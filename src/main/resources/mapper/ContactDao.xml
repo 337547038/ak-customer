@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="customer.dao.ContactDao">
+
+        <resultMap type="customer.entity.Contact" id="ContactMap">
+                <result property="id" column="id" jdbcType="INTEGER"/>
+                <result property="name" column="name" jdbcType="VARCHAR"/>
+                <result property="sex" column="sex" jdbcType="INTEGER"/>
+                <result property="tel" column="tel" jdbcType="VARCHAR"/>
+                <result property="phone" column="phone" jdbcType="INTEGER"/>
+                <result property="weixin" column="weixin" jdbcType="VARCHAR"/>
+                <result property="qq" column="qq" jdbcType="INTEGER"/>
+                <result property="email" column="email" jdbcType="VARCHAR"/>
+                <result property="position" column="position" jdbcType="INTEGER"/>
+                <result property="tid" column="tid" jdbcType="INTEGER"/>
+                <result property="creatDate" column="creatDate" jdbcType="TIMESTAMP"/>
+                <result property="nextTime" column="nextTime" jdbcType="TIMESTAMP"/>
+        </resultMap>
+
+    <sql id="commColumnsItem">
+id, name, sex, tel, phone, weixin, qq, email, position, tid, creatDate, nextTime        
+    </sql>
+        <!--查询单个-->
+        <select id="queryById" resultMap="ContactMap">
+            select
+            <include refid="commColumnsItem" />
+            from sys_contact
+                where id = #{id}
+        </select>
+
+        <!--查询指定行数据-->
+        <select id="queryAllByLimit">
+            select
+            <choose>
+                <when test="extend.columns != null and extend.columns!=''">
+                    ${extend.columns}
+                </when>
+                <otherwise>
+                    <include refid="commColumnsItem" />
+                </otherwise>
+            </choose>
+            from sys_contact
+            <where>
+                    <if test="query.id != null">
+                        and id = #{query.id}
+                    </if>
+                    <if test="query.name != null and query.name != ''">
+                        and name = #{query.name}
+                    </if>
+                    <if test="query.sex != null">
+                        and sex = #{query.sex}
+                    </if>
+                    <if test="query.tel != null and query.tel != ''">
+                        and tel = #{query.tel}
+                    </if>
+                    <if test="query.phone != null">
+                        and phone = #{query.phone}
+                    </if>
+                    <if test="query.weixin != null and query.weixin != ''">
+                        and weixin = #{query.weixin}
+                    </if>
+                    <if test="query.qq != null">
+                        and qq = #{query.qq}
+                    </if>
+                    <if test="query.email != null and query.email != ''">
+                        and email = #{query.email}
+                    </if>
+                    <if test="query.position != null">
+                        and position = #{query.position}
+                    </if>
+                    <if test="query.tid != null">
+                        and tid = #{query.tid}
+                    </if>
+                    <if test="query.creatDate != null">
+                        and creatDate = #{query.creatDate}
+                    </if>
+                    <if test="query.nextTime != null">
+                        and nextTime = #{query.nextTime}
+                    </if>
+            </where>
+            <choose>
+                <when test="extend.sort != null and extend.sort!=''">
+                    order by ${extend.sort}
+                </when>
+                <otherwise>
+                    order by id desc
+                </otherwise>
+            </choose>
+            <if test="extend.pageSize >0">
+            limit #{extend.pageIndex}, #{extend.pageSize}
+            </if>
+        </select>
+
+        <!--统计总行数-->
+        <select id="count" resultType="java.lang.Long">
+            select count(1)
+            from sys_contact
+            <where>
+                    <if test="id != null">
+                        and id = #{id}
+                    </if>
+                    <if test="name != null and name != ''">
+                        and name = #{name}
+                    </if>
+                    <if test="sex != null">
+                        and sex = #{sex}
+                    </if>
+                    <if test="tel != null and tel != ''">
+                        and tel = #{tel}
+                    </if>
+                    <if test="phone != null">
+                        and phone = #{phone}
+                    </if>
+                    <if test="weixin != null and weixin != ''">
+                        and weixin = #{weixin}
+                    </if>
+                    <if test="qq != null">
+                        and qq = #{qq}
+                    </if>
+                    <if test="email != null and email != ''">
+                        and email = #{email}
+                    </if>
+                    <if test="position != null">
+                        and position = #{position}
+                    </if>
+                    <if test="tid != null">
+                        and tid = #{tid}
+                    </if>
+                    <if test="creatDate != null">
+                        and creatDate = #{creatDate}
+                    </if>
+                    <if test="nextTime != null">
+                        and nextTime = #{nextTime}
+                    </if>
+            </where>
+        </select>
+
+        <!--新增所有列-->
+        <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+            insert into sys_contact(name, sex, tel, phone, weixin, qq, email, position, tid, creatDate, nextTime)
+                values
+            (#{name}, #{sex}, #{tel}, #{phone}, #{weixin}, #{qq}, #{email}, #{position}, #{tid}, #{creatDate}, #{nextTime})
+        </insert>
+
+        <!--通过主键修改数据-->
+        <update id="updateById">
+            update sys_contact
+            <set>
+                    <if test="name != null and name != ''">
+                        name = #{name},
+                    </if>
+                    <if test="sex != null">
+                        sex = #{sex},
+                    </if>
+                    <if test="tel != null and tel != ''">
+                        tel = #{tel},
+                    </if>
+                    <if test="phone != null">
+                        phone = #{phone},
+                    </if>
+                    <if test="weixin != null and weixin != ''">
+                        weixin = #{weixin},
+                    </if>
+                    <if test="qq != null">
+                        qq = #{qq},
+                    </if>
+                    <if test="email != null and email != ''">
+                        email = #{email},
+                    </if>
+                    <if test="position != null">
+                        position = #{position},
+                    </if>
+                    <if test="tid != null">
+                        tid = #{tid},
+                    </if>
+                    <if test="creatDate != null">
+                        creatDate = #{creatDate},
+                    </if>
+                    <if test="nextTime != null">
+                        nextTime = #{nextTime},
+                    </if>
+            </set>
+            where id = #{id}
+        </update>
+
+        <!--通过主键删除-->
+        <delete id="deleteById">
+            delete
+            from sys_contact where id in
+            <foreach collection="id" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        </delete>
+
+    </mapper>

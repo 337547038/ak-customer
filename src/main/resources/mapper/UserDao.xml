@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="customer.dao.UserDao">
+
+        <resultMap type="customer.entity.User" id="UserMap">
+                <result property="id" column="id" jdbcType="INTEGER"/>
+                <result property="userName" column="userName" jdbcType="VARCHAR"/>
+                <result property="password" column="password" jdbcType="VARCHAR"/>
+                <result property="status" column="status" jdbcType="INTEGER"/>
+                <result property="creatTime" column="creatTime" jdbcType="TIMESTAMP"/>
+                <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+                <result property="lastLogin" column="lastLogin" jdbcType="TIMESTAMP"/>
+                <result property="loginTimer" column="loginTimer" jdbcType="INTEGER"/>
+                <result property="ip" column="ip" jdbcType="VARCHAR"/>
+                <result property="remark" column="remark" jdbcType="VARCHAR"/>
+                <result property="departmentId" column="departmentId" jdbcType="INTEGER"/>
+                <result property="tid" column="tid" jdbcType="INTEGER"/>
+                <result property="phone" column="phone" jdbcType="VARCHAR"/>
+                <result property="weixin" column="weixin" jdbcType="VARCHAR"/>
+                <result property="qq" column="qq" jdbcType="INTEGER"/>
+                <result property="sex" column="sex" jdbcType="INTEGER"/>
+        </resultMap>
+
+    <sql id="commColumnsItem">
+id, userName, password, status, creatTime, updateTime, lastLogin, loginTimer, ip, remark, departmentId, tid, phone, weixin, qq, sex        
+    </sql>
+        <!--查询单个-->
+        <select id="queryById" resultMap="UserMap">
+            select
+            <include refid="commColumnsItem" />
+            from sys_user
+                where id = #{id}
+        </select>
+
+        <!--查询指定行数据-->
+        <select id="queryAllByLimit">
+            select
+            <choose>
+                <when test="extend.columns != null and extend.columns!=''">
+                    ${extend.columns}
+                </when>
+                <otherwise>
+                    <include refid="commColumnsItem" />
+                </otherwise>
+            </choose>
+            from sys_user
+            <where>
+                    <if test="query.id != null">
+                        and id = #{query.id}
+                    </if>
+                    <if test="query.userName != null and query.userName != ''">
+                        and userName = #{query.userName}
+                    </if>
+                    <if test="query.password != null and query.password != ''">
+                        and password = #{query.password}
+                    </if>
+                    <if test="query.status != null">
+                        and status = #{query.status}
+                    </if>
+                    <if test="query.creatTime != null">
+                        and creatTime = #{query.creatTime}
+                    </if>
+                    <if test="query.updateTime != null">
+                        and updateTime = #{query.updateTime}
+                    </if>
+                    <if test="query.lastLogin != null">
+                        and lastLogin = #{query.lastLogin}
+                    </if>
+                    <if test="query.loginTimer != null">
+                        and loginTimer = #{query.loginTimer}
+                    </if>
+                    <if test="query.ip != null and query.ip != ''">
+                        and ip = #{query.ip}
+                    </if>
+                    <if test="query.remark != null and query.remark != ''">
+                        and remark = #{query.remark}
+                    </if>
+                    <if test="query.departmentId != null">
+                        and departmentId = #{query.departmentId}
+                    </if>
+                    <if test="query.tid != null">
+                        and tid = #{query.tid}
+                    </if>
+                    <if test="query.phone != null and query.phone != ''">
+                        and phone = #{query.phone}
+                    </if>
+                    <if test="query.weixin != null and query.weixin != ''">
+                        and weixin = #{query.weixin}
+                    </if>
+                    <if test="query.qq != null">
+                        and qq = #{query.qq}
+                    </if>
+                    <if test="query.sex != null">
+                        and sex = #{query.sex}
+                    </if>
+            </where>
+            <choose>
+                <when test="extend.sort != null and extend.sort!=''">
+                    order by ${extend.sort}
+                </when>
+                <otherwise>
+                    order by id desc
+                </otherwise>
+            </choose>
+            <if test="extend.pageSize >0">
+            limit #{extend.pageIndex}, #{extend.pageSize}
+            </if>
+        </select>
+
+        <!--统计总行数-->
+        <select id="count" resultType="java.lang.Long">
+            select count(1)
+            from sys_user
+            <where>
+                    <if test="id != null">
+                        and id = #{id}
+                    </if>
+                    <if test="userName != null and userName != ''">
+                        and userName = #{userName}
+                    </if>
+                    <if test="password != null and password != ''">
+                        and password = #{password}
+                    </if>
+                    <if test="status != null">
+                        and status = #{status}
+                    </if>
+                    <if test="creatTime != null">
+                        and creatTime = #{creatTime}
+                    </if>
+                    <if test="updateTime != null">
+                        and updateTime = #{updateTime}
+                    </if>
+                    <if test="lastLogin != null">
+                        and lastLogin = #{lastLogin}
+                    </if>
+                    <if test="loginTimer != null">
+                        and loginTimer = #{loginTimer}
+                    </if>
+                    <if test="ip != null and ip != ''">
+                        and ip = #{ip}
+                    </if>
+                    <if test="remark != null and remark != ''">
+                        and remark = #{remark}
+                    </if>
+                    <if test="departmentId != null">
+                        and departmentId = #{departmentId}
+                    </if>
+                    <if test="tid != null">
+                        and tid = #{tid}
+                    </if>
+                    <if test="phone != null and phone != ''">
+                        and phone = #{phone}
+                    </if>
+                    <if test="weixin != null and weixin != ''">
+                        and weixin = #{weixin}
+                    </if>
+                    <if test="qq != null">
+                        and qq = #{qq}
+                    </if>
+                    <if test="sex != null">
+                        and sex = #{sex}
+                    </if>
+            </where>
+        </select>
+
+        <!--新增所有列-->
+        <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+            insert into sys_user(userName, password, status, creatTime, updateTime, lastLogin, loginTimer, ip, remark, departmentId, tid, phone, weixin, qq, sex)
+                values
+            (#{userName}, #{password}, #{status}, #{creatTime}, #{updateTime}, #{lastLogin}, #{loginTimer}, #{ip}, #{remark}, #{departmentId}, #{tid}, #{phone}, #{weixin}, #{qq}, #{sex})
+        </insert>
+
+        <!--通过主键修改数据-->
+        <update id="updateById">
+            update sys_user
+            <set>
+                    <if test="userName != null and userName != ''">
+                        userName = #{userName},
+                    </if>
+                    <if test="password != null and password != ''">
+                        password = #{password},
+                    </if>
+                    <if test="status != null">
+                        status = #{status},
+                    </if>
+                    <if test="creatTime != null">
+                        creatTime = #{creatTime},
+                    </if>
+                    <if test="updateTime != null">
+                        updateTime = #{updateTime},
+                    </if>
+                    <if test="lastLogin != null">
+                        lastLogin = #{lastLogin},
+                    </if>
+                    <if test="loginTimer != null">
+                        loginTimer = #{loginTimer},
+                    </if>
+                    <if test="ip != null and ip != ''">
+                        ip = #{ip},
+                    </if>
+                    <if test="remark != null and remark != ''">
+                        remark = #{remark},
+                    </if>
+                    <if test="departmentId != null">
+                        departmentId = #{departmentId},
+                    </if>
+                    <if test="tid != null">
+                        tid = #{tid},
+                    </if>
+                    <if test="phone != null and phone != ''">
+                        phone = #{phone},
+                    </if>
+                    <if test="weixin != null and weixin != ''">
+                        weixin = #{weixin},
+                    </if>
+                    <if test="qq != null">
+                        qq = #{qq},
+                    </if>
+                    <if test="sex != null">
+                        sex = #{sex},
+                    </if>
+            </set>
+            where id = #{id}
+        </update>
+
+        <!--通过主键删除-->
+        <delete id="deleteById">
+            delete
+            from sys_user where id in
+            <foreach collection="id" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        </delete>
+
+    </mapper>

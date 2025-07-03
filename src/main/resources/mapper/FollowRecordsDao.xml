@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="customer.dao.FollowRecordsDao">
+
+        <resultMap type="customer.entity.FollowRecords" id="FollowRecordsMap">
+                <result property="id" column="id" jdbcType="INTEGER"/>
+                <result property="cId" column="cId" jdbcType="INTEGER"/>
+                <result property="uId" column="uId" jdbcType="INTEGER"/>
+                <result property="userId" column="userId" jdbcType="INTEGER"/>
+                <result property="dateTime" column="dateTime" jdbcType="TIMESTAMP"/>
+                <result property="type" column="type" jdbcType="INTEGER"/>
+                <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        </resultMap>
+
+    <sql id="commColumnsItem">
+id, cId, uId, userId, dateTime, type, remark        
+    </sql>
+        <!--查询单个-->
+        <select id="queryById" resultMap="FollowRecordsMap">
+            select
+            <include refid="commColumnsItem" />
+            from sys_follow_records
+                where id = #{id}
+        </select>
+
+        <!--查询指定行数据-->
+        <select id="queryAllByLimit">
+            select
+            <choose>
+                <when test="extend.columns != null and extend.columns!=''">
+                    ${extend.columns}
+                </when>
+                <otherwise>
+                    <include refid="commColumnsItem" />
+                </otherwise>
+            </choose>
+            from sys_follow_records
+            <where>
+                    <if test="query.id != null">
+                        and id = #{query.id}
+                    </if>
+                    <if test="query.cId != null">
+                        and cId = #{query.cId}
+                    </if>
+                    <if test="query.uId != null">
+                        and uId = #{query.uId}
+                    </if>
+                    <if test="query.userId != null">
+                        and userId = #{query.userId}
+                    </if>
+                    <if test="query.dateTime != null">
+                        and dateTime = #{query.dateTime}
+                    </if>
+                    <if test="query.type != null">
+                        and type = #{query.type}
+                    </if>
+                    <if test="query.remark != null and query.remark != ''">
+                        and remark = #{query.remark}
+                    </if>
+            </where>
+            <choose>
+                <when test="extend.sort != null and extend.sort!=''">
+                    order by ${extend.sort}
+                </when>
+                <otherwise>
+                    order by id desc
+                </otherwise>
+            </choose>
+            <if test="extend.pageSize >0">
+            limit #{extend.pageIndex}, #{extend.pageSize}
+            </if>
+        </select>
+
+        <!--统计总行数-->
+        <select id="count" resultType="java.lang.Long">
+            select count(1)
+            from sys_follow_records
+            <where>
+                    <if test="id != null">
+                        and id = #{id}
+                    </if>
+                    <if test="cId != null">
+                        and cId = #{cId}
+                    </if>
+                    <if test="uId != null">
+                        and uId = #{uId}
+                    </if>
+                    <if test="userId != null">
+                        and userId = #{userId}
+                    </if>
+                    <if test="dateTime != null">
+                        and dateTime = #{dateTime}
+                    </if>
+                    <if test="type != null">
+                        and type = #{type}
+                    </if>
+                    <if test="remark != null and remark != ''">
+                        and remark = #{remark}
+                    </if>
+            </where>
+        </select>
+
+        <!--新增所有列-->
+        <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+            insert into sys_follow_records(cId, uId, userId, dateTime, type, remark)
+                values
+            (#{cId}, #{uId}, #{userId}, #{dateTime}, #{type}, #{remark})
+        </insert>
+
+        <!--通过主键修改数据-->
+        <update id="updateById">
+            update sys_follow_records
+            <set>
+                    <if test="cId != null">
+                        cId = #{cId},
+                    </if>
+                    <if test="uId != null">
+                        uId = #{uId},
+                    </if>
+                    <if test="userId != null">
+                        userId = #{userId},
+                    </if>
+                    <if test="dateTime != null">
+                        dateTime = #{dateTime},
+                    </if>
+                    <if test="type != null">
+                        type = #{type},
+                    </if>
+                    <if test="remark != null and remark != ''">
+                        remark = #{remark},
+                    </if>
+            </set>
+            where id = #{id}
+        </update>
+
+        <!--通过主键删除-->
+        <delete id="deleteById">
+            delete
+            from sys_follow_records where id in
+            <foreach collection="id" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        </delete>
+
+    </mapper>
