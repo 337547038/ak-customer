@@ -1,10 +1,9 @@
 <template>
   <div>index</div>
 </template>
-
+<route>
+{meta:{permissions:"none"}}
+</route>
 <script lang="ts" setup>
-  /*import { useAppStore } from '../store/app'
-  const counter = useAppStore()
-  counter.$patch({ count: counter.count + 1, msg: 'ok' })
-  counter.increment()*/
+
 </script>

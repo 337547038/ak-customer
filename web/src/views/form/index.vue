@@ -11,6 +11,9 @@
     <el-form-item label="测试" prop="test">
       <el-input v-model="model.test" />
     </el-form-item>
+    <template #diy>
+      可自定义
+    </template>
   </ak-form>
 </template>
 <script setup lang="ts">
@@ -41,19 +44,17 @@
             trigger: 'blur'
           }
         ]
-      },
-      attr: {
-        placeholder: '请输入名字name'
       }
+    },
+    {
+      prop: 'diy',
+      type:'scope',
     },
     {
       prop: 'name2',
       label: '名称',
       formItem: {},
-      attr: {
-        placeholder: '请输入名字name',
-        options: [{ label: '选项1', value: '123' }]
-      },
+      options: [{ label: '选项1', value: '123' }],
       type: 'select'
     }
   ])

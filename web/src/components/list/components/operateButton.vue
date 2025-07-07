@@ -53,7 +53,7 @@
       return false
     }
     if (btn.key && ['add', 'del', 'edit', 'detail'].includes(btn.key)) {
-      emits('click', btn.key)
+      emits('click', btn)
     }
   }
 

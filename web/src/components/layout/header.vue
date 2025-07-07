@@ -36,15 +36,15 @@
       </div>
       <template #dropdown>
         <el-menu class="avatar-menu">
-          <el-menu-item>
+          <el-menu-item index="user">
             <el-icon><User /></el-icon>
             <span class="title">个人中心</span>
           </el-menu-item>
-          <el-menu-item>
+          <el-menu-item index="setting">
             <el-icon><Setting /></el-icon>
             <span class="title">设置</span>
           </el-menu-item>
-          <el-menu-item @click="logout">
+          <el-menu-item @click="logout" index="logout">
             <el-icon><CircleClose /></el-icon>
             <span class="title">退出登录</span>
           </el-menu-item>

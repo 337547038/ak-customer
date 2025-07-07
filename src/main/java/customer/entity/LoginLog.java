@@ -33,6 +33,8 @@ public class LoginLog implements Serializable {
 
     private String remark;
 
+    private Integer status;
+
 
 }
 

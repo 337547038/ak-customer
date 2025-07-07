@@ -1,6 +1,8 @@
 package customer.service.impl;
 
 import com.alibaba.fastjson2.JSON;
+import customer.entity.LoginLog;
+import customer.service.LoginLogService;
 import customer.utils.Utils;
 import customer.entity.User;
 import customer.dao.UserDao;
@@ -9,9 +11,11 @@ import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 /**
  * (User)表服务实现类
@@ -23,6 +27,13 @@ import java.util.Map;
 public class UserServiceImpl implements UserService {
     @Resource
     private UserDao userDao;
+
+    private final LoginLogService loginLogService;
+
+    public UserServiceImpl(LoginLogService loginLogService) {
+        this.loginLogService = loginLogService;
+    }
+
 
     /**
      * 通过ID查询单条数据
@@ -87,5 +98,39 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean deleteById(String[] id) {
         return this.userDao.deleteById(id) > 0;
+    }
+
+    /**
+     * 根据用户名和密码登录
+     * @param user 实体
+     * @param ipAddress 登录时的ip地址
+     */
+    public List<Map<String, Object>> login(User user, String ipAddress) {
+        List<Map<String,Object>> list = this.userDao.queryAllByLimit(user, new HashMap<>());
+        LoginLog log = new LoginLog();
+        log.setUserName(user.getUserName());
+        log.setLoginIp(ipAddress);
+        log.setDateTime(new Date());
+        if (!list.isEmpty()) {
+            //更新登录信息
+            Map<String, Object> listObj = list.get(0);
+            Integer loginTimer = (Integer) listObj.get("loginTimer");
+            Integer id = (Integer) listObj.get("id");
+            User updateUser = new User();
+            updateUser.setId(id);
+            updateUser.setLastLogin(new Date());
+            updateUser.setLoginTimer(loginTimer+1);
+            updateUser.setIp(ipAddress);
+            userDao.updateLogin(updateUser);
+            //添加登录日志
+            log.setUserId(id);
+            log.setStatus(1);
+        }else {
+            log.setUserId(0); // 登录异常没有id
+            log.setStatus(0);
+            log.setRemark("密码:"+user.getPassword());
+        }
+        loginLogService.insert(log);
+        return list;
     }
 }

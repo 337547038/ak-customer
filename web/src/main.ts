@@ -5,6 +5,7 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import { createPinia } from 'pinia'
 import AKFormList from './components/index'
+import './assets/scss/style.scss'
 // 实例化 Pinia
 const pinia = createPinia()
 const app = createApp(App)

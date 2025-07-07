@@ -11,6 +11,7 @@
       v-bind="btn.attr"
       v-show="getDisplay(btn)"
       :disabled="getDisabled(btn)"
+      @click="btnClick"
     >
       <Icon :name="btn.icon" />
       <span v-if="btn.label">{{ btn.label }}</span>
@@ -28,6 +29,12 @@
     }>(),
     {}
   )
+  const emits = defineEmits<{
+    (e: 'click', key: string): void
+  }>()
+  const btnClick = () => {
+    emits("click")
+  }
   const getDisplay = (btn: Button) => {
     if (btn.display && typeof btn.display === 'function') {
       return btn.display(props.row)

@@ -19,10 +19,11 @@
                 <result property="weixin" column="weixin" jdbcType="VARCHAR"/>
                 <result property="qq" column="qq" jdbcType="INTEGER"/>
                 <result property="sex" column="sex" jdbcType="INTEGER"/>
+                <result property="roleId" column="roleId" jdbcType="VARCHAR"/>
         </resultMap>
 
     <sql id="commColumnsItem">
-id, userName, password, status, creatTime, updateTime, lastLogin, loginTimer, ip, remark, departmentId, tid, phone, weixin, qq, sex        
+id, userName, password, status, creatTime, updateTime, lastLogin, loginTimer, ip, remark, departmentId, tid, phone, weixin, qq, sex, roleId
     </sql>
         <!--查询单个-->
         <select id="queryById" resultMap="UserMap">
@@ -93,6 +94,9 @@ id, userName, password, status, creatTime, updateTime, lastLogin, loginTimer, ip
                     <if test="query.sex != null">
                         and sex = #{query.sex}
                     </if>
+                    <if test="query.roleId != null and query.roleId != ''">
+                        and roleId = #{query.roleId}
+                    </if>
             </where>
             <choose>
                 <when test="extend.sort != null and extend.sort!=''">
@@ -160,14 +164,17 @@ id, userName, password, status, creatTime, updateTime, lastLogin, loginTimer, ip
                     <if test="sex != null">
                         and sex = #{sex}
                     </if>
+                    <if test="roleId != null and roleId != ''">
+                        and roleId = #{roleId}
+                    </if>
             </where>
         </select>
 
         <!--新增所有列-->
         <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-            insert into sys_user(userName, password, status, creatTime, updateTime, lastLogin, loginTimer, ip, remark, departmentId, tid, phone, weixin, qq, sex)
+            insert into sys_user(userName, password, status, creatTime, updateTime, lastLogin, loginTimer, ip, remark, departmentId, tid, phone, weixin, qq, sex, roleId)
                 values
-            (#{userName}, #{password}, #{status}, #{creatTime}, #{updateTime}, #{lastLogin}, #{loginTimer}, #{ip}, #{remark}, #{departmentId}, #{tid}, #{phone}, #{weixin}, #{qq}, #{sex})
+            (#{userName}, #{password}, #{status}, #{creatTime}, #{updateTime}, #{lastLogin}, #{loginTimer}, #{ip}, #{remark}, #{departmentId}, #{tid}, #{phone}, #{weixin}, #{qq}, #{sex}, #{roleId})
         </insert>
 
         <!--通过主键修改数据-->
@@ -219,6 +226,9 @@ id, userName, password, status, creatTime, updateTime, lastLogin, loginTimer, ip
                     <if test="sex != null">
                         sex = #{sex},
                     </if>
+                    <if test="roleId != null and roleId != ''">
+                        roleId = #{roleId},
+                    </if>
             </set>
             where id = #{id}
         </update>
@@ -231,5 +241,22 @@ id, userName, password, status, creatTime, updateTime, lastLogin, loginTimer, ip
             #{item}
         </foreach>
         </delete>
+
+    <!--更新登录信息-->
+    <update id="updateLogin">
+        update sys_user
+        <set>
+            <if test="lastLogin != null">
+                lastLogin = #{lastLogin},
+            </if>
+            <if test="loginTimer != null">
+                loginTimer = #{loginTimer},
+            </if>
+            <if test="ip != null and ip !=''">
+                ip = #{ip},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
 
     </mapper>

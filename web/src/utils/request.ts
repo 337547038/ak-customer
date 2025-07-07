@@ -98,7 +98,7 @@ service.interceptors.response.use(
               ElMessage({ message: msg, type: 'error' })
               // todo 这里使用了router后在开发热更新时会导致页面刷新
               // router.push({ path: '/login' })
-              window.location.href = '/login'
+              window.location.href = '/#/login' // 根据路由模式决定是否添加/#
               break
           default:
               // 这里可统一处理其他异常拦截，或提示

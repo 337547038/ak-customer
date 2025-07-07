@@ -12,8 +12,7 @@
           v-for="item in columnsFilter"
           :key="item.prop || item.type"
           :value="item.prop || item.type"
-          :label="item.label || item.type"
-        />
+        >{{item.label || item.type}}</el-checkbox>
       </el-checkbox-group>
     </template>
     <template #reference>

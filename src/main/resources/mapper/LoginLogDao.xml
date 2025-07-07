@@ -9,10 +9,11 @@
                 <result property="loginIp" column="loginIp" jdbcType="VARCHAR"/>
                 <result property="dateTime" column="dateTime" jdbcType="TIMESTAMP"/>
                 <result property="remark" column="remark" jdbcType="VARCHAR"/>
+                <result property="status" column="status" jdbcType="INTEGER"/>
         </resultMap>
 
     <sql id="commColumnsItem">
-id, userName, userId, loginIp, dateTime, remark        
+id, userName, userId, loginIp, dateTime, remark, status
     </sql>
         <!--查询单个-->
         <select id="queryById" resultMap="LoginLogMap">
@@ -53,6 +54,9 @@ id, userName, userId, loginIp, dateTime, remark
                     <if test="query.remark != null and query.remark != ''">
                         and remark = #{query.remark}
                     </if>
+                    <if test="query.status != null">
+                        and status = #{query.status}
+                    </if>
             </where>
             <choose>
                 <when test="extend.sort != null and extend.sort!=''">
@@ -90,14 +94,17 @@ id, userName, userId, loginIp, dateTime, remark
                     <if test="remark != null and remark != ''">
                         and remark = #{remark}
                     </if>
+                    <if test="status != null">
+                        and status = #{status}
+                    </if>
             </where>
         </select>
 
         <!--新增所有列-->
         <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-            insert into sys_login_log(userName, userId, loginIp, dateTime, remark)
+            insert into sys_login_log(userName, userId, loginIp, dateTime, remark, status)
                 values
-            (#{userName}, #{userId}, #{loginIp}, #{dateTime}, #{remark})
+            (#{userName}, #{userId}, #{loginIp}, #{dateTime}, #{remark}, #{status})
         </insert>
 
         <!--通过主键修改数据-->
@@ -118,6 +125,9 @@ id, userName, userId, loginIp, dateTime, remark
                     </if>
                     <if test="remark != null and remark != ''">
                         remark = #{remark},
+                    </if>
+                    <if test="status != null">
+                        status = #{status},
                     </if>
             </set>
             where id = #{id}

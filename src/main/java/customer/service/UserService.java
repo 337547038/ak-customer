@@ -2,6 +2,7 @@ package customer.service;
 
 import customer.entity.User;
 
+import java.util.List;
 import java.util.Map;
 /**
  * (User)表服务接口
@@ -48,5 +49,7 @@ public interface UserService {
      * @return 是否成功
      */
     boolean deleteById(String[] id);
+
+    List<Map<String, Object>> login(User user, String ipAddress);
 
 }

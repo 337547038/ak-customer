@@ -5,7 +5,7 @@
       options=""
       v-model="model"
       @change="change"
-      v-if="type === 'checkbox' && options?.length"
+      v-if="render === 'checkbox' && options?.length"
     >
       <el-checkbox
         v-for="(item, index) in options"
@@ -19,7 +19,7 @@
       v-model="model"
       options=""
       @change="change"
-      v-else-if="type === 'radio' && options?.length"
+      v-else-if="render === 'radio' && options?.length"
     >
       <el-radio
         v-for="(item, index) in options"
@@ -33,7 +33,7 @@
       options=""
       v-model="model"
       :placeholder="$attrs.placeholder || '请选择' + label"
-      v-else-if="type === 'select' && options?.length"
+      v-else-if="render === 'select' && options?.length"
       style="min-width: 120px"
     >
       <el-option
@@ -62,9 +62,10 @@
       label?: string
       formItem?: { [key: string]: any } //绑定于el-form-item的所有属性
       options?: { label: string; value: any }[]
-      type?:
+      render?:
         | 'input'
         | 'cascader'
+        | 'radio'
         | 'checkbox'
         | 'datePicker'
         | 'inputNumber'
@@ -75,13 +76,13 @@
         | 'upload'
         | 'slider'
         | 'component'
-      component?: any // type=component时
+      component?: any // render=component时
     }>(),
     {
       formItem: () => {
         return {}
       },
-      type: 'input'
+      render: 'input'
     }
   )
   const model = defineModel()
@@ -94,9 +95,9 @@
   }
 
   const currentComponent = computed(() => {
-    if (props.type === 'component') {
+    if (props.render === 'component') {
       return props.component
     }
-    return `el-${props.type}`
+    return `el-${props.render}`
   })
 </script>

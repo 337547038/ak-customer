@@ -7,7 +7,7 @@
     >
       <div class="logo"
         ><img src="@/assets/logo.png" />
-        <span v-show="!isCollapse">XX管理系统</span></div
+        <span v-show="!isCollapse">客户管理系统</span></div
       >
       <Menu :collapse="isCollapse" @get-menu-list="getMenuList" />
     </el-aside>
@@ -15,7 +15,7 @@
       <el-header class="common-header" v-if="!fullScreen">
         <CommonHeader @click="headClick" :collapse="isCollapse" />
       </el-header>
-      <TagViews :navList="navList" v-if="!fullScreen" />
+<!--      <TagViews :navList="navList" v-if="!fullScreen" />-->
       <el-main class="common-main">
         <router-view v-slot="{ Component }" v-if="reloadFlag">
           <keep-alive :include="keepAliveInclude">

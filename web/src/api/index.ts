@@ -1,18 +1,17 @@
 import request from '../utils/request'
+import sys from './sys'
 
-//const isDev = import.meta.env.DEV
-
-const api: any = {
-  // tableList: '/get/table/list',
-  formSubmit: '/formSubmit',
-  tableList: './mock/list.json',
-  getFormContent: './mock/form.json'
-}
+const allApi: any = Object.assign({},sys)
 export const getRequest = (apiKey: string, data?: any, options = {}) => {
-  const obj: any = Object.assign(
+    let url = allApi[apiKey] || apiKey
+    // 不是以/和http开头的，添加全局前缀
+    if (!(url.startsWith('/') || url.startsWith('http'))) {
+        url = 'api/' + url
+    }
+    const obj: any = Object.assign(
     {
-      url: api[apiKey] || apiKey,
-      method: 'get',
+      url: url,
+      method: 'POST',
       data
     },
     options
