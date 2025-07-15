@@ -9,9 +9,8 @@ import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * (Role)表服务实现类
@@ -87,5 +86,24 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public boolean deleteById(String[] id) {
         return this.roleDao.deleteById(id) > 0;
+    }
+    @Override
+    public List<String> queryByIds(String ids) {
+        List<Map<String, Object>> list = this.roleDao.queryByIds(ids);
+        // 提取content字段
+        // 过滤null值
+        // 拆分字符串
+        // 去除空格
+        // 去重
+        // 排序（可选）
+        // 收集到List
+        return list.stream()
+                .map(map -> (String) map.get("content")) // 提取content字段
+                .filter(Objects::nonNull)                // 过滤null值
+                .flatMap(content -> Arrays.stream(content.split(","))) // 拆分字符串
+                .map(String::trim)                      // 去除空格
+                .distinct()                             // 去重
+                .sorted()                               // 排序（可选）
+                .collect(Collectors.toList());         // 收集到List
     }
 }

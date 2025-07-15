@@ -4,39 +4,44 @@
         ref="tableListEl"
         pk="id"
         :columns="columns"
-        :api="{ list: 'dictList', edit: 'tableList' }"
+        :api="{ list: 'dictList', del:'dictDelete'}"
         :before="beforeEvent"
         :after="afterEvent"
-        :controlBtn="[
-        {
-          key: 'add',
-          click:()=>{
-            visible=true;
-          }
-        },
-        { key: 'edit' },
-        { key: 'del' }
-      ]"
+        :controlBtn="controlBtn"
     >
     </ak-list>
-    <el-dialog v-model="visible" width="500" title="新增字典">
+    <el-dialog v-model="visible" width="500" :title="dictDialogTitle" class="form-dialog">
       <ak-form
+          label-width="100px"
+          pk="id"
+          ref="formEl"
           @cancel="cancelClick"
           :after="afterSubmit"
           :data="formData"
-          :api="{ add: 'dictSave', edit: 'dictEdit' }"
+          :api="{ add: 'dictSave', edit: 'dictEdit', detail:'dictGet' }"
           v-model="formModel">
       </ak-form>
     </el-dialog>
     <el-dialog v-model="setVisible" width="500" title="设置字典数据">
       <ak-form
+          pk="id"
+          @cancel="cancelSetClick"
+          :before="setFormBefore"
+          :after='setFormAfter'
           :data="formEditData"
           :api="{ edit: 'dictEdit' }"
           v-model="formEditModel">
-        <div v-for="(item,index) in labelList" :key="item.value">
-          <ak-field label="标签名称" v-model="item.label" prop="label"/>
-          <ak-field label="标签值" v-model="item.field" prop="value"/>
-          <el-button @click="delLabelClick(index)"></el-button>
+        <el-form-item label="字典名称:">
+          <div>{{ formEditModel.name }}</div>
+        </el-form-item>
+        <div v-for="(item,index) in labelList" :key="item.value" class="flex-item">
+          <ak-field label="标签名称:" v-model="item.label" prop="label"/>
+          <ak-field label="标签值:" v-model="item.value" prop="value"/>
+          <el-button @click="delLabelClick(index)" type="text">
+            <el-icon>
+              <Delete/>
+            </el-icon>
+          </el-button>
         </div>
         <el-button @click="addLabelClick">添加一行</el-button>
       </ak-form>
@@ -45,8 +50,38 @@
   </div>
 </template>
 <script setup lang="ts">
-import {ref} from 'vue'
+import {ref, nextTick} from 'vue'
+import {Delete} from "@element-plus/icons-vue";
+import {useLayoutStore} from '@/store/layout'
 
+const layoutStore = useLayoutStore()
+
+const dictDialogTitle = ref("新增字典")
+const formEl = ref()
+const editEvent = (row: any) => {
+  visible.value = true
+  dictDialogTitle.value = '编辑字典'
+  nextTick(() => {
+    formEl.value.getData({id: row.id})
+  })
+}
+const controlBtn = ref([
+  {
+    key: 'add',
+    click: () => {
+      visible.value = true;
+      dictDialogTitle.value = '新增字典'
+    }
+  },
+  {
+    key: 'edit', click: (row) => {
+      if (row?.length > 0) {
+        editEvent(row[0])
+      }
+    }
+  },
+  {key: 'del'}
+])
 const columns = ref<any>([
   {
     type: 'selection'
@@ -61,7 +96,7 @@ const columns = ref<any>([
     label: '字典名称'
   },
   {
-    prop: 'name2',
+    prop: 'type',
     label: '字典标识'
   },
   {
@@ -72,14 +107,14 @@ const columns = ref<any>([
     custom: {'1': 'success', '0': 'danger'},
     search: {
       type: 'select',
-      options: [{value: '0', label: '禁用'}]
+      options: [{value: '0', label: '禁用'}, {value: '1', label: '启用'}]
     }
   },
   {
-    prop: 'date',
+    prop: 'dateTime',
     label: '更新时间',
-    width: 150,
-    render: 'date',
+    width: 180,
+    render: 'datetime',
     search: false
   },
   {
@@ -88,8 +123,9 @@ const columns = ref<any>([
     buttons: [
       {
         key: 'edit',
+        label: '编辑',
         click: (row) => {
-          console.log('click')
+          editEvent(row)
         }
         /*display: (row) => {
           return row.status === 1
@@ -100,36 +136,36 @@ const columns = ref<any>([
       },
       {
         label: '设置',
-        tooltip: '设置',
-        disabled: (row) => {
-          return row.status === 1
+        click: (row) => {
+          setVisible.value = true
+          formEditModel.value.id = row.id
+          formEditModel.value.name = row.name
+          formEditModel.value.type = row.type // 传一个标识作为设置和修改的区别
+          if (row.children) {
+            labelList.value = JSON.parse(row.children)
+          }
         }
       },
       {
+        label: '删除',
         key: 'del',
         tooltip: 'del',
         popConfirm: {confirmButtonType: 'danger'},
         display: (row) => {
-          return true
+          return row.isSys === 0
         },
         disabled: (row) => {
-          return row.status === 1
-        },
-        click: () => {
-          console.log('click')
+          return row.isSys === 1
         }
       }
-      /* { label: '其他' }*/
     ]
   }
 ])
 
 const beforeEvent = (type: string, params: any) => {
-  console.log('beforeEvent', type)
   return params
 }
 const afterEvent = (type: string, res: any) => {
-  console.log('afterEvent', type)
 }
 
 // 表单相关
@@ -151,8 +187,7 @@ const formData = ref([
         }
       ]
     },
-    attr:{
-    }
+    attr: {}
   },
   {
     prop: 'type',
@@ -168,7 +203,7 @@ const formData = ref([
     }
   },
   {
-    type: 'radio',
+    render: 'radio',
     prop: 'status',
     label: '状态',
     options: [{label: '禁用', value: 0}, {label: '启用', value: 1}]
@@ -177,7 +212,7 @@ const formData = ref([
     prop: 'remark',
     label: '备注',
     attr: {
-      type:'textarea',
+      type: 'textarea',
       rows: 3
     }
   }
@@ -189,13 +224,35 @@ const setVisible = ref(false)
 const addLabelClick = () => {
   labelList.value.push({label: '', value: ''})
 }
+const setFormBefore = (params: any) => {
+  params.children = JSON.stringify(labelList.value)
+  return params
+}
+const setFormAfter = () => {
+  setVisible.value = false
+  // 更新本地系统字典
+  layoutStore.updateSystemDict(true);
+}
+const cancelSetClick = () => {
+  setVisible.value = false
+}
+
 const delLabelClick = (index: number) => {
   labelList.value.splice(index, 1)
 }
+const tableListEl = ref()
 const afterSubmit = () => {
   visible.value = false
+  tableListEl.value.getData()
 }
 </script>
 <style scoped lang="scss">
+.flex-item {
+  display: flex;
+  justify-content: space-between;
+}
 
+.flex-item > div {
+  margin-right: 10px;
+}
 </style>

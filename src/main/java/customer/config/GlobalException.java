@@ -74,7 +74,11 @@ public class GlobalException {
     public Map<String, Object> handleRuntimeException(RuntimeException e) {// 根据我的方法参数来捕获异常，这里捕获的就是Exception异常
         HashMap<String, Object> result = new HashMap<>();
         result.put("code", ReturnCodeEnum.RC500.getCode());
-        result.put("message", e.getMessage().replace("java.lang.RuntimeException:", ""));
+        if (e.getMessage() != null) {
+            result.put("message", e.getMessage().replace("java.lang.RuntimeException:", ""));
+        } else {
+            result.put("message", e);
+        }
         return result;
     }
 
@@ -87,7 +91,7 @@ public class GlobalException {
     public Map<String, Object> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
         HashMap<String, Object> result = new HashMap<>();
         result.put("code", ReturnCodeEnum.RC100.getCode());
-        result.put("message", "文件上传失败：文件大小超过限制（最大支持"+maxFileSize+"）");
+        result.put("message", "文件上传失败：文件大小超过限制（最大支持" + maxFileSize + "）");
         return result;
     }
 }

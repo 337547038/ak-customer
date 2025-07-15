@@ -1,3 +1,38 @@
-html,body,div,p,h3,h1,h2,ul,li,img{margin:0;padding:0;}
-ul,li{list-style:none;}
-*{box-sizing:border-box;}
+html, body, div, p, h3, h1, h2, ul, li, img {
+  margin: 0;
+  padding: 0;
+}
+
+ul, li {
+  list-style: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.form-item-flex {
+  .el-form-item__content {
+    display: flex;
+    justify-content: center
+  }
+}
+
+.form-dialog {
+  padding-right: 50px;
+}
+
+.flex-form {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  .el-form-item {
+    .el-select {
+      width: 190px;
+    }
+  }
+}
+.flex-form-2{
+  .el-form-item {width: 48%}
+}
+.el-form-item__label{display: flex;align-items: center}

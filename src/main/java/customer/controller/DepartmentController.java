@@ -1,5 +1,6 @@
 package customer.controller;
 
+import customer.config.ResponseResult;
 import customer.entity.Department;
 import customer.service.DepartmentService;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ import java.util.Map;
  */
 @Tag(name = "Department相关")
 @RestController
-@RequestMapping("department")
+@RequestMapping("system/department")
 public class DepartmentController {
     /**
      * 服务对象
@@ -32,23 +33,24 @@ public class DepartmentController {
      * 前端传参:
      * * @param pages 筛选条件分页对象
      * {
-     *     query:{},//查询条件
-     *     extend:{
-     *         pageNum:1,//当前第几页
-     *         pageSize:20,//每页多少条记录，默认20。小于0返回全部
-     *         sort:"id desc"//排序
-     *         columns:""//返回指定查询字段，如'id,name'
-     *     }
+     * query:{},//查询条件
+     * extend:{
+     * pageNum:1,//当前第几页
+     * pageSize:20,//每页多少条记录，默认20。小于0返回全部
+     * sort:"id desc"//排序
+     * columns:""//返回指定查询字段，如'id,name'
      * }
+     * }
+     *
      * @return 查询结果
      */
-    @Operation(summary ="分页列表")
+    @Operation(summary = "分页列表")
     @Parameters({
-            @Parameter(name = "extend.pageNum",description = "当前第几页"),
-            @Parameter(name = "extend.pageSize",description = "每页显示多少条"),
-            @Parameter(name = "extend.sort",description = "排序"),
-            @Parameter(name = "extend.columns",description = "返回指定查询字段"),
-            @Parameter(name = "query",description = "查询条件")
+            @Parameter(name = "extend.pageNum", description = "当前第几页"),
+            @Parameter(name = "extend.pageSize", description = "每页显示多少条"),
+            @Parameter(name = "extend.sort", description = "排序"),
+            @Parameter(name = "extend.columns", description = "返回指定查询字段"),
+            @Parameter(name = "query", description = "查询条件")
     })
     @PostMapping("list")
     public ResponseEntity<Map<String, Object>> queryByPage(@RequestBody Map<String, Object> pages) {
@@ -58,10 +60,10 @@ public class DepartmentController {
     /**
      * 通过主键查询单条数据
      *
-     *@param query 主键
+     * @param query 主键
      * @return 单条数据
      */
-    @Operation(summary ="根据id查询数据")
+    @Operation(summary = "根据id查询数据")
     @PostMapping("get")
     public ResponseEntity<Department> queryById(@RequestBody Map<String, Integer> query) {
         return ResponseEntity.ok(this.departmentService.queryById(query.get("id")));
@@ -73,7 +75,7 @@ public class DepartmentController {
      * @param department 实体
      * @return 新增结果Id
      */
-    @Operation(summary ="新增数据")
+    @Operation(summary = "新增数据")
     @PostMapping("save")
     public ResponseEntity<Integer> add(@RequestBody Department department) {
         Department result = departmentService.insert(department);
@@ -86,7 +88,7 @@ public class DepartmentController {
      * @param department 实体
      * @return 影响行数
      */
-    @Operation(summary ="编辑数据")
+    @Operation(summary = "编辑数据")
     @PostMapping("edit")
     public ResponseEntity<Integer> edit(@RequestBody Department department) {
         return ResponseEntity.ok(this.departmentService.updateById(department));
@@ -98,13 +100,17 @@ public class DepartmentController {
      * @param ids 主键
      * @return 删除是否成功
      */
-    @Operation(summary ="根据id删除")
-    @Parameter(name = "id",description = "多个id时使用豆号隔开",required = true)
+    @Operation(summary = "根据id删除")
+    //@Parameter(name = "id",description = "多个id时使用豆号隔开",required = true)
     @PostMapping("delete")
-    public ResponseEntity<Boolean> deleteById(@RequestBody Map<String,Object> ids) {
+    public ResponseResult<Boolean> deleteById(@RequestBody Map<String, Object> ids) {
         String string = ids.get("id").toString();
         String[] idList = string.split(",");
-        return ResponseEntity.ok(this.departmentService.deleteById(idList));
+        // 这里只允许删单条记录
+        if (idList.length > 1) {
+            return ResponseResult.success(false, "删除失败");
+        }
+        return ResponseResult.success(this.departmentService.deleteById(idList), "删除失败，如有子级请先删除");
     }
 
 }

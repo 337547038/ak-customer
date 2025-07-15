@@ -27,9 +27,9 @@
           class="avatar"
           size="small"
           shape="circle"
-          :src="user.avatar"
+          :src="userInfo.avatar"
         />
-        <span class="name">{{ user.name }}</span>
+        <span class="name">{{ userInfo.userName }}</span>
         <el-icon class="el-icon--right">
           <arrow-down />
         </el-icon>
@@ -57,7 +57,9 @@
 <script setup lang="ts">
   import { computed, ref } from 'vue'
   import { useLayoutStore } from '@/store/layout'
-  //import { useStore } from 'vuex'
+  import {useRouter} from 'vue-router'
+  import {getStorage} from "@/utils";
+  const router = useRouter()
   withDefaults(
     defineProps<{
       collapse: boolean
@@ -71,6 +73,10 @@
   const emits = defineEmits<{
     (e: 'click', type: string): void
   }>()
+
+  const userInfo = computed(()=>{
+    return getStorage('userInfo',true)
+  })
   const user = ref({
     name: 'userName',
     avatar: ''
@@ -79,7 +85,7 @@
     emits('click', type)
   }
   const logout = () => {
-    console.log('logout')
+    store.logout(router)
   }
 </script>
 <style lang="scss">

@@ -26,6 +26,8 @@ public class Department implements Serializable {
 
     private String remark;
 
+    private Integer userId;
+
 
 }
 

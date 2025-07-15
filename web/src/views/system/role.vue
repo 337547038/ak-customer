@@ -1,10 +1,220 @@
-<script setup lang="ts">
-
-</script>
-
 <template>
-  <div>user</div>
+  <ak-list
+      ref="tableListEl"
+      pk="id"
+      :columns="columns"
+      :api="{ list: 'roleList', del:'roleDelete'}"
+      :controlBtn="[
+          {
+            key:'add',
+            click:()=>{
+              addEditEvent({})
+            }
+          },
+          {key:'del'}]"
+  >
+  </ak-list>
+  <el-dialog v-model="visible" width="500" :title="dictDialogTitle" class="form-dialog">
+    <ak-form
+        label-width="100px"
+        pk="id"
+        ref="formEl"
+        @cancel="cancelClick"
+        :before="beforeSubmit"
+        :after="afterSubmit"
+        :data="formData"
+        :api="{ add: 'roleSave', edit: 'roleEdit', detail:'roleGet' }"
+        v-model="formModel">
+      <template #idList>
+        <el-form-item label="角色权限">
+          <el-tree
+              ref="treeRef"
+              node-key="value"
+              :props="{}"
+              :data="treeData"
+              show-checkbox
+              @check-change="handleCheckChange"></el-tree>
+        </el-form-item>
+      </template>
+    </ak-form>
+  </el-dialog>
 </template>
+
+<script setup lang="ts">
+  import {ref, nextTick} from 'vue';
+
+  const treeRef = ref()
+  const tableListEl = ref()
+  const columns = ref([
+    {
+      prop: 'name',
+      label: '角色名称'
+    },
+    {
+      prop: 'status',
+      label: '状态',
+      render: 'tag',
+      replaceValue: 'status',
+      custom: {'1': 'success', '0': 'danger'},
+      search: {
+        type: 'select',
+        options: 'status'
+      }
+    },
+    {
+      label: '操作',
+      render: 'buttons',
+      width: 150,
+      buttons: [
+        {
+          key: 'edit',
+          label: '编辑',
+          attr: {
+            text: true
+          },
+          click: (row) => {
+            addEditEvent(row)
+          }
+        },
+        {
+          label: '删除',
+          key: 'del',
+          attr: {
+            text: true
+          },
+          popConfirm: {confirmButtonType: 'danger'},
+          /*display: (row) => {
+            return row.isSys === 0
+          },
+          disabled: (row) => {
+            return row.isSys === 1
+          }*/
+        }
+      ]
+    }
+  ])
+  const addEditEvent = (row) => {
+    visible.value = true
+    dictDialogTitle.value = row.name ? `编辑${row.name}角色` : '新增角色'
+    formModel.value = row || {}
+    nextTick(() => {
+      treeRef.value.setCheckedKeys(row.content?.split(',')||[])
+    })
+  }
+
+  // form
+  const formEl = ref()
+  const formModel = ref({})
+  const visible = ref(false);
+  const dictDialogTitle = ref('新增角色')
+  const cancelClick = () => {
+    visible.value = false
+  }
+  const beforeSubmit = (data: any, type: string) => {
+    return data
+  }
+  const afterSubmit = () => {
+    cancelClick()
+    tableListEl.value.getData()
+  }
+
+  const treeData = ref([
+    {
+      label: '客户管理',
+      value: 'customer',
+      children: [
+        {
+          label: '客户查重',
+          value: '/customer/check'
+        },
+        {
+          label: '客户列表',
+          value: '/customer/list'
+        },
+        {
+          label: '公海客户',
+          value: '/customer/list-comm'
+        },
+        {
+          label: '无效客户',
+          value: '/customer/list-invalid'
+        },
+        {
+          label: '跟进记录',
+          value: '/customer/follow'
+        },
+        {
+          label: '名片识别',
+          value: '/customer/ocr'
+        }
+      ]
+    }, {
+      label: '系统管理',
+      value: 'system',
+      children: [
+        {
+          label: '字典管理',
+          value: '/system/dict'
+        },
+        {
+          label: '登录日志',
+          value: '/system/log'
+        },
+        {
+          label: '部门管理',
+          value: '/system/dept'
+        },
+        {
+          label: '角色管理',
+          value: '/system/role'
+        },
+        {
+          label: '用户管理',
+          value: '/system/user'
+        }
+      ]
+    }
+  ])
+  const handleCheckChange = () => {
+    const val = treeRef.value!.getCheckedKeys(false)
+    formModel.value.idList = val.join(',')
+  }
+  const formData = ref([
+    {
+      prop: 'name',
+      label: '角色名称',
+      formItem: {
+        rules: [{
+          required: true,
+          message: '请输入角色名称',
+          trigger: 'blur'
+        }]
+      }
+    },
+    {
+      label: '状态',
+      prop: 'status',
+      render: 'radio',
+      options: 'status',
+      attr: {
+        modelValue: 1
+      }
+    },
+    {
+      label: '权限菜单',
+      prop: 'idList',
+      render: 'scope'
+    },
+    {
+      label: '备注',
+      prop: 'remark',
+      attr: {
+        type: 'textarea',
+        rows: 4
+      }
+    }
+  ])
+</script>
 
 <style scoped lang="scss">
 

@@ -26,7 +26,7 @@ public class Role implements Serializable {
 /**
      * 权限列表
      */
-    private String idList;
+    private String content;
 
 
 }

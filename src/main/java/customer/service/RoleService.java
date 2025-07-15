@@ -2,6 +2,7 @@ package customer.service;
 
 import customer.entity.Role;
 
+import java.util.List;
 import java.util.Map;
 /**
  * (Role)表服务接口
@@ -18,6 +19,7 @@ public interface RoleService {
      * @return 实例对象
      */
     Role queryById(Integer id);
+    List<String> queryByIds(String ids);
     
     /**
      * 分页查询
@@ -48,5 +50,7 @@ public interface RoleService {
      * @return 是否成功
      */
     boolean deleteById(String[] id);
+
+
 
 }

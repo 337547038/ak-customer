@@ -3,6 +3,23 @@ export default {
     dictList: 'system/dict/list', // 获取字典
     dictDelete: 'system/dict/delete',
     dictEdit: 'system/dict/edit',
+    dictGet: 'system/dict/get',
+    logList: 'system/loginLog/list',
     getCaptcha: 'system/captcha/get', // 获取图片验证码
     userLogin: 'system/user/login', // 获取图片验证码
+    userList: "system/user/list",
+    userDelete: "system/user/delete",
+    userEdit: "system/user/edit",
+    userGet: "system/user/get",
+    deptGet: "system/department/get",
+    deptSave: "system/department/save",
+    deptEdit: "system/department/edit",
+    deptDel: "system/department/delete",
+    deptList: "system/department/list",
+    roleList: "system/role/list",
+    roleDelete: "system/role/delete",
+    roleSave: "system/role/save",
+    roleEdit: "system/role/edit",
+    roleGet: "system/role/get",
+    roleGetByIds: "system/role/getByIds",
 }

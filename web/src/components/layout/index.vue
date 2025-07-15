@@ -36,9 +36,9 @@
 
 <script lang="ts" setup>
   import '@/assets/scss/layout.scss'
-  import { ref, computed, nextTick } from 'vue'
+  import { ref, computed, nextTick, onMounted } from 'vue'
   import { useLayoutStore } from '@/store/layout'
-  import TagViews from './tagViews.vue'
+  //import TagViews from './tagViews.vue'
   import Menu from './menu.vue'
   import CommonHeader from './header.vue'
   const store = useLayoutStore()
@@ -73,5 +73,12 @@
       return temp
     }
     return []
+  })
+  // 获取系统字典
+  const getSystemDict = () => {
+    store.updateSystemDict(false)
+  }
+  onMounted(() => {
+    getSystemDict()
   })
 </script>

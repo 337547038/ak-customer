@@ -1,6 +1,8 @@
 package customer.service.impl;
 
 import com.alibaba.fastjson2.JSON;
+import customer.config.CustomException;
+import customer.entity.Dict;
 import customer.entity.LoginLog;
 import customer.service.LoginLogService;
 import customer.utils.Utils;
@@ -73,6 +75,13 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public User insert(User user) {
+        User hasUser = new User();
+        hasUser.setUserName(user.getUserName());
+        long total = this.userDao.count(hasUser);
+        if (total > 0) {
+            // 存在相同key
+            throw new CustomException("已存在用户名:" + user.getUserName());
+        }
         this.userDao.insert(user);
         return user;
     }

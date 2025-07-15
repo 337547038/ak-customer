@@ -15,10 +15,13 @@
                 <result property="source" column="source" jdbcType="INTEGER"/>
                 <result property="tel" column="tel" jdbcType="VARCHAR"/>
                 <result property="web" column="web" jdbcType="VARCHAR"/>
+                <result property="userId" column="userId" jdbcType="INTEGER"/>
+                <result property="creatTime" column="creatTime" jdbcType="TIMESTAMP"/>
+                <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
         </resultMap>
 
     <sql id="commColumnsItem">
-id, company, brandName, type, area, address, industry, code, files, source, tel, web        
+id, company, brandName, type, area, address, industry, code, files, source, tel, web, userId, creatTime, updateTime
     </sql>
         <!--查询单个-->
         <select id="queryById" resultMap="CustomerMap">
@@ -31,6 +34,7 @@ id, company, brandName, type, area, address, industry, code, files, source, tel,
         <!--查询指定行数据-->
         <select id="queryAllByLimit">
             select
+            (select userName from `sys_user` where c.userId=id) as userName,
             <choose>
                 <when test="extend.columns != null and extend.columns!=''">
                     ${extend.columns}
@@ -39,16 +43,16 @@ id, company, brandName, type, area, address, industry, code, files, source, tel,
                     <include refid="commColumnsItem" />
                 </otherwise>
             </choose>
-            from sys_customer
+            from sys_customer as c
             <where>
                     <if test="query.id != null">
                         and id = #{query.id}
                     </if>
                     <if test="query.company != null and query.company != ''">
-                        and company = #{query.company}
+                        and company LIKE CONCAT('%', #{query.company}, '%')
                     </if>
                     <if test="query.brandName != null and query.brandName != ''">
-                        and brandName = #{query.brandName}
+                        and brandName LIKE CONCAT('%', #{query.brandName}, '%')
                     </if>
                     <if test="query.type != null">
                         and type = #{query.type}
@@ -63,7 +67,7 @@ id, company, brandName, type, area, address, industry, code, files, source, tel,
                         and industry = #{query.industry}
                     </if>
                     <if test="query.code != null and query.code != ''">
-                        and code = #{query.code}
+                        and code LIKE CONCAT('%', #{query.code}, '%')
                     </if>
                     <if test="query.files != null and query.files != ''">
                         and files = #{query.files}
@@ -72,10 +76,19 @@ id, company, brandName, type, area, address, industry, code, files, source, tel,
                         and source = #{query.source}
                     </if>
                     <if test="query.tel != null and query.tel != ''">
-                        and tel = #{query.tel}
+                        and tel LIKE CONCAT('%', #{query.tel}, '%')
                     </if>
                     <if test="query.web != null and query.web != ''">
                         and web = #{query.web}
+                    </if>
+                    <if test="query.userId != null">
+                        and userId = #{query.userId}
+                    </if>
+                    <if test="query.creatTime != null">
+                        and creatTime = #{query.creatTime}
+                    </if>
+                    <if test="query.updateTime != null">
+                        and updateTime = #{query.updateTime}
                     </if>
             </where>
             <choose>
@@ -100,10 +113,10 @@ id, company, brandName, type, area, address, industry, code, files, source, tel,
                         and id = #{id}
                     </if>
                     <if test="company != null and company != ''">
-                        and company = #{company}
+                        and company LIKE CONCAT('%', #{company}, '%')
                     </if>
                     <if test="brandName != null and brandName != ''">
-                        and brandName = #{brandName}
+                        and brandName LIKE CONCAT('%', #{brandName}, '%')
                     </if>
                     <if test="type != null">
                         and type = #{type}
@@ -118,7 +131,7 @@ id, company, brandName, type, area, address, industry, code, files, source, tel,
                         and industry = #{industry}
                     </if>
                     <if test="code != null and code != ''">
-                        and code = #{code}
+                        and code LIKE CONCAT('%', #{code}, '%')
                     </if>
                     <if test="files != null and files != ''">
                         and files = #{files}
@@ -127,19 +140,28 @@ id, company, brandName, type, area, address, industry, code, files, source, tel,
                         and source = #{source}
                     </if>
                     <if test="tel != null and tel != ''">
-                        and tel = #{tel}
+                        and tel LIKE CONCAT('%', #{tel}, '%')
                     </if>
                     <if test="web != null and web != ''">
                         and web = #{web}
+                    </if>
+                    <if test="userId != null">
+                        and userId = #{userId}
+                    </if>
+                    <if test="creatTime != null">
+                        and creatTime = #{creatTime}
+                    </if>
+                    <if test="updateTime != null">
+                        and updateTime = #{updateTime}
                     </if>
             </where>
         </select>
 
         <!--新增所有列-->
         <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-            insert into sys_customer(company, brandName, type, area, address, industry, code, files, source, tel, web)
+            insert into sys_customer(company, brandName, type, area, address, industry, code, files, source, tel, web, userId, creatTime, updateTime)
                 values
-            (#{company}, #{brandName}, #{type}, #{area}, #{address}, #{industry}, #{code}, #{files}, #{source}, #{tel}, #{web})
+            (#{company}, #{brandName}, #{type}, #{area}, #{address}, #{industry}, #{code}, #{files}, #{source}, #{tel}, #{web}, #{userId}, #{creatTime}, #{updateTime})
         </insert>
 
         <!--通过主键修改数据-->
@@ -178,6 +200,15 @@ id, company, brandName, type, area, address, industry, code, files, source, tel,
                     </if>
                     <if test="web != null and web != ''">
                         web = #{web},
+                    </if>
+                    <if test="userId != null">
+                        userId = #{userId},
+                    </if>
+                    <if test="creatTime != null">
+                        creatTime = #{creatTime},
+                    </if>
+                    <if test="updateTime != null">
+                        updateTime = #{updateTime},
                     </if>
             </set>
             where id = #{id}

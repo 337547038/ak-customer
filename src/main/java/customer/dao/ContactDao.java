@@ -62,7 +62,7 @@ public interface ContactDao {
      * @param id 主键
      * @return 影响行数
      */
-    int deleteById(String[] id);
+    int deleteById(@Param("id") String[] id);
 
 }
 

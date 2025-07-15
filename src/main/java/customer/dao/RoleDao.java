@@ -13,7 +13,7 @@ import java.util.Map;
  * @author ak.design 337547038
  * @since 2025-07-03 13:54:47
  */
- @Mapper
+@Mapper
 public interface RoleDao {
 
     /**
@@ -26,11 +26,12 @@ public interface RoleDao {
 
     /**
      * 查询指定行数据
-     *@param role 筛选条件
-     *@param extend 扩展参数
+     *
+     * @param role   筛选条件
+     * @param extend 扩展参数
      * @return 对象列表
      */
-    List<Map<String,Object>> queryAllByLimit(@Param("query") Role role,@Param("extend") Map<String,Object> extend);
+    List<Map<String, Object>> queryAllByLimit(@Param("query") Role role, @Param("extend") Map<String, Object> extend);
 
     /**
      * 统计总行数
@@ -62,7 +63,9 @@ public interface RoleDao {
      * @param id 主键
      * @return 影响行数
      */
-    int deleteById(String[] id);
+    int deleteById(@Param("id") String[] id);
+
+    List<Map<String, Object>> queryByIds(@Param("id") String id);
 
 }
 

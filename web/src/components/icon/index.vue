@@ -1,7 +1,6 @@
 <template>
-<!--  <el-icon v-if="isElIcon"><component :is="name" /></el-icon>
-  <i :class="[name]" v-else v-show="name"></i>-->
-  <i></i>
+  <el-icon v-if="isElIcon"><component :is="name" /></el-icon>
+  <i :class="[name]" v-else v-show="name"></i>
 </template>
 <script setup lang="ts">
   import { computed } from 'vue'

@@ -8,9 +8,11 @@ import customer.service.DepartmentService;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 /**
  * (Department)表服务实现类
  *
@@ -36,16 +38,16 @@ public class DepartmentServiceImpl implements DepartmentService {
     /**
      * 分页查询
      *
-     * @param pages  筛选条件分页对象
+     * @param pages 筛选条件分页对象
      * @return 查询结果
      */
     @Override
-    public Map<String, Object> queryByPage(Map<String,Object> pages) {
+    public Map<String, Object> queryByPage(Map<String, Object> pages) {
         Map<String, Object> extend = Utils.getPagination(pages);//处理分页信息
         Department department = JSON.parseObject(JSON.toJSONString(pages), Department.class);//json字符串转java对象
-        
+
         long total = this.departmentDao.count(department);
-        List<Map<String,Object>> list = this.departmentDao.queryAllByLimit(department,extend);
+        List<Map<String, Object>> list = this.departmentDao.queryAllByLimit(department, extend);
         Map<String, Object> response = new HashMap<>();
         response.put("list", list);
         response.put("total", total);
@@ -84,6 +86,13 @@ public class DepartmentServiceImpl implements DepartmentService {
      */
     @Override
     public boolean deleteById(String[] id) {
+        // 检查有没子级
+        Department dept = new Department();
+        dept.setTid(Integer.parseInt(id[0]));
+        long total = this.departmentDao.count(dept);
+        if (total > 0) {
+            return false;
+        }
         return this.departmentDao.deleteById(id) > 0;
     }
 }

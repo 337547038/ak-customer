@@ -14,7 +14,7 @@
         </resultMap>
 
     <sql id="commColumnsItem">
-id, name, type, status, remark, isSys, dateTime, children        
+id, name, type, status, remark, isSys, dateTime, children
     </sql>
         <!--查询单个-->
         <select id="queryById" resultMap="DictMap">
@@ -41,7 +41,7 @@ id, name, type, status, remark, isSys, dateTime, children
                         and id = #{query.id}
                     </if>
                     <if test="query.name != null and query.name != ''">
-                        and name = #{query.name}
+                        and name LIKE CONCAT('%', #{query.name}, '%')
                     </if>
                     <if test="query.type != null and query.type != ''">
                         and type = #{query.type}
@@ -84,7 +84,7 @@ id, name, type, status, remark, isSys, dateTime, children
                         and id = #{id}
                     </if>
                     <if test="name != null and name != ''">
-                        and name = #{name}
+                        and name LIKE CONCAT('%', #{name}, '%')
                     </if>
                     <if test="type != null and type != ''">
                         and type = #{type}
@@ -146,7 +146,7 @@ id, name, type, status, remark, isSys, dateTime, children
         <!--通过主键删除-->
         <delete id="deleteById">
             delete
-            from sys_dict where id in
+            from sys_dict where isSys=0 and id in
             <foreach collection="id" item="item" separator="," open="(" close=")">
             #{item}
         </foreach>

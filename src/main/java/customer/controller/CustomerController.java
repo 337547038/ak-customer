@@ -1,5 +1,6 @@
 package customer.controller;
 
+import customer.config.CustomException;
 import customer.entity.Customer;
 import customer.service.CustomerService;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +9,9 @@ import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.annotation.Resource;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -32,36 +35,56 @@ public class CustomerController {
      * 前端传参:
      * * @param pages 筛选条件分页对象
      * {
-     *     query:{},//查询条件
-     *     extend:{
-     *         pageNum:1,//当前第几页
-     *         pageSize:20,//每页多少条记录，默认20。小于0返回全部
-     *         sort:"id desc"//排序
-     *         columns:""//返回指定查询字段，如'id,name'
-     *     }
+     * xxxx:xxx,//查询条件
+     * extend:{
+     * pageNum:1,//当前第几页
+     * pageSize:20,//每页多少条记录，默认20。小于0返回全部
+     * sort:"id desc"//排序
+     * columns:""//返回指定查询字段，如'id,name'
      * }
+     * }
+     *
      * @return 查询结果
      */
-    @Operation(summary ="分页列表")
+    @Operation(summary = "分页列表")
     @Parameters({
-            @Parameter(name = "extend.pageNum",description = "当前第几页"),
-            @Parameter(name = "extend.pageSize",description = "每页显示多少条"),
-            @Parameter(name = "extend.sort",description = "排序"),
-            @Parameter(name = "extend.columns",description = "返回指定查询字段"),
-            @Parameter(name = "query",description = "查询条件")
+            @Parameter(name = "extend.pageNum", description = "当前第几页"),
+            @Parameter(name = "extend.pageSize", description = "每页显示多少条"),
+            @Parameter(name = "extend.sort", description = "排序"),
+            @Parameter(name = "extend.columns", description = "返回指定查询字段"),
+            @Parameter(name = "query", description = "查询条件")
     })
     @PostMapping("list")
     public ResponseEntity<Map<String, Object>> queryByPage(@RequestBody Map<String, Object> pages) {
         return ResponseEntity.ok(this.customerService.queryByPage(pages));
     }
 
+    @Operation(summary = "查重分页列表")
+    @Parameters({
+            @Parameter(name = "extend.pageNum", description = "当前第几页"),
+            @Parameter(name = "extend.pageSize", description = "每页显示多少条"),
+            @Parameter(name = "extend.sort", description = "排序"),
+            @Parameter(name = "extend.columns", description = "返回指定查询字段"),
+            @Parameter(name = "query", description = "查询条件")
+    })
+    @PostMapping("check")
+    public ResponseEntity<Map<String, Object>> checkByPage(@RequestBody Map<String, Object> pages) {
+        Map<String, Object> keywords = new HashMap<>();
+        keywords.put("company", pages.get("keywords"));
+        keywords.put("brandName", pages.get("keywords"));
+        keywords.put("code", pages.get("keywords"));
+        keywords.put("tel", pages.get("keywords"));
+        keywords.put("extend", pages.get("extend"));
+        return ResponseEntity.ok(this.customerService.queryByPage(keywords));
+    }
+
     /**
      * 通过主键查询单条数据
      *
-     *@param query 主键
+     * @param query 主键
      * @return 单条数据
      */
-    @Operation(summary ="根据id查询数据")
+    @Operation(summary = "根据id查询数据")
     @PostMapping("get")
     public ResponseEntity<Customer> queryById(@RequestBody Map<String, Integer> query) {
         return ResponseEntity.ok(this.customerService.queryById(query.get("id")));
@@ -73,7 +96,7 @@ public class CustomerController {
      * @param customer 实体
      * @return 新增结果Id
      */
-    @Operation(summary ="新增数据")
+    @Operation(summary = "新增数据")
     @PostMapping("save")
     public ResponseEntity<Integer> add(@RequestBody Customer customer) {
         Customer result = customerService.insert(customer);
@@ -86,7 +109,7 @@ public class CustomerController {
      * @param customer 实体
      * @return 影响行数
      */
-    @Operation(summary ="编辑数据")
+    @Operation(summary = "编辑数据")
     @PostMapping("edit")
     public ResponseEntity<Integer> edit(@RequestBody Customer customer) {
         return ResponseEntity.ok(this.customerService.updateById(customer));
@@ -98,14 +121,25 @@ public class CustomerController {
      * @param ids 主键
      * @return 删除是否成功
      */
-    @Operation(summary ="根据id删除")
-    @Parameter(name = "id",description = "多个id时使用豆号隔开",required = true)
+    @Operation(summary = "根据id删除")
+    @Parameter(name = "id", description = "多个id时使用豆号隔开", required = true)
     @PostMapping("delete")
-    public ResponseEntity<Boolean> deleteById(@RequestBody Map<String,Object> ids) {
+    public ResponseEntity<Boolean> deleteById(@RequestBody Map<String, Object> ids) {
         String string = ids.get("id").toString();
         String[] idList = string.split(",");
         return ResponseEntity.ok(this.customerService.deleteById(idList));
     }
 
+    @Operation(summary ="导入客户")
+    @Parameters({
+            @Parameter(name = "file",description = "上传的文件")
+    })
+    @PostMapping("export")
+    public ResponseEntity<Boolean> importXlsx(@RequestParam("file") MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new CustomException("请选择文件");
+        }
+        return ResponseEntity.ok(this.customerService.importXlsx(file));
+    }
 }
 

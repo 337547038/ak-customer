@@ -8,10 +8,11 @@
                 <result property="name" column="name" jdbcType="VARCHAR"/>
                 <result property="status" column="status" jdbcType="INTEGER"/>
                 <result property="remark" column="remark" jdbcType="VARCHAR"/>
+                <result property="userId" column="userId" jdbcType="INTEGER"/>
         </resultMap>
 
     <sql id="commColumnsItem">
-id, tid, name, status, remark        
+id, tid, name, status, remark, userId
     </sql>
         <!--查询单个-->
         <select id="queryById" resultMap="DepartmentMap">
@@ -32,7 +33,9 @@ id, tid, name, status, remark
                     <include refid="commColumnsItem" />
                 </otherwise>
             </choose>
-            from sys_department
+            ,(select userName from `sys_user` where d.userId=id) as userName
+            , exists(select 1 from sys_department child where child.tid=d.id) as hasChildren
+            from sys_department as d
             <where>
                     <if test="query.id != null">
                         and id = #{query.id}
@@ -48,6 +51,9 @@ id, tid, name, status, remark
                     </if>
                     <if test="query.remark != null and query.remark != ''">
                         and remark = #{query.remark}
+                    </if>
+                    <if test="query.userId != null">
+                        and userId = #{query.userId}
                     </if>
             </where>
             <choose>
@@ -83,14 +89,17 @@ id, tid, name, status, remark
                     <if test="remark != null and remark != ''">
                         and remark = #{remark}
                     </if>
+                    <if test="userId != null">
+                        and userId = #{userId}
+                    </if>
             </where>
         </select>
 
         <!--新增所有列-->
         <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-            insert into sys_department(tid, name, status, remark)
+            insert into sys_department(tid, name, status, remark, userId)
                 values
-            (#{tid}, #{name}, #{status}, #{remark})
+            (#{tid}, #{name}, #{status}, #{remark}, #{userId})
         </insert>
 
         <!--通过主键修改数据-->
@@ -109,6 +118,7 @@ id, tid, name, status, remark
                     <if test="remark != null and remark != ''">
                         remark = #{remark},
                     </if>
+                        userId = #{userId},
             </set>
             where id = #{id}
         </update>

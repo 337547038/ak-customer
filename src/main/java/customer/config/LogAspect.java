@@ -37,7 +37,6 @@ public class LogAspect {
 
     @Around("log()")
     public Object around(ProceedingJoinPoint point) throws Throwable {
-        System.out.println("okk2");
         String methodName = point.getSignature().toLongString();
         Object[] args = point.getArgs();
 
@@ -51,7 +50,6 @@ public class LogAspect {
         if (!logArgs.isEmpty()) {
             params = logArgs.get(0);
         }
-        System.out.println("params : " + params);
         //System.out.println(JSON.toJSONString(logArgs));
         //System.out.println(logArgs.size());
 
@@ -59,7 +57,6 @@ public class LogAspect {
         if (Objects.isNull(attributes)) {
             return null;
         }
-        System.out.println("ok123:"+log.isDebugEnabled());
         HttpServletRequest request = attributes.getRequest();
         UUID uuid = UUID.randomUUID(); //用于关联响应结果，否则同时多个请求分不清响应是属于哪个请求
         if (log.isDebugEnabled()) {

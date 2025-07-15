@@ -19,13 +19,16 @@ import java.util.Map;
  */
 @Tag(name = "LoginLog相关")
 @RestController
-@RequestMapping("loginLog")
+@RequestMapping("system/loginLog")
 public class LoginLogController {
     /**
      * 服务对象
      */
-    @Resource
-    private LoginLogService loginLogService;
+    private final LoginLogService loginLogService;
+
+    public LoginLogController(LoginLogService loginLogService) {
+        this.loginLogService = loginLogService;
+    }
 
     /**
      * 分页查询
@@ -73,12 +76,12 @@ public class LoginLogController {
      * @param loginLog 实体
      * @return 新增结果Id
      */
-    @Operation(summary ="新增数据")
+/*    @Operation(summary ="新增数据")
     @PostMapping("save")
     public ResponseEntity<Integer> add(@RequestBody LoginLog loginLog) {
         LoginLog result = loginLogService.insert(loginLog);
         return ResponseEntity.ok(result.getId());
-    }
+    }*/
 
     /**
      * 编辑数据
@@ -86,12 +89,12 @@ public class LoginLogController {
      * @param loginLog 实体
      * @return 影响行数
      */
-    @Operation(summary ="编辑数据")
+    /*@Operation(summary ="编辑数据")
     @PostMapping("edit")
     public ResponseEntity<Integer> edit(@RequestBody LoginLog loginLog) {
         return ResponseEntity.ok(this.loginLogService.updateById(loginLog));
     }
-
+*/
     /**
      * 删除数据，删除多个时使用豆号分隔
      *

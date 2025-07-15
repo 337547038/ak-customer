@@ -1,7 +1,8 @@
 import request from '../utils/request'
 import sys from './sys'
+import customer from './customer'
 
-const allApi: any = Object.assign({},sys)
+const allApi: any = Object.assign({},sys,customer)
 export const getRequest = (apiKey: string, data?: any, options = {}) => {
     let url = allApi[apiKey] || apiKey
     // 不是以/和http开头的，添加全局前缀

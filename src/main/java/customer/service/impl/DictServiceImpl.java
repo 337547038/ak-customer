@@ -1,6 +1,7 @@
 package customer.service.impl;
 
 import com.alibaba.fastjson2.JSON;
+import customer.config.CustomException;
 import customer.utils.Utils;
 import customer.entity.Dict;
 import customer.dao.DictDao;
@@ -8,9 +9,12 @@ import customer.service.DictService;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
+
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 /**
  * 字典(Dict)表服务实现类
  *
@@ -36,16 +40,16 @@ public class DictServiceImpl implements DictService {
     /**
      * 分页查询
      *
-     * @param pages  筛选条件分页对象
+     * @param pages 筛选条件分页对象
      * @return 查询结果
      */
     @Override
-    public Map<String, Object> queryByPage(Map<String,Object> pages) {
+    public Map<String, Object> queryByPage(Map<String, Object> pages) {
         Map<String, Object> extend = Utils.getPagination(pages);//处理分页信息
         Dict dict = JSON.parseObject(JSON.toJSONString(pages), Dict.class);//json字符串转java对象
-        
+
         long total = this.dictDao.count(dict);
-        List<Map<String,Object>> list = this.dictDao.queryAllByLimit(dict,extend);
+        List<Map<String, Object>> list = this.dictDao.queryAllByLimit(dict, extend);
         Map<String, Object> response = new HashMap<>();
         response.put("list", list);
         response.put("total", total);
@@ -60,6 +64,13 @@ public class DictServiceImpl implements DictService {
      */
     @Override
     public Dict insert(Dict dict) {
+        Dict hasDict = new Dict();
+        hasDict.setType(dict.getType());
+        long total = this.dictDao.count(hasDict);
+        if (total > 0) {
+            // 存在相同key
+            throw new CustomException("已存在字典标识:" + dict.getType());
+        }
         this.dictDao.insert(dict);
         return dict;
     }
@@ -72,8 +83,18 @@ public class DictServiceImpl implements DictService {
      */
     @Override
     public Integer updateById(Dict dict) {
+        Dict hasDict = new Dict();
+        hasDict.setType(dict.getType());
+        List<Map<String, Object>> list = this.dictDao.queryAllByLimit(hasDict, new HashMap<>());
+        if (!list.isEmpty()) {
+            for (Map<String, Object> map : list) {
+                if (!map.get("id").equals(dict.getId())) {
+                    // 存在相同key
+                    throw new CustomException("已存在字典标识:" + dict.getType());
+                }
+            }
+        }
         return this.dictDao.updateById(dict);
-        //return this.queryById(dict.getId());
     }
 
     /**

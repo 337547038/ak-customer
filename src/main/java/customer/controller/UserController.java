@@ -157,6 +157,7 @@ public class UserController {
         map.put("expire_time", EXPIRE_TIME);
         map.put("id", obj.getString("id"));
         map.put("userName", obj.getString("userName"));
+        map.put("roleId", obj.getString("roleId"));
         return ResponseResult.success(map, "登录成功");
     }
 

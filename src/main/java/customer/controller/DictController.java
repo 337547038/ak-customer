@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.annotation.Resource;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -19,13 +20,16 @@ import java.util.Map;
  */
 @Tag(name = "Dict相关")
 @RestController
-@RequestMapping("dict")
+@RequestMapping("system/dict")
 public class DictController {
     /**
      * 服务对象
      */
-    @Resource
-    private DictService dictService;
+    private final DictService dictService;
+
+    public DictController(DictService dictService) {
+        this.dictService = dictService;
+    }
 
     /**
      * 分页查询
@@ -76,6 +80,8 @@ public class DictController {
     @Operation(summary ="新增数据")
     @PostMapping("save")
     public ResponseEntity<Integer> add(@RequestBody Dict dict) {
+        dict.setIsSys(0);
+        dict.setDateTime(new Date());
         Dict result = dictService.insert(dict);
         return ResponseEntity.ok(result.getId());
     }

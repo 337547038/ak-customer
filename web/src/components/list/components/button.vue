@@ -1,58 +1,68 @@
 <template>
   <el-tooltip
-    effect="dark"
-    :content="btn.tooltip"
-    placement="top"
-    :disabled="!btn.tooltip"
+      effect="dark"
+      :content="btn.tooltip"
+      placement="top"
+      :disabled="getTooltipDisabled(btn)"
   >
     <el-button
-      :type="btn.type"
-      :class="[btn.class]"
-      v-bind="btn.attr"
-      v-show="getDisplay(btn)"
-      :disabled="getDisabled(btn)"
-      @click="btnClick"
+        :type="btn.type"
+        :class="[btn.class]"
+        v-bind="btn.attr"
+        v-show="getDisplay(btn)"
+        :disabled="getDisabled(btn)"
+        @click="btnClick"
     >
-      <Icon :name="btn.icon" />
+      <Icon :name="btn.icon"/>
       <span v-if="btn.label">{{ btn.label }}</span>
     </el-button>
   </el-tooltip>
 </template>
 <script setup lang="ts">
-  import Icon from '@/components/icon/index.vue'
-  import { Button } from '../types'
-  const props = withDefaults(
+import Icon from '@/components/icon/index.vue'
+import {Button} from '../types'
+
+const props = withDefaults(
     defineProps<{
       btn: Button
       row: any
       position?: string
     }>(),
     {}
-  )
-  const emits = defineEmits<{
-    (e: 'click', key: string): void
-  }>()
-  const btnClick = () => {
-    emits("click")
-  }
-  const getDisplay = (btn: Button) => {
-    if (btn.display && typeof btn.display === 'function') {
-      return btn.display(props.row)
-    }
+)
+const emits = defineEmits<{
+  (e: 'click', key: string): void
+}>()
+
+const getTooltipDisabled = (btn: Button): void => {
+  // 如果有label时则不提示tooltip效果,即设置了tooltip也不显示
+  if (btn.label) {
     return true
+  } else {
+    return !btn.tooltip
   }
-  const getDisabled = (btn: Button) => {
-    if (btn.disabled && typeof btn.disabled === 'function') {
-      return btn.disabled(props.row)
-    }
-    //上方需要勾选才可操作，没有勾选行时为禁用状态
-    if (
+}
+const btnClick = () => {
+  emits("click")
+}
+const getDisplay = (btn: Button) => {
+  if (btn.display && typeof btn.display === 'function') {
+    return btn.display(props.row)
+  }
+  return true
+}
+const getDisabled = (btn: Button) => {
+  if (btn.disabled && typeof btn.disabled === 'function') {
+    return btn.disabled(props.row)
+  }
+  //上方需要勾选才可操作，没有勾选行时为禁用状态
+  if (
       props.position === 'top' &&
       btn.key &&
       ['edit', 'del'].includes(btn.key)
-    ) {
-      return props.row?.length <= 0
-    }
-    return false
+  ) {
+    return props.row?.length <= 0
   }
+  return false
+}
 </script>

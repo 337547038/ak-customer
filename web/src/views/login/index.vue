@@ -28,76 +28,95 @@
 { meta:{title:'登录',layout:'hidden',permissions:false} }
 </route>
 <script setup lang="ts">
-import {ref, onMounted} from 'vue'
-import {getRequest} from "@/api"
-import {useRouter,useRoute} from 'vue-router'
-import { useLayoutStore } from '@/store/layout'
-const router = useRouter()
-const route = useRoute()
+  import {ref, onMounted, nextTick} from 'vue'
+  import {getRequest} from "@/api"
+  import {useRouter, useRoute} from 'vue-router'
+  import {useLayoutStore} from '@/store/layout'
+  import {setStorage,removeStorage} from '@/utils'
 
-const useStore = useLayoutStore()
+  const router = useRouter()
+  const route = useRoute()
 
-const loginAfter = (data, success) => {
-  if (success) {
-    // 统一方法保存token
-    useStore.setLoginInfo(data, true)
-    // 获取权限菜单信息 todo
-    const resources=""
-    setStorage('resources', resources, 0) // 用于权限判断
-    const path = route.query.redirect ? route.query.redirect : '/'
-    nextTick(() => {
-      router.push({ path: path })
-    })
-  }else {
-    getCaptcha()
+  const useStore = useLayoutStore()
+
+  const loginAfter = (data, success) => {
+    if (success) {
+      removeStorage('resources',true)
+      // 统一方法保存token
+      useStore.setLoginInfo(data, true)
+      // 获取权限菜单信息
+      getRoleResources(data.roleId).then(() => {
+        const path = route.query.redirect ? route.query.redirect : '/'
+        nextTick(() => {
+          router.push({path: path})
+        })
+      })
+    } else {
+      getCaptcha()
+    }
   }
-}
-const formModel = ref({userName: 'admin', password: '12345'})
-const formData = ref([
-  {
-    prop: 'userName',
-    label: '用户名',
-    formItem: {
-      rules: [
-        {
-          required: true,
-          message: '请输入用户名',
-          trigger: 'blur'
-        }
-      ]
+  // 加载资源角色
+  const getRoleResources = (roleIds: string) => {
+    return new Promise((resolve) => {
+      if (!roleIds) {
+        return resolve()
+      }
+      getRequest('roleGetByIds', {id: roleIds})
+          .then((res) => {
+            const resources = res.data
+            setStorage('resources', resources, 0) // 用于权限判断
+            resolve()
+          })
+    })
+  }
+  const formModel = ref({userName: 'admin', password: '12345'})
+  const formData = ref([
+    {
+      prop: 'userName',
+      label: '用户名',
+      formItem: {
+        rules: [
+          {
+            required: true,
+            message: '请输入用户名',
+            trigger: 'blur'
+          }
+        ]
+      },
+      attr: {}
     },
-    attr: {}
-  },
-  {
-    prop: 'password',
-    label: '密码',
-    formItem: {
-      rules: [
-        {
-          required: true,
-          message: '请输入密码',
-          trigger: 'blur'
-        }
-      ]
+    {
+      prop: 'password',
+      label: '密码',
+      formItem: {
+        rules: [
+          {
+            required: true,
+            message: '请输入密码',
+            trigger: 'blur'
+          }
+        ]
+      },
+      attr: {
+        type: 'password'
+      }
     },
-    attr: {}
-  },
-])
-const src = ref()
-const getCaptcha = () => {
-  getRequest('getCaptcha', {})
-      .then((res: { data: { base64: any, codeId: any } }) => {
-        const {base64, codeId} = res.data
-        src.value = 'data:image/png;base64,' + base64
-        //codeId.value = a
-        formModel.value.codeId = codeId
-      })
-      .catch(() => {
-      })
-}
-onMounted(() => {
-  getCaptcha()
-})
+  ])
+  const src = ref()
+  const getCaptcha = () => {
+    getRequest('getCaptcha', {})
+        .then((res: { data: { base64: any, codeId: any } }) => {
+          const {base64, codeId} = res.data
+          src.value = 'data:image/png;base64,' + base64
+          //codeId.value = a
+          formModel.value.codeId = codeId
+        })
+        .catch(() => {
+        })
+  }
+  onMounted(() => {
+    getCaptcha()
+  })
 </script>
 <style scoped lang="scss">
 .container {

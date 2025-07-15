@@ -3,6 +3,7 @@ package customer.entity;
 import java.io.Serializable;
 import lombok.Data;
 import java.io.Serial;
+import java.util.Date;
 
 
 /**
@@ -61,6 +62,18 @@ public class Customer implements Serializable {
      * 网址
      */
     private String web;
+/**
+     * 所属人员
+     */
+    private Integer userId;
+/**
+     * 创建时间
+     */
+    private Date creatTime;
+/**
+     * 更新时间
+     */
+    private Date updateTime;
 
 
 }

@@ -1,6 +1,7 @@
 package customer.service;
 
 import customer.entity.Customer;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 /**
@@ -48,5 +49,8 @@ public interface CustomerService {
      * @return 是否成功
      */
     boolean deleteById(String[] id);
+    boolean importXlsx(MultipartFile file);
+
+
 
 }

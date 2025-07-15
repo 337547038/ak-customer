@@ -46,7 +46,7 @@
   const btnClick = (btn: Button) => {
     let clickEventResult: any = true
     if (btn.click && typeof btn.click === 'function') {
-      clickEventResult = btn.click(props.row)
+      clickEventResult = btn.click(JSON.parse(JSON.stringify(props.row)))
     }
     //只有系统预设的add,edit,detail,del才有默认事件
     if (clickEventResult === false) {
