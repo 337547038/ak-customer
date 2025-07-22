@@ -36,11 +36,11 @@
       </div>
       <template #dropdown>
         <el-menu class="avatar-menu">
-          <el-menu-item index="user">
+          <el-menu-item index="user" @click="userClick">
             <el-icon><User /></el-icon>
             <span class="title">个人中心</span>
           </el-menu-item>
-          <el-menu-item index="setting">
+          <el-menu-item index="setting" @click="userClick">
             <el-icon><Setting /></el-icon>
             <span class="title">设置</span>
           </el-menu-item>
@@ -75,7 +75,7 @@
   }>()
 
   const userInfo = computed(()=>{
-    return getStorage('userInfo',true)
+    return getStorage('userInfo',true)||{}
   })
   const user = ref({
     name: 'userName',
@@ -86,6 +86,9 @@
   }
   const logout = () => {
     store.logout(router)
+  }
+  const userClick = () => {
+    router.push({path:'/system/userCenter'})
   }
 </script>
 <style lang="scss">

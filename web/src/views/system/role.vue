@@ -29,8 +29,8 @@
         <el-form-item label="角色权限">
           <el-tree
               ref="treeRef"
-              node-key="value"
-              :props="{}"
+              node-key="path"
+              :props="{label:'title',value:'path'}"
               :data="treeData"
               show-checkbox
               @check-change="handleCheckChange"></el-tree>
@@ -42,6 +42,7 @@
 
 <script setup lang="ts">
   import {ref, nextTick} from 'vue';
+  import treeData from '@/components/layout/menuList'
 
   const treeRef = ref()
   const tableListEl = ref()
@@ -57,7 +58,7 @@
       replaceValue: 'status',
       custom: {'1': 'success', '0': 'danger'},
       search: {
-        type: 'select',
+        render: 'select',
         options: 'status'
       }
     },
@@ -118,66 +119,9 @@
     tableListEl.value.getData()
   }
 
-  const treeData = ref([
-    {
-      label: '客户管理',
-      value: 'customer',
-      children: [
-        {
-          label: '客户查重',
-          value: '/customer/check'
-        },
-        {
-          label: '客户列表',
-          value: '/customer/list'
-        },
-        {
-          label: '公海客户',
-          value: '/customer/list-comm'
-        },
-        {
-          label: '无效客户',
-          value: '/customer/list-invalid'
-        },
-        {
-          label: '跟进记录',
-          value: '/customer/follow'
-        },
-        {
-          label: '名片识别',
-          value: '/customer/ocr'
-        }
-      ]
-    }, {
-      label: '系统管理',
-      value: 'system',
-      children: [
-        {
-          label: '字典管理',
-          value: '/system/dict'
-        },
-        {
-          label: '登录日志',
-          value: '/system/log'
-        },
-        {
-          label: '部门管理',
-          value: '/system/dept'
-        },
-        {
-          label: '角色管理',
-          value: '/system/role'
-        },
-        {
-          label: '用户管理',
-          value: '/system/user'
-        }
-      ]
-    }
-  ])
   const handleCheckChange = () => {
     const val = treeRef.value!.getCheckedKeys(false)
-    formModel.value.idList = val.join(',')
+    formModel.value.content = val.join(',')
   }
   const formData = ref([
     {

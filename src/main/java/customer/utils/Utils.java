@@ -5,6 +5,7 @@ import com.alibaba.fastjson2.JSONObject;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -14,7 +15,11 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 
+@Slf4j
 public class Utils {
+
+    public static final long EXPIRE_TIME = 8 * 60 * 60 * 1000;//token过期时间
+    public static final String HMAC256Secret = "your256secret";//token密钥
     /**
      * 公共分页处理方法
      */
@@ -53,6 +58,25 @@ public class Utils {
     }
 
     /**
+     * 从token中返回当前登录的用户名
+     *
+     * @return 返回当前登录用户
+     */
+    public static String getCurrentUserName() {
+        try {
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+            String token = request.getHeader("Authorization");
+            if (token != null) {
+                return JWT.decode(token).getClaim("userName").asString();
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
+    }
+
+
+    /**
      * 将字符串转换为md5值
      *
      * @param string 筛选条件分页对象
@@ -78,15 +102,15 @@ public class Utils {
      * 生成token
      *
      * @param userId   会员id
-     * @param password //密码
-     * @param expire   　//　过期时间ms
+     * @param username // 用户名
      * @return token
      */
-    public static String getToken(String userId, String password, long expire) {
-        Date date = new Date(System.currentTimeMillis() + expire);
+    public static String getToken(String userId, String username, long expireTime) {
+        Date date = new Date(System.currentTimeMillis() + expireTime);
         return JWT.create().withAudience(userId)// 将 user id 保存到 token 里面,作为载荷
                 .withExpiresAt(date)
-                .sign(Algorithm.HMAC256(password));// 以 password 作为 token 的密钥
+                .withClaim("userName", username)   // 自定义声明：写入用户名
+                .sign(Algorithm.HMAC256(HMAC256Secret));// 使用固定值 作为 token 的密钥
     }
 
     /**

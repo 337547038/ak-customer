@@ -177,6 +177,8 @@
   import type {Button, EventType} from './types'
   import {useLayoutStore} from '@/store/layout'
 
+
+  defineOptions({name:'AkList'})
   const props = withDefaults(
       defineProps<{
         tableProp?: any
@@ -444,7 +446,7 @@
     if (btn.key === 'del' && props.pk) {
       getDel([row[props.pk]])
     } else {
-      console.log(row, btn.key)
+      //　console.log(row, btn.key)
       // todo 编辑或查看时请数据拉回来，或者是对外暴露拉取数据的方法
     }
   }

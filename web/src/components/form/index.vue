@@ -1,9 +1,9 @@
 <template>
-  <el-form ref="formEl" :model="model" :rules="rules">
+  <el-form ref="formEl" :model="model" :rules="rules" v-loading="loading">
     <template v-if="dataFilter?.length">
-      <template v-for="(item, index) in dataFilter" :key="index">
+      <template v-for="(item, index) in dataFilter" :key="item.prop||index">
         <el-text
-            v-if="item.render === 'text'"
+            v-if="item.render === 'title'"
             class="form-title1"
             size="large"
             v-bind="item"
@@ -18,6 +18,7 @@
             :tooltip="item.tooltip"
             :formItem="item.formItem"
             :options="item.options"
+            :ajax="item.ajax"
             :render="item.render"
             :component="item.component"
             v-model="model[item.prop]"
@@ -39,6 +40,9 @@
   import {ref, onMounted, computed} from 'vue'
   import Field from '../field/index.vue'
   import {getRequest} from '@/api'
+  import {ElMessage} from "element-plus";
+
+  defineOptions({name: 'AkForm'})
 
   interface formData {
     prop: string
@@ -76,12 +80,14 @@
       }
   )
   const emits = defineEmits<{
-    (e: 'update:modelValue', value: any): void
-    (e: 'change', name: string, value: any): void
+    // (e: 'update:modelValue', value: any): void
+    (e: 'change', name: string, value: any, model: any): void
     (e: 'submit', value: any): void
     (e: 'cancel'): void
   }>()
-  const model = defineModel()
+  const model = defineModel();
+
+  const loading = ref(false)
 
   const dataFilter = computed(() => {
     return props.data.filter(item => item.visible !== false)
@@ -100,34 +106,40 @@
     if (!formEl.value) return
     await formEl.value.validate((valid: any, fields: any) => {
       if (valid) {
-        let type = 'submit'
+        let type = 'add'
         let api = props.api?.add
         if (props.pk && model.value[props.pk]) {
           api = props.api?.edit
-          type = 'editSubmit'
+          type = 'update'
         }
         if (api) {
           let params = model.value
           if (props.before && typeof props.before === 'function') {
-            params = props.before(model.value, type)
+            params = props.before(JSON.parse(JSON.stringify(model.value)), type)
           }
           if (params === false) {
             return false
           }
           emits("submit", params)
+          loading.value = true
           getRequest(api, params)
               .then((res: any) => {
                 if (typeof props.after === 'function') {
                   props.after(res.data || res, true, type)
                 }
+                ElMessage.success(res.message || '提交成功')
+                loading.value = false
                 // 这里作全局提交结果处理
               })
               .catch((res: any) => {
                 if (typeof props.after === 'function') {
                   props.after(res, false, type)
                 }
+                loading.value = false
                 // 这里作全局异常提示处理
               })
+        } else {
+          console.error('请配置props.api地址')
         }
       } else {
         console.log('error submit!', fields)
@@ -136,7 +148,7 @@
   }
   const onReset = () => {
     formEl.value.resetFields()
-    model.value = {}
+    //model.value = {}
     emits('cancel')
   }
   // 设置初始值
@@ -147,7 +159,7 @@
     return model.value
   }
   const changeField = (prop: string, val: any) => {
-    emits('change', prop, val)
+    emits('change', prop, val, model.value)
   }
   // 修改表单时，加载初始数据
   const getData = (data?: any) => {
@@ -160,16 +172,19 @@
       if (params === false) {
         return false
       }
+      loading.value = true
       getRequest(api, params)
           .then((res: any) => {
             let result = res.data
-            if (props.after && typeof props.aftert === 'function') {
-              result = props.after(result, true, 'detail')
+            if (props.after && typeof props.after === 'function') {
+              result = props.after(result, true, 'detail') || result
             }
             model.value = result
+            loading.value = false
             // 这里作全局提交结果处理
           })
           .catch((res: any) => {
+            loading.value = false
             // 这里作全局异常提示处理
             if (typeof props.after === 'function') {
               props.after(res, false, 'detail')
@@ -186,12 +201,13 @@
 </script>
 <style>
 .submit-btn-group {
-  width: 100%!important;
+  width: 100% !important;
   margin: 0 !important;
 }
+
 .submit-btn-group .el-form-item__content {
   display: flex;
   justify-content: center;
-  margin: 0 !important ;
+  margin: 0 !important;
 }
 </style>

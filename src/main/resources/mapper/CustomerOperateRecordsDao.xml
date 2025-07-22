@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="customer.dao.CustomerOperateRecordsDao">
+
+        <resultMap type="customer.entity.CustomerOperateRecords" id="CustomerOperateRecordsMap">
+                <result property="id" column="id" jdbcType="INTEGER"/>
+                <result property="tid" column="tid" jdbcType="INTEGER"/>
+                <result property="userId" column="userId" jdbcType="INTEGER"/>
+                <result property="dataTime" column="dataTime" jdbcType="TIMESTAMP"/>
+                <result property="content" column="content" jdbcType="VARCHAR"/>
+                <result property="userName" column="userName" jdbcType="VARCHAR"/>
+        </resultMap>
+
+    <sql id="commColumnsItem">
+id, tid, userId, dataTime, content, userName
+    </sql>
+        <!--查询单个-->
+        <select id="queryById" resultMap="CustomerOperateRecordsMap">
+            select
+            <include refid="commColumnsItem" />
+            from sys_customer_operate_records
+                where id = #{id}
+        </select>
+
+        <!--查询指定行数据-->
+        <select id="queryAllByLimit">
+            select
+            <choose>
+                <when test="extend.columns != null and extend.columns!=''">
+                    ${extend.columns}
+                </when>
+                <otherwise>
+                    <include refid="commColumnsItem" />
+                </otherwise>
+            </choose>
+            from sys_customer_operate_records
+            <where>
+                    <if test="query.id != null">
+                        and id = #{query.id}
+                    </if>
+                    <if test="query.tid != null">
+                        and tid = #{query.tid}
+                    </if>
+                    <if test="query.userId != null">
+                        and userId = #{query.userId}
+                    </if>
+                    <if test="query.dataTime != null">
+                        and dataTime = #{query.dataTime}
+                    </if>
+                    <if test="query.content != null and query.content != ''">
+                        and content = #{query.content}
+                    </if>
+                    <if test="query.userName != null and query.userName != ''">
+                        and userName = #{query.userName}
+                    </if>
+            </where>
+            <choose>
+                <when test="extend.sort != null and extend.sort!=''">
+                    order by ${extend.sort}
+                </when>
+                <otherwise>
+                    order by id desc
+                </otherwise>
+            </choose>
+            <if test="extend.pageSize >0">
+            limit #{extend.pageIndex}, #{extend.pageSize}
+            </if>
+        </select>
+
+        <!--统计总行数-->
+        <select id="count" resultType="java.lang.Long">
+            select count(1)
+            from sys_customer_operate_records
+            <where>
+                    <if test="id != null">
+                        and id = #{id}
+                    </if>
+                    <if test="tid != null">
+                        and tid = #{tid}
+                    </if>
+                    <if test="userId != null">
+                        and userId = #{userId}
+                    </if>
+                    <if test="dataTime != null">
+                        and dataTime = #{dataTime}
+                    </if>
+                    <if test="content != null and content != ''">
+                        and content = #{content}
+                    </if>
+                    <if test="userName != null and userName != ''">
+                        and userName = #{userName}
+                    </if>
+            </where>
+        </select>
+
+        <!--新增所有列-->
+        <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+            insert into sys_customer_operate_records(tid, userId, dataTime, content, userName)
+                values
+            (#{tid}, #{userId}, #{dataTime}, #{content}, #{userName})
+        </insert>
+
+        <!--通过主键修改数据-->
+        <update id="updateById">
+            update sys_customer_operate_records
+            <set>
+                    <if test="tid != null">
+                        tid = #{tid},
+                    </if>
+                    <if test="userId != null">
+                        userId = #{userId},
+                    </if>
+                    <if test="dataTime != null">
+                        dataTime = #{dataTime},
+                    </if>
+                    <if test="content != null and content != ''">
+                        content = #{content},
+                    </if>
+                    <if test="userName != null and userName != ''">
+                        userName = #{userName},
+                    </if>
+            </set>
+            where id = #{id}
+        </update>
+
+        <!--通过主键删除-->
+        <delete id="deleteById">
+            delete
+            from sys_customer_operate_records where id in
+            <foreach collection="id" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        </delete>
+
+    </mapper>

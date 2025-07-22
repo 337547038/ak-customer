@@ -95,6 +95,7 @@ public class DictController {
     @Operation(summary ="编辑数据")
     @PostMapping("edit")
     public ResponseEntity<Integer> edit(@RequestBody Dict dict) {
+        dict.setDateTime(new Date());
         return ResponseEntity.ok(this.dictService.updateById(dict));
     }
 

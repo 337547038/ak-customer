@@ -7,7 +7,9 @@
           :content="tooltip"
           placement="top-start"
       >
-        <el-icon size="18"><InfoFilled /></el-icon>
+        <el-icon size="18">
+          <InfoFilled/>
+        </el-icon>
       </el-tooltip>
     </template>
     <el-checkbox-group
@@ -55,6 +57,7 @@
           :value="item.value"
       />
     </el-select>
+    <el-text v-else-if="render==='text'" v-bind="$attrs">{{ model }}</el-text>
     <component
         v-bind="$attrs"
         :placeholder="$attrs.placeholder || '请输入' + label"
@@ -66,11 +69,21 @@
   </el-form-item>
 </template>
 <script setup lang="ts">
-  import {computed} from 'vue'
+  import {computed, onMounted, ref} from 'vue'
   import {useLayoutStore} from '@/store/layout'
   import {InfoFilled} from "@element-plus/icons-vue";
+  import {getRequest} from "@/api";
 
-  defineOptions({name: 'field'})
+  interface AjaxObj {
+    api: string
+    data?: { [key: string]: any }
+    before?: <T>(params: { [key: string]: any }) => T
+    after?: <T>(res: any, success: boolean) => T
+    label?: string
+    value?: string
+  }
+
+  defineOptions({name: 'AkField'})
   const props = withDefaults(
       defineProps<{
         prop?: string
@@ -92,14 +105,18 @@
             | 'slider'
             | 'component'
             | 'tree-select'
-        component?: any, // render=component时
+        component?: any // render=component时
         tooltip?: string
+        ajax?: AjaxObj
       }>(),
       {
         formItem: () => {
           return {}
         },
-        render: 'input'
+        render: 'input',
+        ajax: () => {
+          return {api: ''}
+        }
       }
   )
 
@@ -108,6 +125,8 @@
   const emits = defineEmits<{
     (e: 'change', value: any): void
   }>()
+
+  const ajaxOptions = ref([])
 
   const optionsArray = computed(() => {
     if (typeof props.options === 'string') {
@@ -123,8 +142,10 @@
         return temp
       }
       return []
-    } else {
+    } else if (typeof props.options === 'object') {
       return props.options
+    } else if (props.ajax) {
+      return ajaxOptions.value
     }
   })
   const change = (val: any) => {
@@ -136,5 +157,36 @@
       return props.component
     }
     return `el-${props.render}`
+  })
+
+  const getAjaxOptions = () => {
+    const {api, data, before, after, label, value} = props.ajax
+    if (['checkbox', 'radio', 'select'].includes(props.render) && !props.options && api) {
+      let params = data
+      if (typeof before === 'function') {
+        params = before(data) ?? data
+      }
+      getRequest(api, params)
+          .then(({data}) => {
+            let list = data?.list || data
+            if (label && value) {
+              list = list.map(item => ({
+                label: item[label],
+                value: item[value]
+              }));
+            }
+            if (typeof after === 'function') {
+              ajaxOptions.value = after(list, true) || list
+            } else {
+              ajaxOptions.value = list
+            }
+          })
+          .catch((err) => {
+            after(err, false)
+          })
+    }
+  }
+  onMounted(() => {
+    getAjaxOptions()
   })
 </script>

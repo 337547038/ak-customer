@@ -134,7 +134,7 @@ public class CustomerController {
     @Parameters({
             @Parameter(name = "file",description = "上传的文件")
     })
-    @PostMapping("export")
+    @PostMapping("import")
     public ResponseEntity<Boolean> importXlsx(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
             throw new CustomException("请选择文件");

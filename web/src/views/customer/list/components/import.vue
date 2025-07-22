@@ -39,7 +39,7 @@
     const params = new FormData();
     params.append('file', file.file);
     loading.value = true;
-    getRequest("customerExport", params)
+    getRequest("customerImport", params)
         .then(() => {
           loading.value = false
           callbackFn.value && callbackFn.value()

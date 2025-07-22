@@ -157,6 +157,22 @@ id, company, brandName, type, area, address, industry, code, files, source, tel,
             </where>
         </select>
 
+    <select id="exist" resultType="java.lang.Long">
+        select count(1)
+        from sys_customer
+        <where>
+            <if test="id != null">
+                and id != #{id}
+            </if>
+            <if test="company != null and company != ''">
+                and company = #{company}
+            </if>
+            <if test="code != null and code != ''">
+                and code = #{code}
+            </if>
+        </where>
+    </select>
+
         <!--新增所有列-->
         <insert id="insert" keyProperty="id" useGeneratedKeys="true">
             insert into sys_customer(company, brandName, type, area, address, industry, code, files, source, tel, web, userId, creatTime, updateTime)

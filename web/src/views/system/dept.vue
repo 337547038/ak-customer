@@ -48,7 +48,7 @@
       replaceValue: 'status',
       custom: {'1': 'success', '0': 'danger'},
       search: {
-        type: 'select',
+        render: 'select',
         options: 'status'
       }
     },

@@ -2,16 +2,19 @@ package customer.service.impl;
 
 import com.alibaba.fastjson2.JSON;
 import customer.config.CustomException;
+import customer.entity.CustomerOperateRecords;
 import customer.utils.Utils;
 import customer.entity.Customer;
 import customer.dao.CustomerDao;
 import customer.service.CustomerService;
+import customer.service.CustomerOperateRecordsService;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
+
 
 import jakarta.annotation.Resource;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,6 +35,11 @@ public class CustomerServiceImpl implements CustomerService {
     @Resource
     private CustomerDao customerDao;
 
+    private final CustomerOperateRecordsService customerOperateRecordsService;
+
+    public CustomerServiceImpl(CustomerOperateRecordsService customerOperateRecordsService) {
+        this.customerOperateRecordsService = customerOperateRecordsService;
+    }
 
     /**
      * 通过ID查询单条数据
@@ -71,7 +79,22 @@ public class CustomerServiceImpl implements CustomerService {
      */
     @Override
     public Customer insert(Customer customer) {
+        Customer hasName = new Customer();
+        hasName.setCompany(customer.getCompany());
+        long total = this.customerDao.exist(hasName);
+        if (total > 0) {
+            throw new CustomException("已存在客户名称:" + customer.getCompany());
+        }
+        customer.setUserId(Utils.getCurrentUserId());
+        customer.setCreatTime(new Date());
         this.customerDao.insert(customer);
+        CustomerOperateRecords cop = new CustomerOperateRecords();
+        cop.setTid(customer.getId());
+        cop.setUserId(Utils.getCurrentUserId());
+        cop.setUserName(Utils.getCurrentUserName());
+        cop.setDataTime(new Date());
+        cop.setContent("创建了该数据记录");
+        this.customerOperateRecordsService.insert(cop);
         return customer;
     }
 
@@ -83,8 +106,15 @@ public class CustomerServiceImpl implements CustomerService {
      */
     @Override
     public Integer updateById(Customer customer) {
+        Customer hasName = new Customer();
+        hasName.setCompany(customer.getCompany());
+        hasName.setId(customer.getId());
+        long total = this.customerDao.exist(hasName);
+        if (total > 0) {
+            throw new CustomException("已存在客户名称:" + customer.getCompany());
+        }
+        customer.setUpdateTime(new Date());
         return this.customerDao.updateById(customer);
-        //return this.queryById(customer.getId());
     }
 
     /**

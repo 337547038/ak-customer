@@ -39,6 +39,7 @@ public interface CustomerDao {
      * @return 总行数
      */
     long count(Customer customer);
+    long exist(Customer customer);
 
     /**
      * 新增数据

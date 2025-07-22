@@ -3,7 +3,7 @@
     <template v-for="(item, index) in columnsFilter" :key="index">
       <field
         v-bind="item.search"
-        :render="item.search?.type"
+        :render="item.search?.render"
         :prop="item.prop"
         :label="item.label"
         v-model="searchForm[item.prop]"

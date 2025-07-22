@@ -50,10 +50,12 @@ public class User implements Serializable {
     private String remark;
 
     private Integer departmentId;
+    private String departmentName;
 /**
      * 直属上级id
      */
     private Integer tid;
+    private String TidName;
 
     private String phone;
 
@@ -66,6 +68,10 @@ public class User implements Serializable {
      * 角色
      */
     private String roleId;
+/**
+     * 绑定微信用于登录
+     */
+    private String bindWX;
 
 
 }

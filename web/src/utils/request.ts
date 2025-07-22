@@ -2,6 +2,7 @@ import axios from 'axios'
 import { useLayoutStore } from '@/store/layout'
 import {getStorage} from "@/utils/index";
 import {ElMessage} from "element-plus";
+import {refreshToken as refreshTokenApi} from "@/api";
 // 全局设置
 /* axios.defaults.baseURL = window.APP_CONFIG.BASE_URL
 axios.defaults.headers.common['Authorization'] = getToken() */
@@ -29,9 +30,8 @@ function reloadSubscribesArr(newToken: any) {
 // 使用refreshToken请求获取新的token
 function getNewToken(refreshToken: any) {
   const layoutStore = useLayoutStore()
-  const params: any = { refreshToken: refreshToken }
   axios
-      .post('/api/user/refreshToken', params)
+      .post(refreshTokenApi, { refreshToken: refreshToken })
       .then((result: any) => {
         console.log(result)
         if (result.data.code === 1) {

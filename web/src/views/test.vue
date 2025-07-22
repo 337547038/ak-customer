@@ -1,23 +1,13 @@
 <script setup lang="ts">
 
-import {ref} from "vue";
-import {getRequest} from '@/api'
+  import {ref, unref} from "vue";
+  import {getRequest} from '@/api'
+import Child from './child.vue'
 
-const click=()=>{
-
-  getRequest("roleGetByIds", {id:'2,1'})
-      .then((res: any) => {
-
-        console.log('then')
-      })
-      .catch((err:any) => {
-        console.log('catch')
-      })
-}
 </script>
 
 <template>
-  <el-button @click="click">click</el-button>
+ <div><Child/></div>
 </template>
 
 <style scoped lang="scss">

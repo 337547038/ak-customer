@@ -132,7 +132,7 @@
   background: #fff;
   border-radius: 5px;
   padding: 30px 100px 30px 100px;
-  width: 30%;
+  width: 580px;
   min-width: 400px;
   box-sizing: border-box;
 

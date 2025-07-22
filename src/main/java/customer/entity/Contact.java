@@ -52,6 +52,16 @@ public class Contact implements Serializable {
      * 下次跟进时间
      */
     private Date nextTime;
+/**
+     * 是否决策人1是2否3未知
+     */
+    private Integer decisionMaker;
+
+    private String address;
+
+    private Date birthday;
+
+    private String remark;
 
 
 }

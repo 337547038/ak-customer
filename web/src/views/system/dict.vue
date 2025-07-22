@@ -106,7 +106,7 @@ const columns = ref<any>([
     replaceValue: {'1': '启用', '0': '禁用'},
     custom: {'1': 'success', '0': 'danger'},
     search: {
-      type: 'select',
+      render: 'select',
       options: [{value: '0', label: '禁用'}, {value: '1', label: '启用'}]
     }
   },

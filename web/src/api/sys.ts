@@ -11,6 +11,8 @@ export default {
     userDelete: "system/user/delete",
     userEdit: "system/user/edit",
     userGet: "system/user/get",
+    userInfo:'system/user/info',
+    userSave: "system/user/save",
     deptGet: "system/department/get",
     deptSave: "system/department/save",
     deptEdit: "system/department/edit",
@@ -22,4 +24,6 @@ export default {
     roleEdit: "system/role/edit",
     roleGet: "system/role/get",
     roleGetByIds: "system/role/getByIds",
+    upload:'system/upload',
+    uploadDel:'system/upload/delete',
 }
