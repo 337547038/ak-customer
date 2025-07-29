@@ -1,10 +1,13 @@
 package customer.service.impl;
 
 import com.alibaba.fastjson2.JSON;
+import customer.entity.Contact;
+import customer.service.ContactService;
 import customer.utils.Utils;
 import customer.entity.FollowRecords;
 import customer.dao.FollowRecordsDao;
 import customer.service.FollowRecordsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
@@ -23,6 +26,12 @@ import java.util.Map;
 public class FollowRecordsServiceImpl implements FollowRecordsService {
     @Resource
     private FollowRecordsDao followRecordsDao;
+
+    private final ContactService contactService;
+
+    public FollowRecordsServiceImpl(ContactService contactService) {
+        this.contactService = contactService;
+    }
 
     /**
      * 通过ID查询单条数据
@@ -63,6 +72,12 @@ public class FollowRecordsServiceImpl implements FollowRecordsService {
     @Override
     public FollowRecords insert(FollowRecords followRecords) {
         this.followRecordsDao.insert(followRecords);
+        //　更新当前联系人的最后跟进和下次跟进时间
+        Contact contact = new Contact();
+        contact.setId(followRecords.getContactId());
+        contact.setLastTime(followRecords.getDateTime());
+        contact.setNextTime(followRecords.getNextTime());
+        contactService.updateById(contact);
         return followRecords;
     }
 

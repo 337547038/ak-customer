@@ -75,6 +75,16 @@ public class Customer implements Serializable {
      */
     private Date updateTime;
 
+    private String remark;
+/**
+     * 1正常2公海3无效4删除
+     */
+    private Integer status;
+/**
+     * 分享给指定用户id
+     */
+    private String shareUserId;
+
 
 }
 

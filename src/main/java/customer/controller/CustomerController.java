@@ -1,5 +1,7 @@
 package customer.controller;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import customer.config.CustomException;
 import customer.entity.Customer;
 import customer.service.CustomerService;
@@ -74,20 +76,22 @@ public class CustomerController {
         keywords.put("brandName", pages.get("keywords"));
         keywords.put("code", pages.get("keywords"));
         keywords.put("tel", pages.get("keywords"));
-        keywords.put("extend", pages.get("extend"));
+        JSONObject obj = JSON.parseObject(JSON.toJSONString(pages.get("extend")));
+        obj.put("type", "check");
+        keywords.put("extend", obj);
         return ResponseEntity.ok(this.customerService.queryByPage(keywords));
     }
 
     /**
      * 通过主键查询单条数据
      *
-     * @param query 主键
+     * @param query query.id主键,query.type
      * @return 单条数据
      */
     @Operation(summary = "根据id查询数据")
     @PostMapping("get")
-    public ResponseEntity<Customer> queryById(@RequestBody Map<String, Integer> query) {
-        return ResponseEntity.ok(this.customerService.queryById(query.get("id")));
+    public ResponseEntity<Customer> queryById(@RequestBody Map<String, Object> query) {
+        return ResponseEntity.ok(this.customerService.queryById(query));
     }
 
     /**
@@ -130,9 +134,9 @@ public class CustomerController {
         return ResponseEntity.ok(this.customerService.deleteById(idList));
     }
 
-    @Operation(summary ="导入客户")
+    @Operation(summary = "导入客户")
     @Parameters({
-            @Parameter(name = "file",description = "上传的文件")
+            @Parameter(name = "file", description = "上传的文件", required = true)
     })
     @PostMapping("import")
     public ResponseEntity<Boolean> importXlsx(@RequestParam("file") MultipartFile file) {
@@ -140,6 +144,41 @@ public class CustomerController {
             throw new CustomException("请选择文件");
         }
         return ResponseEntity.ok(this.customerService.importXlsx(file));
+    }
+
+    @Operation(summary = "移动客户")
+    @Parameters({
+            @Parameter(name = "ids", description = "要移交的客户id,多个用豆号隔开", required = true),
+            @Parameter(name = "type", description = "可选toUser、toCom", required = true),
+            @Parameter(name = "userId", description = "toUser时要移交给谁")
+    })
+    @PostMapping("moveByIds")
+    public ResponseEntity<Boolean> toUser(@RequestBody Map<String, Object> params) {
+        Object type = params.get("type");
+        if (params.get("ids") == null || type == null) {
+            throw new CustomException("请按要求提交相应参数");
+        }
+        if (type == "toUser" && params.get("userId") == null) {
+            throw new CustomException("移交时id不能为空");
+        }
+        return ResponseEntity.ok(this.customerService.moveCustomerByIds(params, (String) type));
+    }
+
+    @Operation(summary = "分享或取消分享")
+    @Parameters({
+            @Parameter(name = "ids", description = "要分享的客户id,多个用豆号隔开", required = true),
+            @Parameter(name = "userId", description = "要分享的谁,多个用豆号隔开,为0时所有人可见"),
+            @Parameter(name = "type", description = "share时为分享，其他值为取消分享", required = true),
+    })
+    @PostMapping("share")
+    public ResponseEntity<Boolean> toCom(@RequestBody Map<String, Object> params) {
+        if (params.get("ids") == null || params.get("ids") == "") {
+            throw new CustomException("请选择要分享的客户");
+        }
+        if (params.get("type") == "share" && params.get("userId") == null) {
+            throw new CustomException("请选择分享目标人");
+        }
+        return ResponseEntity.ok(this.customerService.shareCustomer(params));
     }
 }
 

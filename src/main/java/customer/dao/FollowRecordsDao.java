@@ -64,5 +64,6 @@ public interface FollowRecordsDao {
      */
     int deleteById(@Param("id") String[] id);
 
+    void deleteByCustomerId(@Param("id") String[] id);
 }
 

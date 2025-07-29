@@ -6,7 +6,7 @@ export default [
     },
     {
         title: '数据分析',
-        path: 'analysis',
+        menuIndex: 'analysis',
         icon: '',
         children: [
             {
@@ -42,7 +42,7 @@ export default [
     {
         title: '客户管理',
         icon: 'user',
-        path: "customer",
+        menuIndex: "customer",
         children: [
             {
                 title: '客户查重',
@@ -78,13 +78,18 @@ export default [
                 title: '名片识别',
                 path: '/customer/ocr',
                 icon: "Aim"
+            },
+            {
+                title: '删除客户',
+                path: 'delCustomer',
+                type: 'btn'
             }
         ]
     },
     {
         title: '系统管理',
         icon: 'setting',
-        path: "system",
+        menuIndex: "system",
         children: [
             {
                 title: '用户管理',

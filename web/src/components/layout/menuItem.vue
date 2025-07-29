@@ -1,14 +1,13 @@
 <template>
   <template v-for="(item, index) in data" :key="index">
-    <el-sub-menu v-if="item.children" :index="item.path || item.title + index" v-permission="item.path">
+    <el-sub-menu v-if="item.children && subMenuPermission(item.children)" :index="item.path || item.menuIndex">
       <template #title>
         <ak-icon :name="item.icon"/>
         <span>{{ item.title }}</span>
       </template>
-      <menu-item :data="item.children" />
+      <menu-item :data="item.children"/>
     </el-sub-menu>
-    <el-menu-item v-else :index="item.path || item.title + index" v-permission="item.path">
-<!--      <el-icon><component :is="item.icon" /></el-icon>-->
+    <el-menu-item v-else-if="item.type!=='btn'" :index="item.path || item.menuIndex" v-permission="item.path">
       <ak-icon :name="item.icon"/>
       <span>{{ item.title }}</span>
     </el-menu-item>
@@ -16,14 +15,26 @@
 </template>
 
 <script setup lang="ts">
+  import {permission} from "@/directive/permissions";
+
   withDefaults(
-    defineProps<{
-      data: string[]
-    }>(),
-    {
-      data: () => {
-        return []
+      defineProps<{
+        data: string[]
+      }>(),
+      {
+        data: () => {
+          return []
+        }
+      }
+  )
+
+  const subMenuPermission = (child) => {
+    // 其中有一个子级有权限则返回true
+    for (const key in child) {
+      if (permission(child[key].path)) {
+        return true
       }
     }
-  )
+    return false
+  }
 </script>

@@ -65,5 +65,7 @@ public interface UserDao {
     int deleteById(@Param("id") String[] id);
 
     void updateLogin(User user);
+
+    List<Map<String,Object>> queryByIds(@Param("ids") String[] ids);
 }
 

@@ -15,10 +15,10 @@ public interface CustomerService {
     /**
      * 通过ID查询单条数据
      *
-     * @param id 主键
+     * @param query 参数
      * @return 实例对象
      */
-    Customer queryById(Integer id);
+    Customer queryById(Map<String,Object> query);
     
     /**
      * 分页查询
@@ -51,6 +51,7 @@ public interface CustomerService {
     boolean deleteById(String[] id);
     boolean importXlsx(MultipartFile file);
 
+    boolean moveCustomerByIds(Map<String, Object> params, String type);
 
-
+    boolean shareCustomer(Map<String, Object> params);
 }

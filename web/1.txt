@@ -4,4 +4,4 @@ icon-import
 icon-toUser 移交
 icon-com 转入公海
 icon-share　共享客户
-icon-set 批量设置
+icon-invalid 无效客户

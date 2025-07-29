@@ -2,6 +2,7 @@ package customer.controller;
 
 import customer.entity.FollowRecords;
 import customer.service.FollowRecordsService;
+import customer.utils.Utils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.*;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.annotation.Resource;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -19,7 +21,7 @@ import java.util.Map;
  */
 @Tag(name = "FollowRecords相关")
 @RestController
-@RequestMapping("followRecords")
+@RequestMapping("customer/follow")
 public class FollowRecordsController {
     /**
      * 服务对象
@@ -76,6 +78,9 @@ public class FollowRecordsController {
     @Operation(summary ="新增数据")
     @PostMapping("save")
     public ResponseEntity<Integer> add(@RequestBody FollowRecords followRecords) {
+        followRecords.setUserId(Utils.getCurrentUserId());
+        followRecords.setUserName(Utils.getCurrentUserName());
+        followRecords.setDateTime(new Date());
         FollowRecords result = followRecordsService.insert(followRecords);
         return ResponseEntity.ok(result.getId());
     }

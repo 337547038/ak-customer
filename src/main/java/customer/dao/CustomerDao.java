@@ -19,10 +19,10 @@ public interface CustomerDao {
     /**
      * 通过ID查询单条数据
      *
-     * @param id 主键
+     * @param query 参数
      * @return 实例对象
      */
-    Customer queryById(Integer id);
+    Customer queryById(@Param("query") Map<String,Object> query);
 
     /**
      * 查询指定行数据
@@ -65,5 +65,6 @@ public interface CustomerDao {
      */
     int deleteById(@Param("id") String[] id);
 
+    boolean moveCustomerByIds(@Param("params") Map<String,Object> params,@Param("type") String type);
 }
 

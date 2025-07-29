@@ -131,5 +131,12 @@ id, tid, userId, dataTime, content, userName
             #{item}
         </foreach>
         </delete>
+    <delete id="deleteByCustomerId">
+        delete
+        from sys_follow_records where tid in
+        <foreach collection="id" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </delete>
 
     </mapper>

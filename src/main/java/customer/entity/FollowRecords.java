@@ -21,15 +21,21 @@ public class FollowRecords implements Serializable {
 /**
      * 客户id
      */
-    private Integer cId;
+    private Integer customerId;
 /**
      * 联系人
      */
-    private Integer uId;
+    private Integer contactId;
+
+    private String contactName;
 /**
-     * 用户id
+     * 跟进人用户id
      */
     private Integer userId;
+/**
+     * 跟进人用户名称
+     */
+    private String userName;
 /**
      * 跟进时间
      */
@@ -42,6 +48,11 @@ public class FollowRecords implements Serializable {
      * 跟进记录客户反馈
      */
     private String remark;
+
+    /**
+     * 下次跟进时间
+     */
+    private Date nextTime;
 
 
 }

@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.annotation.Resource;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -19,7 +20,7 @@ import java.util.Map;
  */
 @Tag(name = "Contact相关")
 @RestController
-@RequestMapping("contact")
+@RequestMapping("customer/contact")
 public class ContactController {
     /**
      * 服务对象
@@ -76,6 +77,7 @@ public class ContactController {
     @Operation(summary ="新增数据")
     @PostMapping("save")
     public ResponseEntity<Integer> add(@RequestBody Contact contact) {
+        contact.setCreatDate(new Date());
         Contact result = contactService.insert(contact);
         return ResponseEntity.ok(result.getId());
     }

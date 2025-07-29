@@ -29,17 +29,17 @@ public class Contact implements Serializable {
 /**
      * 手机
      */
-    private Integer phone;
+    private String phone;
 
     private String weixin;
 
-    private Integer qq;
+    private String qq;
 
     private String email;
 /**
      * 职务
      */
-    private Integer position;
+    private String position;
 /**
      * 所属客户
      */
@@ -48,6 +48,10 @@ public class Contact implements Serializable {
      * 创建时间
      */
     private Date creatDate;
+/**
+     * 最后一次跟进时间
+     */
+    private Date lastTime;
 /**
      * 下次跟进时间
      */

@@ -4,16 +4,19 @@ import getCityByCode from "@/utils/getCityByCode";
 
 export default [
     {
-        type: 'selection'
+        type: 'selection',
+        width: 30
     },
     {
         label: '序号',
         type: 'index',
-        width: 80
+        width: 60
     },
     {
         prop: 'company',
-        label: '客户名称'
+        label: '客户名称',
+        width: 180,
+        showOverflowTooltip: true
     },
     {
         prop: 'userName',
@@ -41,7 +44,9 @@ export default [
         },
         formatter: (row: any, column: any, cellValue: any) => {
             return getCityByCode(cellValue)
-        }
+        },
+        width: 160,
+        showOverflowTooltip: true
     },
     {
         prop: 'industry',
@@ -66,30 +71,34 @@ export default [
         }
     },
     {
-        prop: 'lastContactTime',
+        prop: 'lastTime',
         label: '最近联系时间',
-        width: 160,
+        width: 120,
+        showOverflowTooltip: true,
         render: 'datetime',
         search: false
     },
     {
-        prop: 'nextContactTime',
+        prop: 'nextTime',
         label: '下次联系时间',
-        width: 160,
         render: 'datetime',
-        search: false
+        search: false,
+        width: 120,
+        showOverflowTooltip: true
     },
     {
         prop: 'creatTime',
         label: '创建时间',
-        width: 160,
         render: 'datetime',
-        search: false
+        search: false,
+        width: 120,
+        showOverflowTooltip: true
     },
     {
         prop: 'updateTime',
         label: '更新时间',
-        width: 160,
+        width: 120,
+        showOverflowTooltip: true,
         render: 'datetime',
         search: false
     },
@@ -97,8 +106,9 @@ export default [
         prop: 'operation',
         label: '操作',
         render: 'buttons',
-        width: 150,
+        width: 70,
         search: false,
+        fixed:'right',
         buttons: [
             {
                 key: 'detail',
@@ -108,21 +118,21 @@ export default [
                     text: true
                 }
             },
-            {
+            /*{
                 key: 'follow',
                 label: '跟进',
                 attr: {
                     text: true
                 }
-            },
-            {
+            },*/
+            /*{
                 key: 'del',
                 label: '删除',
                 icon: '',
                 attr: {
                     text: true
                 }
-            }
+            }*/
         ]
     }
 ]

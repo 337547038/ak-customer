@@ -52,4 +52,5 @@ public interface UserService {
 
     List<Map<String, Object>> login(User user, String ipAddress);
 
+    List<Map<String, Object>> queryByIds(String ids);
 }

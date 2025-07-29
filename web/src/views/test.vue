@@ -2,12 +2,22 @@
 
   import {ref, unref} from "vue";
   import {getRequest} from '@/api'
-import Child from './child.vue'
 
+  const click=()=>{
+    getRequest("followSave",{
+      "customerId":'123',
+      "contactId":'12',
+      type:1,
+      adc:'ab',
+      })
+  }
 </script>
 
 <template>
- <div><Child/></div>
+  <div>
+   <el-button @click="click">click</el-button>
+  </div>
+
 </template>
 
 <style scoped lang="scss">

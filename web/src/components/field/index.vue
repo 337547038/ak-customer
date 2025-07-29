@@ -46,6 +46,7 @@
         v-bind="$attrs"
         options=""
         v-model="model"
+        @change="change"
         :placeholder="$attrs.placeholder || '请选择' + label"
         v-else-if="render === 'select' && optionsArray?.length"
         style="min-width: 120px"
@@ -63,7 +64,7 @@
         :placeholder="$attrs.placeholder || '请输入' + label"
         :is="currentComponent"
         v-model="model"
-        label=""
+        @change="change"
         v-else
     />
   </el-form-item>
@@ -89,7 +90,7 @@
         prop?: string
         label?: string
         formItem?: { [key: string]: any } //绑定于el-form-item的所有属性
-        options?: Array<{ label: string; value: any }> | string
+        options?: Array<{ label: string; value: any }> | string | { [key: string]: any }
         render?:
             | 'input'
             | 'cascader'
@@ -128,24 +129,31 @@
 
   const ajaxOptions = ref([])
 
+  //　将object转array
+  const formatObj = (obj: { [key: string]: any }) => {
+    if (obj && Object.keys(obj).length) {
+      const temp = []
+      for (const key in obj) {
+        const num = Number(key)
+        const numKey = isNaN(num) ? key : num
+        temp.push({label: obj[key], value: numKey})
+      }
+      return temp
+    }
+    return []
+  }
+
   const optionsArray = computed(() => {
     if (typeof props.options === 'string') {
       // 作为字典的标识处理
       const dict = layoutStore.getSystemDict(props.options)
-      if (dict && Object.keys(dict).length) {
-        const temp = []
-        for (const key in dict) {
-          const num = Number(key)
-          const numKey = isNaN(num) ? key : num
-          temp.push({label: dict[key], value: numKey})
-        }
-        return temp
-      }
-      return []
-    } else if (typeof props.options === 'object') {
-      return props.options
-    } else if (props.ajax) {
+      return formatObj(dict)
+    } else if (Object.prototype.toString.call(props.options) === '[object Object]') {
+      return formatObj(props.options)
+    } else if (props.ajax?.api) {
       return ajaxOptions.value
+    } else {
+      return props.options
     }
   })
   const change = (val: any) => {

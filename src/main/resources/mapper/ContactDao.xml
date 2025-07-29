@@ -7,13 +7,14 @@
                 <result property="name" column="name" jdbcType="VARCHAR"/>
                 <result property="sex" column="sex" jdbcType="INTEGER"/>
                 <result property="tel" column="tel" jdbcType="VARCHAR"/>
-                <result property="phone" column="phone" jdbcType="INTEGER"/>
+                <result property="phone" column="phone" jdbcType="VARCHAR"/>
                 <result property="weixin" column="weixin" jdbcType="VARCHAR"/>
-                <result property="qq" column="qq" jdbcType="INTEGER"/>
+                <result property="qq" column="qq" jdbcType="VARCHAR"/>
                 <result property="email" column="email" jdbcType="VARCHAR"/>
-                <result property="position" column="position" jdbcType="INTEGER"/>
+                <result property="position" column="position" jdbcType="VARCHAR"/>
                 <result property="tid" column="tid" jdbcType="INTEGER"/>
                 <result property="creatDate" column="creatDate" jdbcType="TIMESTAMP"/>
+                <result property="lastTime" column="lastTime" jdbcType="TIMESTAMP"/>
                 <result property="nextTime" column="nextTime" jdbcType="TIMESTAMP"/>
                 <result property="decisionMaker" column="decisionMaker" jdbcType="INTEGER"/>
                 <result property="address" column="address" jdbcType="VARCHAR"/>
@@ -22,7 +23,7 @@
         </resultMap>
 
     <sql id="commColumnsItem">
-id, name, sex, tel, phone, weixin, qq, email, position, tid, creatDate, nextTime, decisionMaker, address, birthday, remark
+id, name, sex, tel, phone, weixin, qq, email, position, tid, creatDate, lastTime, nextTime, decisionMaker, address, birthday, remark
     </sql>
         <!--查询单个-->
         <select id="queryById" resultMap="ContactMap">
@@ -35,63 +36,53 @@ id, name, sex, tel, phone, weixin, qq, email, position, tid, creatDate, nextTime
         <!--查询指定行数据-->
         <select id="queryAllByLimit">
             select
-            <choose>
-                <when test="extend.columns != null and extend.columns!=''">
-                    ${extend.columns}
-                </when>
-                <otherwise>
-                    <include refid="commColumnsItem" />
-                </otherwise>
-            </choose>
-            from sys_contact
+            a.id,a.name, a.sex, a.tel, a.phone, a.weixin, a.qq, a.email, a.position, a.tid, a.creatDate,a.lastTime, a.nextTime, a.decisionMaker, a.address, a.birthday, b.company
+            from sys_contact as a join sys_customer as b on a.tid = b.id
             <where>
-                    <if test="query.id != null">
-                        and id = #{query.id}
+                    <if test="extend.userId != null">
+                        and b.userId=#{extend.userId}
                     </if>
                     <if test="query.name != null and query.name != ''">
-                        and name = #{query.name}
+                        and a.name LIKE CONCAT('%', #{query.name}, '%')
                     </if>
                     <if test="query.sex != null">
-                        and sex = #{query.sex}
+                        and a.sex = #{query.sex}
                     </if>
                     <if test="query.tel != null and query.tel != ''">
-                        and tel = #{query.tel}
+                        and a.tel = #{query.tel}
                     </if>
-                    <if test="query.phone != null">
-                        and phone = #{query.phone}
+                    <if test="query.phone != null and query.phone != ''">
+                        and a.phone = #{query.phone}
                     </if>
                     <if test="query.weixin != null and query.weixin != ''">
-                        and weixin = #{query.weixin}
+                        and a.weixin = #{query.weixin}
                     </if>
-                    <if test="query.qq != null">
-                        and qq = #{query.qq}
+                    <if test="query.qq != null and query.qq != ''">
+                        and a.qq = #{query.qq}
                     </if>
                     <if test="query.email != null and query.email != ''">
-                        and email = #{query.email}
+                        and a.email = #{query.email}
                     </if>
-                    <if test="query.position != null">
-                        and position = #{query.position}
+                    <if test="query.position != null and query.position != ''">
+                        and a.position = #{query.position}
                     </if>
                     <if test="query.tid != null">
-                        and tid = #{query.tid}
+                        and a.tid = #{query.tid}
                     </if>
                     <if test="query.creatDate != null">
-                        and creatDate = #{query.creatDate}
+                        and a.creatDate = #{query.creatDate}
                     </if>
                     <if test="query.nextTime != null">
-                        and nextTime = #{query.nextTime}
+                        and a.nextTime = #{query.nextTime}
                     </if>
                     <if test="query.decisionMaker != null">
-                        and decisionMaker = #{query.decisionMaker}
+                        and a.decisionMaker = #{query.decisionMaker}
                     </if>
                     <if test="query.address != null and query.address != ''">
-                        and address = #{query.address}
+                        and a.address = #{query.address}
                     </if>
-                    <if test="query.birthday != null">
-                        and birthday = #{query.birthday}
-                    </if>
-                    <if test="query.remark != null and query.remark != ''">
-                        and remark = #{query.remark}
+                <if test="query.birthday != null">
+                        and a.birthday = #{query.birthday}
                     </if>
             </where>
             <choose>
@@ -116,7 +107,7 @@ id, name, sex, tel, phone, weixin, qq, email, position, tid, creatDate, nextTime
                         and id = #{id}
                     </if>
                     <if test="name != null and name != ''">
-                        and name = #{name}
+                        and name LIKE CONCAT('%', #{name}, '%')
                     </if>
                     <if test="sex != null">
                         and sex = #{sex}
@@ -124,19 +115,19 @@ id, name, sex, tel, phone, weixin, qq, email, position, tid, creatDate, nextTime
                     <if test="tel != null and tel != ''">
                         and tel = #{tel}
                     </if>
-                    <if test="phone != null">
+                    <if test="phone != null and phone != ''">
                         and phone = #{phone}
                     </if>
                     <if test="weixin != null and weixin != ''">
                         and weixin = #{weixin}
                     </if>
-                    <if test="qq != null">
+                    <if test="qq != null and qq != ''">
                         and qq = #{qq}
                     </if>
                     <if test="email != null and email != ''">
                         and email = #{email}
                     </if>
-                    <if test="position != null">
+                    <if test="position != null and position != ''">
                         and position = #{position}
                     </if>
                     <if test="tid != null">
@@ -154,7 +145,7 @@ id, name, sex, tel, phone, weixin, qq, email, position, tid, creatDate, nextTime
                     <if test="address != null and address != ''">
                         and address = #{address}
                     </if>
-                    <if test="birthday != null">
+                <if test="birthday != null">
                         and birthday = #{birthday}
                     </if>
                     <if test="remark != null and remark != ''">
@@ -183,19 +174,19 @@ id, name, sex, tel, phone, weixin, qq, email, position, tid, creatDate, nextTime
                     <if test="tel != null and tel != ''">
                         tel = #{tel},
                     </if>
-                    <if test="phone != null">
+                    <if test="phone != null and phone != ''">
                         phone = #{phone},
                     </if>
                     <if test="weixin != null and weixin != ''">
                         weixin = #{weixin},
                     </if>
-                    <if test="qq != null">
+                    <if test="qq != null and qq != ''">
                         qq = #{qq},
                     </if>
                     <if test="email != null and email != ''">
                         email = #{email},
                     </if>
-                    <if test="position != null">
+                    <if test="position != null and position != ''">
                         position = #{position},
                     </if>
                     <if test="tid != null">
@@ -203,6 +194,9 @@ id, name, sex, tel, phone, weixin, qq, email, position, tid, creatDate, nextTime
                     </if>
                     <if test="creatDate != null">
                         creatDate = #{creatDate},
+                    </if>
+                    <if test="lastTime != null">
+                        lastTime = #{lastTime},
                     </if>
                     <if test="nextTime != null">
                         nextTime = #{nextTime},
@@ -231,5 +225,13 @@ id, name, sex, tel, phone, weixin, qq, email, position, tid, creatDate, nextTime
             #{item}
         </foreach>
         </delete>
+
+    <delete id="deleteByCustomerId">
+        delete
+        from sys_follow_records where tid in
+        <foreach collection="id" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </delete>
 
     </mapper>

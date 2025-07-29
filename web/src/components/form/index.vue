@@ -64,6 +64,7 @@
         params?: any // 附件参数
         rules?: any
         pk?: string | number // 主键，当提交的数据里包含了主键时，则提交修改接口
+        hideFiled?: string[] // 不显示的字段
       }>(),
       {
         data: () => {
@@ -76,6 +77,9 @@
             edit: '', //
             detail: ''
           }
+        },
+        hideFiled: () => {
+          return []
         }
       }
   )
@@ -85,12 +89,13 @@
     (e: 'submit', value: any): void
     (e: 'cancel'): void
   }>()
+  //const model = defineModel();
   const model = defineModel();
 
   const loading = ref(false)
 
   const dataFilter = computed(() => {
-    return props.data.filter(item => item.visible !== false)
+    return props.data.filter(item => item.visible !== false && !props.hideFiled.includes(item.prop))
   })
   //获取初始值
   const getModelValue = (data: formData[]) => {
@@ -167,9 +172,9 @@
     if (api) {
       let params = Object.assign({}, props.params, data || {})
       if (props.before && typeof props.before === 'function') {
-        params = props.before(params, 'detail') || {}
+        params = props.before(params, 'detail') ?? params
       }
-      if (params === false) {
+      if (params === false || Object.keys(params).length === 0) {
         return false
       }
       loading.value = true

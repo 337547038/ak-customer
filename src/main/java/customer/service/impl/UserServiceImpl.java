@@ -142,4 +142,9 @@ public class UserServiceImpl implements UserService {
         loginLogService.insert(log);
         return list;
     }
+
+
+    public List<Map<String, Object>> queryByIds(String ids) {
+        return this.userDao.queryByIds(ids.split(","));
+    }
 }

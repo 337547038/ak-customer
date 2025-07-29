@@ -99,7 +99,8 @@
     dictDialogTitle.value = row.name ? `编辑${row.name}角色` : '新增角色'
     formModel.value = row || {}
     nextTick(() => {
-      treeRef.value.setCheckedKeys(row.content?.split(',')||[])
+      // 这里去掉几个特殊，否则当一级选中时，会选中所有子级
+     treeRef.value.setCheckedKeys(row.content?.split(',')||[])
     })
   }
 

@@ -18,144 +18,177 @@
                 <result property="userId" column="userId" jdbcType="INTEGER"/>
                 <result property="creatTime" column="creatTime" jdbcType="TIMESTAMP"/>
                 <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
+                <result property="remark" column="remark" jdbcType="VARCHAR"/>
+                <result property="status" column="status" jdbcType="INTEGER"/>
+                <result property="shareUserId" column="shareUserId" jdbcType="VARCHAR"/>
         </resultMap>
 
     <sql id="commColumnsItem">
-id, company, brandName, type, area, address, industry, code, files, source, tel, web, userId, creatTime, updateTime
+        id
+        , company, brandName, type, area, address, industry, code, files, source, tel, web, userId, creatTime, updateTime, remark, status, shareUserId
     </sql>
-        <!--查询单个-->
-        <select id="queryById" resultMap="CustomerMap">
-            select
-            <include refid="commColumnsItem" />
-            from sys_customer
-                where id = #{id}
-        </select>
+    <!--查询单个-->
+    <select id="queryById" resultMap="CustomerMap">
+        select
+        <include refid="commColumnsItem"/>
+        from sys_customer
+        <where>
+            <choose>
+                <when test="query.type=='share'">
+                    and FIND_IN_SET(#{query.userId}, shareUserId) > 0 or shareUserId="0"
+                </when>
+                <otherwise>
+                    and userId=#{query.userId}
+                </otherwise>
+            </choose>
+        </where>
+        and id = #{query.id}
+    </select>
 
-        <!--查询指定行数据-->
-        <select id="queryAllByLimit">
-            select
-            (select userName from `sys_user` where c.userId=id) as userName,
-            <choose>
-                <when test="extend.columns != null and extend.columns!=''">
-                    ${extend.columns}
-                </when>
-                <otherwise>
-                    <include refid="commColumnsItem" />
-                </otherwise>
-            </choose>
-            from sys_customer as c
-            <where>
-                    <if test="query.id != null">
-                        and id = #{query.id}
-                    </if>
-                    <if test="query.company != null and query.company != ''">
-                        and company LIKE CONCAT('%', #{query.company}, '%')
-                    </if>
-                    <if test="query.brandName != null and query.brandName != ''">
-                        and brandName LIKE CONCAT('%', #{query.brandName}, '%')
-                    </if>
-                    <if test="query.type != null">
-                        and type = #{query.type}
-                    </if>
-                    <if test="query.area != null and query.area != ''">
-                        and area = #{query.area}
-                    </if>
-                    <if test="query.address != null and query.address != ''">
-                        and address = #{query.address}
-                    </if>
-                    <if test="query.industry != null">
-                        and industry = #{query.industry}
-                    </if>
-                    <if test="query.code != null and query.code != ''">
-                        and code LIKE CONCAT('%', #{query.code}, '%')
-                    </if>
-                    <if test="query.files != null and query.files != ''">
-                        and files = #{query.files}
-                    </if>
-                    <if test="query.source != null">
-                        and source = #{query.source}
-                    </if>
-                    <if test="query.tel != null and query.tel != ''">
-                        and tel LIKE CONCAT('%', #{query.tel}, '%')
-                    </if>
-                    <if test="query.web != null and query.web != ''">
-                        and web = #{query.web}
-                    </if>
-                    <if test="query.userId != null">
-                        and userId = #{query.userId}
-                    </if>
-                    <if test="query.creatTime != null">
-                        and creatTime = #{query.creatTime}
-                    </if>
-                    <if test="query.updateTime != null">
-                        and updateTime = #{query.updateTime}
-                    </if>
-            </where>
-            <choose>
-                <when test="extend.sort != null and extend.sort!=''">
-                    order by ${extend.sort}
-                </when>
-                <otherwise>
-                    order by id desc
-                </otherwise>
-            </choose>
-            <if test="extend.pageSize >0">
-            limit #{extend.pageIndex}, #{extend.pageSize}
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit">
+        select
+        a.id, a.company, a.brandName, a.type, a.area, a.address, a.industry, a.code, a.source, a.tel, a.userId, a.creatTime, a.updateTime,a.status
+        <if test="extend.type=='normal' || extend.type=='share' || extend.type=='share2'">
+            ,c.userName,b.lastTime,b.nextTime
+        </if>
+        <if test="extend.type=='check'">
+            ,c.userName
+        </if>
+        from sys_customer as a
+        <if test="extend.type=='check'">
+            join `sys_user` as c ON a.userId=c.id
+        </if>
+        <!--仅在列表时查询sys_contact获取lastTime,nextTime-->
+        <if test="extend.type=='normal' || extend.type=='share' || extend.type=='share2'">
+            join `sys_user` as c ON a.userId=c.id
+            left join (SELECT tid,lastTime,nextTime,MAX(nextTime) FROM `sys_contact` GROUP BY tid) as b
+            ON a.id=b.tid
+        </if>
+        <where>
+            <bind name="andOr" value="extend.type=='check' ? 'OR' : 'AND'"/>
+            <if test="query.id != null">
+                and a.id = #{query.id}
             </if>
-        </select>
+            <if test="query.userId != null">
+                and a.userId = #{query.userId}
+            </if>
 
-        <!--统计总行数-->
-        <select id="count" resultType="java.lang.Long">
-            select count(1)
-            from sys_customer
-            <where>
-                    <if test="id != null">
-                        and id = #{id}
-                    </if>
-                    <if test="company != null and company != ''">
-                        and company LIKE CONCAT('%', #{company}, '%')
-                    </if>
-                    <if test="brandName != null and brandName != ''">
-                        and brandName LIKE CONCAT('%', #{brandName}, '%')
-                    </if>
-                    <if test="type != null">
-                        and type = #{type}
-                    </if>
-                    <if test="area != null and area != ''">
-                        and area = #{area}
-                    </if>
-                    <if test="address != null and address != ''">
-                        and address = #{address}
-                    </if>
-                    <if test="industry != null">
-                        and industry = #{industry}
-                    </if>
-                    <if test="code != null and code != ''">
-                        and code LIKE CONCAT('%', #{code}, '%')
-                    </if>
-                    <if test="files != null and files != ''">
-                        and files = #{files}
-                    </if>
-                    <if test="source != null">
-                        and source = #{source}
-                    </if>
-                    <if test="tel != null and tel != ''">
-                        and tel LIKE CONCAT('%', #{tel}, '%')
-                    </if>
-                    <if test="web != null and web != ''">
-                        and web = #{web}
-                    </if>
-                    <if test="userId != null">
-                        and userId = #{userId}
-                    </if>
-                    <if test="creatTime != null">
-                        and creatTime = #{creatTime}
-                    </if>
-                    <if test="updateTime != null">
-                        and updateTime = #{updateTime}
-                    </if>
-            </where>
-        </select>
+            <if test="query.company != null and query.company != ''">
+                ${andOr} a.company LIKE CONCAT('%', #{query.company}, '%')
+            </if>
+            <if test="query.brandName != null and query.brandName != ''">
+                ${andOr} a.brandName LIKE CONCAT('%', #{query.brandName}, '%')
+            </if>
+            <if test="query.type != null">
+                and type = #{query.type}
+            </if>
+            <if test="query.area != null and query.area != ''">
+                and a.area = #{query.area}
+            </if>
+            <if test="query.address != null and query.address != ''">
+                and a.address = #{query.address}
+            </if>
+            <if test="query.industry != null">
+                and a.industry = #{query.industry}
+            </if>
+            <if test="query.code != null and query.code != ''">
+                ${andOr} a.code LIKE CONCAT('%', #{query.code}, '%')
+            </if>
+
+            <if test="query.source != null">
+                and a.source = #{query.source}
+            </if>
+            <if test="query.tel != null and query.tel != ''">
+                ${andOr} a.tel LIKE CONCAT('%', #{query.tel}, '%')
+            </if>
+            <if test="query.status != null">
+                and a.status = #{query.status}
+            </if>
+            <!--<if test="query.shareUserId != null and query.shareUserId != ''">
+                and a.shareUserId = #{query.shareUserId}
+            </if>-->
+            <if test="extend.type=='share'">
+                and a.shareUserId is not null and a.shareUserId != ''
+            </if>
+            <if test="extend.type=='share2'">
+                and FIND_IN_SET(#{query.shareUserId}, a.shareUserId) > 0 or a.shareUserId="0"
+            </if>
+        </where>
+        <choose>
+            <when test="extend.sort != null and extend.sort!=''">
+                order by ${extend.sort}
+            </when>
+            <when test="extend.type=='normal'">
+                order by b.nextTime
+            </when>
+            <otherwise>
+                order by a.id desc
+            </otherwise>
+        </choose>
+        <if test="extend.pageSize >0">
+            limit #{extend.pageIndex}, #{extend.pageSize}
+        </if>
+    </select>
+
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from sys_customer
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="company != null and company != ''">
+                and company LIKE CONCAT('%', #{company}, '%')
+            </if>
+            <if test="brandName != null and brandName != ''">
+                and brandName LIKE CONCAT('%', #{brandName}, '%')
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="area != null and area != ''">
+                and area = #{area}
+            </if>
+            <if test="address != null and address != ''">
+                and address = #{address}
+            </if>
+            <if test="industry != null">
+                and industry = #{industry}
+            </if>
+            <if test="code != null and code != ''">
+                and code LIKE CONCAT('%', #{code}, '%')
+            </if>
+            <if test="files != null and files != ''">
+                and files = #{files}
+            </if>
+            <if test="source != null">
+                and source = #{source}
+            </if>
+            <if test="tel != null and tel != ''">
+                and tel LIKE CONCAT('%', #{tel}, '%')
+            </if>
+            <if test="web != null and web != ''">
+                and web = #{web}
+            </if>
+            <if test="userId != null">
+                and userId = #{userId}
+            </if>
+            <if test="creatTime != null">
+                and creatTime = #{creatTime}
+            </if>
+            <if test="updateTime != null">
+                and updateTime = #{updateTime}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="shareUserId != null and shareUserId != ''">
+                and shareUserId = #{shareUserId}
+            </if>
+        </where>
+    </select>
 
     <select id="exist" resultType="java.lang.Long">
         select count(1)
@@ -173,70 +206,101 @@ id, company, brandName, type, area, address, industry, code, files, source, tel,
         </where>
     </select>
 
-        <!--新增所有列-->
-        <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-            insert into sys_customer(company, brandName, type, area, address, industry, code, files, source, tel, web, userId, creatTime, updateTime)
-                values
-            (#{company}, #{brandName}, #{type}, #{area}, #{address}, #{industry}, #{code}, #{files}, #{source}, #{tel}, #{web}, #{userId}, #{creatTime}, #{updateTime})
-        </insert>
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into sys_customer(company, brandName, type, area, address, industry, code, files, source, tel, web, userId, creatTime, updateTime,remark, status, shareUserId)
+        values (#{company}, #{brandName}, #{type}, #{area}, #{address}, #{industry}, #{code}, #{files}, #{source}, #{tel}, #{web}, #{userId}, #{creatTime}, #{updateTime}, #{remark}, #{status}, #{shareUserId})
+    </insert>
 
-        <!--通过主键修改数据-->
-        <update id="updateById">
-            update sys_customer
-            <set>
-                    <if test="company != null and company != ''">
-                        company = #{company},
-                    </if>
-                    <if test="brandName != null and brandName != ''">
-                        brandName = #{brandName},
-                    </if>
-                    <if test="type != null">
-                        type = #{type},
-                    </if>
-                    <if test="area != null and area != ''">
-                        area = #{area},
-                    </if>
-                    <if test="address != null and address != ''">
-                        address = #{address},
-                    </if>
-                    <if test="industry != null">
-                        industry = #{industry},
-                    </if>
-                    <if test="code != null and code != ''">
-                        code = #{code},
-                    </if>
-                    <if test="files != null and files != ''">
-                        files = #{files},
-                    </if>
-                    <if test="source != null">
-                        source = #{source},
-                    </if>
-                    <if test="tel != null and tel != ''">
-                        tel = #{tel},
-                    </if>
-                    <if test="web != null and web != ''">
-                        web = #{web},
-                    </if>
-                    <if test="userId != null">
-                        userId = #{userId},
-                    </if>
-                    <if test="creatTime != null">
-                        creatTime = #{creatTime},
-                    </if>
-                    <if test="updateTime != null">
-                        updateTime = #{updateTime},
-                    </if>
-            </set>
-            where id = #{id}
-        </update>
+    <!--通过主键修改数据-->
+    <update id="updateById">
+        update sys_customer
+        <set>
+            <if test="company != null and company != ''">
+                company = #{company},
+            </if>
+            <if test="brandName != null and brandName != ''">
+                brandName = #{brandName},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="area != null and area != ''">
+                area = #{area},
+            </if>
+            <if test="address != null and address != ''">
+                address = #{address},
+            </if>
+            <if test="industry != null">
+                industry = #{industry},
+            </if>
+            <if test="code != null and code != ''">
+                code = #{code},
+            </if>
+            <if test="files != null and files != ''">
+                files = #{files},
+            </if>
+            <if test="source != null">
+                source = #{source},
+            </if>
+            <if test="tel != null and tel != ''">
+                tel = #{tel},
+            </if>
+            <if test="web != null and web != ''">
+                web = #{web},
+            </if>
+            <if test="userId != null">
+                userId = #{userId},
+            </if>
+            <if test="creatTime != null">
+                creatTime = #{creatTime},
+            </if>
+            <if test="updateTime != null">
+                updateTime = #{updateTime},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="shareUserId != null and shareUserId != '' and shareUserId != 'cancel'">
+                shareUserId = #{shareUserId},
+            </if>
+            <if test="shareUserId == 'cancel'">
+                shareUserId = "",
+            </if>
+        </set>
+        where id = #{id}
+    </update>
 
-        <!--通过主键删除-->
-        <delete id="deleteById">
-            delete
-            from sys_customer where id in
-            <foreach collection="id" item="item" separator="," open="(" close=")">
+    <update id="moveCustomerByIds">
+        update sys_customer
+        <if test="type=='toCom'">
+            set userId=null,status=2,shareUserId=''
+        </if>
+        <if test="type=='toUser'">
+            set userId=#{params.userId},shareUserId=''
+        </if>
+        <if test="type=='toInvalid'">
+            set userId=null,status=3,shareUserId=''
+        </if>
+        <if test="type=='toFollow'">
+            set userId=#{params.userId},status=1
+        </if>
+        <if test="type=='toShare'">
+            set shareUserId=#{params.userId}
+        </if>
+        where id in (${params.ids})
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from sys_customer where id in
+        <foreach collection="id" item="item" separator="," open="(" close=")">
             #{item}
         </foreach>
-        </delete>
+    </delete>
 
-    </mapper>
+</mapper>

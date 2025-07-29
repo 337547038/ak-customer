@@ -23,18 +23,16 @@
         />
         <slot name="btnAppend"></slot>
       </div>
-      <div class="other" v-if="columnsIconVisible||searchIconVisible">
-        <el-tooltip effect="dark" content="展开 / 收起筛选" placement="top">
-          <el-button
-              circle
-              icon="Search"
-              size="small"
-              v-if="showSearch&&searchIconVisible"
-              @click="toggleFormSearch = !toggleFormSearch"
-          />
-        </el-tooltip>
-        <column-display :columns="columns" v-model="columnsCheck" v-if="columnsIconVisible"/>
-      </div>
+      <icon-search-column
+          v-if="columnsIconVisible||searchIconVisible"
+          @searchToggleClick="toggleFormSearch = !toggleFormSearch"
+          :columns="columns"
+          :showSearch="showSearch"
+          :searchIconVisible="searchIconVisible"
+          :columnsIconVisible="columnsIconVisible"
+          :keyColumns="keyColumns"
+          v-model="columnsCheck"
+      />
     </div>
     <slot name="tablePrepend"></slot>
     <el-table
@@ -44,21 +42,11 @@
         ref="table"
         @selection-change="tableSelect"
         :empty-text="tableProp?.emptyText||'暂无数据'"
-        controlbtn=""
-        params=""
-        pagination=""
-        columns=""
-        api=""
     >
       <template v-for="item in columnsFilter" :key="item.prop || item.label">
         <!-- 将一些多余的绑定信息去掉-->
         <el-table-column
             v-bind="item"
-            buttons=""
-            custom=""
-            replaceValue=""
-            attr=""
-            help=""
         >
           <template #header="scope" v-if="item.help">
             {{ scope.column.label }}
@@ -103,7 +91,7 @@
                 :src="getImgSrc(scope.row[item.prop])"
             />
             <el-tag
-                v-if="item.prop && item.render === 'tag' && scope.row[item.prop]"
+                v-if="item.prop && item.render === 'tag' && scope.row[item.prop]!==undefined"
                 v-bind="item.attr"
                 :type="getTagType(scope.row[item.prop], item.custom)"
             >{{ getTagVal(scope.row[item.prop], item.replaceValue) }}
@@ -169,13 +157,14 @@
   import {ElMessage} from 'element-plus'
   import {getRequest} from '@/api'
   import {Api, Columns} from './types'
-  import {dateFormatting} from '@/utils'
+  import {dateFormatting, jsonParseStringify} from '@/utils'
   import OperateButton from './components/operateButton.vue'
-  import ColumnDisplay from './components/columnDisplay.vue'
   import SearchForm from './components/searchForm.vue'
   import {Delete, Edit, Histogram, Plus} from '@element-plus/icons-vue'
   import type {Button, EventType} from './types'
   import {useLayoutStore} from '@/store/layout'
+
+  import IconSearchColumn from './components/iconSearchColumn.vue'
 
 
   defineOptions({name:'AkList'})
@@ -195,6 +184,7 @@
         fixedBottomScroll?: boolean | string
         searchIconVisible?: boolean // 搜索折叠icon按钮
         columnsIconVisible?: boolean // 列显示隐藏icon按钮
+        keyColumns?: string
       }>(),
       {
         columns: () => {
@@ -240,7 +230,6 @@
     } else {
       return props.columns.filter((item: Columns) => {
         return columnsCheck.value.includes(item.prop || item.type) && item.show !== false
-
       })
     }
   })
@@ -282,7 +271,7 @@
     return custom[val]
   }
   const getTagVal = (val: string | number, replaceValue: any) => {
-    if (!replaceValue || !val) {
+    if (!replaceValue || val===undefined) {
       return val
     } else {
       if (typeof replaceValue === 'string') {
@@ -479,7 +468,7 @@
     } else {
       return {
         pageSize: pageSize.value,
-        current: current.value
+        pageNum: current.value
       }
     }
   })
@@ -504,12 +493,12 @@
     const source = 'get'
     if (listApi) {
       let params: any = {
-        ...getPageInfo.value,
+        extend:getPageInfo.value,
         ...props.params,
         ...searchFormValue.value //条件筛选数据
       }
       if (props.before) {
-        params = props.before(source, params) ?? params
+        params = props.before(source, jsonParseStringify(params)) ?? jsonParseStringify(params)
       }
       if (params === false) {
         return
@@ -614,10 +603,10 @@
   //当用户手动勾选数据行的 Checkbox 时触发的事件
   const tableSelect = (row: any) => {
     selectRows.value = row
-    if (props.props?.selectionChange) {
-      props.props?.selectionChange(row)
-      emits('selection-change', row)
+    if (props.tableProp?.selectionChange) {
+      props.tableProp?.selectionChange(row)
     }
+    emits('selection-change', row)
   }
   const getSelectionRows = () => {
     return selectRows.value

@@ -77,6 +77,22 @@ export default [
         visible: 'isDetailForm'
     },
     {
+        prop: 'lastTime',
+        label: '最后跟进时间',
+        attr:{
+            disabled: true
+        },
+        visible: 'isDetailForm'
+    },
+    {
+        prop: 'nextTime',
+        label: '下次跟进时间',
+        attr:{
+            disabled: true
+        },
+        visible: 'isDetailForm'
+    },
+    {
         prop: 'remark',
         label:'备注',
         attr:{

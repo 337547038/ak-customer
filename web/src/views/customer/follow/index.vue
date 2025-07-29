@@ -4,14 +4,18 @@
         ref="tableListEl"
         pk="id"
         :columns="columns"
-        :api="{ list: 'contactList',del:'contactDel'}"
+        :api="{ list: 'followList',del:'followDel'}"
         :controlBtn="controlBtn"
         :before="beforeList"
+        :auto-load="!isComponents"
         :show-search="!disabled"
         :columnsIconVisible="!disabled"
-        :auto-load="!isComponents"
         :keyColumns="keyColumns"
     >
+      <template #expand="{row}">
+        <div style="padding: 0 20px;margin-bottom: 8px;">跟进时间：{{ dateFormatting(row.dateTime) }}</div>
+        <div style="padding: 0 20px">跟进内容：{{ row.remark }}</div>
+      </template>
     </ak-list>
     <el-dialog v-model="visible" width="800" :title="title" class="form-dialog" :before-close="formCancelClick">
       <ak-form
@@ -20,10 +24,11 @@
           :data="formData"
           label-width="100"
           class="flex-form flex-form-2"
-          :api="{ detail: 'contactGet',add:'contactSave', edit:'contactEdit' }"
+          :api="{ detail: 'followGet',add:'followSave' }"
           @cancel="formCancelClick"
           :after="afterForm"
           :before="beforeForm"
+          @change="formFiledChange"
           v-model="formModel">
       </ak-form>
     </el-dialog>
@@ -33,13 +38,14 @@
 <script setup lang="ts">
   import {ref, markRaw, nextTick, computed} from 'vue'
   import customerSelect from '@/components/customerSelect/index.vue'
+  import selectContact from './components/selectContact.vue'
   import validate from "@/components/form/validate";
-  import {getStorage} from "@/utils";
+  import {dateFormatting, getStorage} from "@/utils";
 
   const props = withDefaults(
       defineProps<{
         isComponents?: boolean
-        tid?: number
+        customerId?: number
         company?: string
         disabled?: boolean
         keyColumns?:string
@@ -50,7 +56,8 @@
   )
   const controlBtn = [
     {
-      key: 'add', click: () => {
+      key: 'add',
+      click: () => {
         addEditEvent(true)
       },
       display: () => {
@@ -62,27 +69,28 @@
   const visible = ref(false)
   const title = ref('新增联系人')
   const formRef = ref()
-  const formModel = ref({decisionMaker: 1, sex: 1})
-  const isEdit = ref(false)
+  const formModel = ref({})
   const userInfo = computed(() => {
     return getStorage('userInfo', true) || {}
+  })
+  const customerId = ref()
+  const customerId2 = computed(() => {
+    return customerId.value || props.customerId
   })
   const beforeList = (type: string, data: any) => {
     if (type === 'get') {
       if (props.isComponents) {
         // 作为组件调用
-        data.tid = props.tid
-      } else {
-        data.extend.userId = userInfo.value.id
+        data.customerId = customerId2.value
       }
+      data.extend.userId = userInfo.value.id
     }
     return data
   }
   const addEditEvent = (add: boolean, row?: { [key: string]: any }) => {
     visible.value = true
-    isEdit.value = !add
     if (add) {
-      title.value = `新增${props.company || ''}联系人`
+      title.value = `新增${props.company || ''}跟进`
     } else {
       title.value = `编辑${row?.name}信息`
       nextTick(() => {
@@ -93,20 +101,19 @@
   const showCompany = computed(() => {
     return !props.isComponents
   })
-  const isDecisionMaker = {1: '是', 2: '否', 3: '未知'}
   const columns = ref([
+    {
+      type: 'expand',
+      prop: 'expand',
+      search: false
+    },
     {
       prop: 'checked',
       type: 'selection',
     },
     {
-      label: '姓名',
-      prop: 'name',
-      width: 80
-    },
-    {
       label: '客户名称',
-      prop: 'tid',
+      prop: 'customerId',
       search: {
         visible: showCompany,
         render: 'component',
@@ -116,56 +123,35 @@
         return row.company
       },
       show: showCompany,
-      width: 160,
       showOverflowTooltip: true
     },
     {
-      label: '是否决策人',
-      prop: 'decisionMaker',
+      label: '联系人',
+      prop: 'contactId',
+      width: 90,
+      search: {
+        customerId: props.customerId,
+        placeholder: '请输入联系人,可使用%',
+        render: 'component',
+        component: markRaw(selectContact)
+      },
+      formatter: (row: any) => {
+        return row.contactName
+      }
+    },
+    {
+      label: '跟进方式',
+      prop: 'type',
       render: 'tag',
-      replaceValue: isDecisionMaker,
-      custom: {1: 'success', 2: 'primary', 3: 'warning'},
-      search: false,
-      width: 95,
+      width: 110,
+      replaceValue: 'followType',
+      search: {
+        render: 'select',
+        options: 'followType'
+      }
     },
     {
-      label: '手机',
-      prop: 'phone',
-    },
-    {
-      label: '性别',
-      prop: 'sex',
-      render: 'tag',
-      replaceValue: 'sex',
-      search: false,
-      width: 60,
-    },
-    {
-      label: '微信',
-      prop: 'weixin',
-    },
-    {
-      label: '电话',
-      prop: 'tel',
-      search: false
-    },
-    {
-      label: 'QQ',
-      prop: 'qq',
-      search: false
-    },
-    {
-      label: '电子邮件',
-      prop: 'email',
-      search: false
-    },
-    {
-      label: '职位',
-      prop: 'position',
-      search: false
-    },
-    {
-      prop: 'creatDate',
+      prop: 'dateTime',
       label: '创建时间',
       render: 'datetime',
       search: false,
@@ -173,40 +159,32 @@
       showOverflowTooltip: true
     },
     {
-      prop: 'lastTime',
-      label: '最后联系时间',
-      render: 'datetime',
+      prop: 'userName',
+      label: '跟进人',
       search: false,
-      width: 120,
-      showOverflowTooltip: true
+      width: 90,
     },
     {
-      prop: 'nextTime',
-      label: '下次联系时间',
-      render: 'datetime',
+      prop: 'remark',
+      label: '跟进内容',
       search: false,
-      width: 120,
-      showOverflowTooltip: true
+      formatter: (row: any) => {
+        const remark = row.remark
+        if (remark.length > 20) {
+          return row.remark?.substring(0, 20) + '...';
+        } else {
+          return row.remark
+        }
+      }
     },
     {
       show: !props.disabled,
-      fixed: 'right',
+      width: 90,
       prop: 'operate',
       label: '操作',
       render: 'buttons',
-      width: '120px',
       search: false,
       buttons: [
-        {
-          key: 'edit',
-          label: '编辑',
-          attr: {
-            text: true
-          },
-          click: (row: any) => {
-            addEditEvent(false, row)
-          }
-        },
         {
           key: 'del',
           label: '删除',
@@ -221,11 +199,12 @@
 
   const formCancelClick = () => {
     visible.value = false
-    formModel.value = {decisionMaker: 1, sex: 1}
+    formModel.value = {}
   }
+
   const beforeForm = (model: any, type: string) => {
     if (type === 'add' && props.isComponents) {
-      model.tid = props.tid
+      model.customerId = props.customerId
     }
     return model
   }
@@ -237,90 +216,44 @@
     }
     return result
   }
+
   const formData = ref([
     {
       label: '客户名称',
-      prop: 'tid',
-      attr: {style: {width: '350px'}},
+      prop: 'customerId',
+      attr: {},
       render: 'component',
       component: markRaw(customerSelect),
       visible: showCompany,
       formItem: {
-        rules: [validate('required', '客户名称不能为空')]
+        rules: [validate('required', '客户名称不能为空', 'change')]
       }
     },
     {
-      label: '姓名',
-      prop: 'name',
-      formItem: {
-        rules: [validate('required', '姓名不能为空')]
-      }
-    },
-    {
-      label: '手机',
-      prop: 'phone',
-      formItem: {
-        rules: [validate('mobile'), validate('required', '请输入手机号')]
-      }
-    },
-    {
-      label: '职务',
-      prop: 'position',
-    },
-    {
-      label: '电话',
-      prop: 'tel',
-      formItem: {
-        rules: [validate('tel')]
-      }
-    },
-    {
-      label: '微信号',
-      prop: 'weixin',
-    },
-    {
-      label: 'QQ',
-      prop: 'qq',
-    },
-    {
-      label: '电子邮件',
-      prop: 'email',
-      formItem: {
-        rules: [validate('email')]
-      }
-    },
-    {
-      label: '是否决策人',
-      prop: 'decisionMaker',
-      render: 'radio',
-      options: isDecisionMaker
-    },
-    {
-      label: '性别',
-      prop: 'sex',
-      render: 'radio',
-      options: 'sex'
-    },
-    {
-      label: '生日',
-      prop: 'birthday',
-      render: 'datePicker',
+      label: '联系人',
+      prop: 'contactId',
       attr: {
-        valueFormat: 'YYYY-MM-DD HH:mm:ss',
-        format: 'YYYY-MM-DD'
-      }
-    },
-    {
-      label: '地址',
-      prop: 'address',
-    },
-    {
-      label: '最后联系时间',
-      prop: 'lastTime',
-      attr: {
-        disabled: true
+        placeholder: '请输入联系人,可使用%',
+        customerId: customerId2,
+        onBlur: (val: number, name: string) => {
+          // 同时提交联系人姓名
+          formModel.value.contactName = name
+        }
       },
-      visible: isEdit
+      render: 'component',
+      component: markRaw(selectContact),
+      formItem: {
+        rules: [validate('required', '联系人不能为空', 'change')]
+      }
+    },
+    {
+      label: '跟进方式',
+      prop: 'type',
+      render: 'select',
+      options: 'followType',
+      formItem: {
+        rules: [validate('required', '请选择跟进方式')]
+      }
     },
     {
       label: '下次跟进时间',
@@ -333,23 +266,26 @@
       }
     },
     {
-      label: '创建时间',
-      prop: 'creatDate',
-      attr: {
-        disabled: true
-      },
-      visible: isEdit
-    },
-    {
-      label: '备注',
+      label: '跟进内容',
       prop: 'remark',
       attr: {
         style: {width: '100%'},
         type: 'textarea',
         rows: 3
+      },
+      formItem: {
+        rules: [validate('required', '请输入跟进内容')]
       }
     }
   ])
+
+  const formFiledChange = (prop: string, val: any, model: any) => {
+    if (prop === 'customerId' && val) {
+      // 客户名称改变时，清空联系人选择。将值传给联系人
+      model.contactId = undefined
+      customerId.value = val
+    }
+  }
 
   const getData = () => {
     tableListEl.value.getData()

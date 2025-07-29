@@ -95,6 +95,17 @@ public class UserController {
         return ResponseEntity.ok(this.userService.queryById(query.get("id")));
     }
 
+    @Operation(summary = "根据id查询数据列表")
+    @Parameters({
+            @Parameter(name = "ids", description = "查询id,多个使用豆号隔开",required = true)
+    })
+    @PostMapping("getByIds")
+    public ResponseEntity<List<Map<String, Object>>> queryByIds(@RequestBody Map<String, Object> params) {
+        if(params.get("ids")==null){
+            throw new CustomException("查询id不能为空");
+        }
+        return ResponseEntity.ok(this.userService.queryByIds((String) params.get("ids")));
+    }
 
     @Operation(summary = "查询当前用户信息")
     @PostMapping("info")
