@@ -58,7 +58,6 @@
   import { computed, ref } from 'vue'
   import { useLayoutStore } from '@/store/layout'
   import {useRouter} from 'vue-router'
-  import {getStorage} from "@/utils";
   const router = useRouter()
   withDefaults(
     defineProps<{
@@ -75,7 +74,7 @@
   }>()
 
   const userInfo = computed(()=>{
-    return getStorage('userInfo',true)||{}
+    return store.userInfo
   })
   const user = ref({
     name: 'userName',

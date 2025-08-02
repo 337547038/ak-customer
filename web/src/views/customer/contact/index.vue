@@ -34,7 +34,7 @@
   import {ref, markRaw, nextTick, computed} from 'vue'
   import customerSelect from '@/components/customerSelect/index.vue'
   import validate from "@/components/form/validate";
-  import {getStorage} from "@/utils";
+  import {useLayoutStore} from '@/store/layout'
 
   const props = withDefaults(
       defineProps<{
@@ -42,12 +42,15 @@
         tid?: number
         company?: string
         disabled?: boolean
-        keyColumns?:string
+        keyColumns?: string
+        tabsName?: string
       }>(),
       {
         isComponents: false
       }
   )
+
+  const layoutStore = useLayoutStore()
   const controlBtn = [
     {
       key: 'add', click: () => {
@@ -64,17 +67,18 @@
   const formRef = ref()
   const formModel = ref({decisionMaker: 1, sex: 1})
   const isEdit = ref(false)
-  const userInfo = computed(() => {
-    return getStorage('userInfo', true) || {}
-  })
+
   const beforeList = (type: string, data: any) => {
     if (type === 'get') {
       if (props.isComponents) {
-        // 作为组件调用
+        // 作为组件调用,仅查询当前客户下的
         data.tid = props.tid
-      } else {
-        data.extend.userId = userInfo.value.id
       }
+      // 查询指定下属于
+      if (layoutStore.userInfo?.hasChild && data.userId) {
+        data.extend.type = 'child'
+      }
+      data.userId=1
     }
     return data
   }
@@ -93,6 +97,15 @@
   const showCompany = computed(() => {
     return !props.isComponents
   })
+  const showUserId = computed(() => {
+    if (props.isComponents) {
+      // 在列表页引用时，在查看下属会员客户时显示
+      return props.tabsName === 'child'
+    } else {
+      return layoutStore.userInfo?.hasChild
+    }
+  })
+  const currentUserId = ref()
   const isDecisionMaker = {1: '是', 2: '否', 3: '未知'}
   const columns = ref([
     {
@@ -100,14 +113,30 @@
       type: 'selection',
     },
     {
-      label: '姓名',
-      prop: 'name',
-      width: 80
+      label: '所属人员',
+      prop: 'userId',
+      show: false,
+      search: {
+        style: {width: '230px'},
+        visible: showUserId,
+        render: 'select',
+        ajax: {
+          api: 'userChildList',
+          data: {},
+          label: 'userName',
+          value: 'id'
+        },
+        clearable: true,
+        onChange: (val: number) => {
+          currentUserId.value = val
+        }
+      }
     },
     {
       label: '客户名称',
       prop: 'tid',
       search: {
+        userId: currentUserId,
         visible: showCompany,
         render: 'component',
         component: markRaw(customerSelect)
@@ -118,6 +147,11 @@
       show: showCompany,
       width: 160,
       showOverflowTooltip: true
+    },
+    {
+      label: '联系人',
+      prop: 'name',
+      width: 80
     },
     {
       label: '是否决策人',

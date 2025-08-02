@@ -1,7 +1,7 @@
 <template>
   <el-tabs v-model="activeName" class="demo-tabs" @tab-change="handleClick">
-    <el-tab-pane label="我的客户" name="customer"></el-tab-pane>
-    <el-tab-pane label="下属客户" name="second"></el-tab-pane>
+    <el-tab-pane label="我的客户" name="list"></el-tab-pane>
+    <el-tab-pane label="下属客户" name="child"></el-tab-pane>
     <el-tab-pane label="共享客户" name="share2"></el-tab-pane>
     <el-tab-pane label="我共享的" name="share"></el-tab-pane>
   </el-tabs>
@@ -38,7 +38,7 @@
   const userDialogRef = ref()
   const userMultiple = ref(false)
   //　tabs
-  const activeName = ref('customer')
+  const activeName = ref('list')
   const handleClick = (name: string) => {
     getData()
   }
@@ -111,7 +111,7 @@
             return !row?.length
           },
           display: () => {
-            return activeName.value === 'customer'
+            return activeName.value === 'list'
           },
           click: (row: { [key: string]: any }[]) => {
             userMultiple.value = true
@@ -177,7 +177,7 @@
             }
           })
     } else {
-      getRequest('customerMove', {ids: ids, userId: user.id, type: currentBtn.value})
+      getRequest('customerMove', {ids: ids, userId: selectUser.id, type: currentBtn.value})
           .then(res => {
             ElMessage.success("操作成功")
             getData()
@@ -192,13 +192,7 @@
   const beforeList = (type: string, data: any) => {
     if (type === 'get') {
       // 添加参数
-      switch (activeName.value) {
-        case 'share':
-        case 'share2':
-          // 添加分享查询参数
-          data.extend.type = activeName.value
-          break
-      }
+      data.extend.type = activeName.value
     }
     return data
   }

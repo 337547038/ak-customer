@@ -33,28 +33,20 @@ id, userName, status, creatTime, updateTime, lastLogin, loginTimer, ip, remark, 
             from sys_user
                 where id = #{id}
         </select>
-
         <!--查询指定行数据-->
         <select id="queryAllByLimit">
             select
-            <choose>
-                <when test="extend.columns != null and extend.columns!=''">
-                    ${extend.columns}
-                </when>
-                <otherwise>
-                    <include refid="commColumnsItem" />
-                </otherwise>
-            </choose>
-            from sys_user
+            u.id, userName, u.status, creatTime, updateTime, lastLogin, loginTimer, ip, u.remark, departmentId,d.name as departmentName, u.tid, phone, weixin, qq, sex, roleId,bindWX
+            from sys_user as u join sys_department as d on departmentId=d.id
             <where>
                     <if test="query.id != null">
-                        and id = #{query.id}
+                        and u.id = #{query.id}
                     </if>
                     <if test="query.userName != null and query.userName != ''">
                         and userName = #{query.userName}
                     </if>
                     <if test="query.status != null">
-                        and status = #{query.status}
+                        and u.status = #{query.status}
                     </if>
                     <if test="query.creatTime != null">
                         and creatTime = #{query.creatTime}
@@ -72,13 +64,13 @@ id, userName, status, creatTime, updateTime, lastLogin, loginTimer, ip, remark, 
                         and ip = #{query.ip}
                     </if>
                     <if test="query.remark != null and query.remark != ''">
-                        and remark = #{query.remark}
+                        and u.remark = #{query.remark}
                     </if>
                     <if test="query.departmentId != null">
                         and departmentId = #{query.departmentId}
                     </if>
                     <if test="query.tid != null">
-                        and tid = #{query.tid}
+                        and u.tid = #{query.tid}
                     </if>
                     <if test="query.phone != null and query.phone != ''">
                         and phone = #{query.phone}
@@ -251,6 +243,20 @@ id, userName, status, creatTime, updateTime, lastLogin, loginTimer, ip, remark, 
         <foreach collection="ids" item="item" separator="," open="(" close=")">
             #{item}
         </foreach>
+    </select>
+    <!--根据用户id返回所有子级，不包含自己-->
+    <select id="queryUserChild">
+        WITH RECURSIVE subordinates AS (SELECT id, userName, status
+                                        FROM sys_user
+                                        WHERE status = 1
+                                          and id = #{id}
+                                        UNION ALL
+                                        SELECT u.id, u.userName, u.status
+                                        FROM sys_user u
+                                                 JOIN subordinates s ON u.tid = s.id and u.status = 1)
+        select id,userName
+        from subordinates
+        where id != #{id}
     </select>
 
     </mapper>

@@ -1,53 +1,54 @@
 <template>
-  <div style="display: flex;align-items: center" v-if="showInput">
-    <el-input
-        v-model="userName"
-        readonly
-        @click="open()"
-        :placeholder="placeholder"
-        :clearable="true"/>
-    <el-button text type="primary" @click="clearUserId">清空</el-button>
-  </div>
-  <el-dialog
-      v-model="visible"
-      title="用户选择"
-      :append-to-body="true"
-      width="800px"
-  >
-    <div class="expand-user-dialog">
-      <div class="sidebar-tree">
-        <el-tree
-            ref="treeEl"
-            node-key="id"
-            :props="{ label: 'name', value: 'id', children:'children',isLeaf:'hasChildren'}"
-            highlight-current
-            @node-click="handleNodeClick"
-            :load="loadNode"
-            lazy
-        />
-      </div>
-      <div class="table-list">
-        <ak-list
-            ref="tableListEl"
-            pk="id"
-            :searchIconVisible="false"
-            :columnsIconVisible="false"
-            :before="before"
-            :columns="columns"
-            @selection-change="selectionChange"
-            :api="{ list: 'userList'}"
-        >
-        </ak-list>
-        <div v-if="multiple" style="display: flex;justify-content: center">
-          <el-button type="danger" @click="confirmClick('all')" v-if="selectAll">选择全部</el-button>
-          <el-button type="primary" @click="confirmClick" :disabled="!tableSelectRows.length">确定</el-button>
-          <el-button @click="cancelClick">取消</el-button>
+  <div>
+    <div style="display: flex;align-items: center" v-if="showInput">
+      <el-input
+          v-model="userName"
+          readonly
+          @click="open()"
+          :placeholder="placeholder"
+          :clearable="true"/>
+      <el-button text type="primary" @click="clearUserId">清空</el-button>
+    </div>
+    <el-dialog
+        v-model="visible"
+        title="用户选择"
+        :append-to-body="true"
+        width="800px"
+    >
+      <div class="expand-user-dialog">
+        <div class="sidebar-tree">
+          <el-tree
+              ref="treeEl"
+              node-key="id"
+              :props="{ label: 'name', value: 'id', children:'children',isLeaf:'hasChildren'}"
+              highlight-current
+              @node-click="handleNodeClick"
+              :load="loadNode"
+              lazy
+          />
+        </div>
+        <div class="table-list">
+          <ak-list
+              ref="tableListEl"
+              pk="id"
+              :searchIconVisible="false"
+              :columnsIconVisible="false"
+              :before="before"
+              :columns="columns"
+              @selection-change="selectionChange"
+              :api="{ list: 'userList'}"
+          >
+          </ak-list>
+          <div v-if="multiple" style="display: flex;justify-content: center">
+            <el-button type="danger" @click="confirmClick('all')" v-if="selectAll">选择全部</el-button>
+            <el-button type="primary" @click="confirmClick" :disabled="!tableSelectRows.length">确定</el-button>
+            <el-button @click="cancelClick">取消</el-button>
+          </div>
         </div>
       </div>
-    </div>
-  </el-dialog>
+    </el-dialog>
+  </div>
 </template>
-
 <script setup lang="ts">
   import {ref, watch, computed, nextTick} from 'vue'
   import {getRequest} from "@/api";
@@ -60,12 +61,12 @@
         placeholder?: string
         modelValue?: string
         multiple?: boolean
-        selectAll?:boolean
+        selectAll?: boolean
       }>(),
       {
         showInput: true,
         multiple: false,
-        selectAll:true
+        selectAll: true
       }
   )
   const emits = defineEmits<{
@@ -89,10 +90,12 @@
     }
   })
 
+
   const clearUserId = () => {
     model.value = ''
     userName.value = ''
   }
+
   // tree
   const deptId = ref()
   const handleNodeClick = (row: any) => {
@@ -121,6 +124,7 @@
   const showCheckbox = computed(() => {
     return props.multiple
   })
+
   const columns = ref([
     {
       prop: 'selection',
@@ -185,6 +189,7 @@
     unWatch()
   })
   defineExpose({open})
+
 </script>
 
 <style lang="scss">

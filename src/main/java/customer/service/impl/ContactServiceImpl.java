@@ -1,6 +1,8 @@
 package customer.service.impl;
 
 import com.alibaba.fastjson2.JSON;
+import customer.config.CustomException;
+import customer.service.UserService;
 import customer.utils.Utils;
 import customer.entity.Contact;
 import customer.dao.ContactDao;
@@ -8,9 +10,13 @@ import customer.service.ContactService;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 /**
  * tid(Contact)表服务实现类
  *
@@ -22,6 +28,12 @@ public class ContactServiceImpl implements ContactService {
     @Resource
     private ContactDao contactDao;
 
+    private final UserService userService;
+
+    public ContactServiceImpl(UserService userService) {
+        this.userService = userService;
+    }
+
     /**
      * 通过ID查询单条数据
      *
@@ -30,6 +42,7 @@ public class ContactServiceImpl implements ContactService {
      */
     @Override
     public Contact queryById(Integer id) {
+
         return this.contactDao.queryById(id);
     }
 
@@ -44,7 +57,30 @@ public class ContactServiceImpl implements ContactService {
         Map<String, Object> extend = Utils.getPagination(pages);//处理分页信息
         Contact contact = JSON.parseObject(JSON.toJSONString(pages), Contact.class);//json字符串转java对象
 
-        long total = this.contactDao.count(contact);
+        Object userId = pages.get("userId");
+        String typeStr = String.valueOf(extend.get("search"));
+
+        if (userId == null) {
+            if (Objects.equals(typeStr, "child")) {
+                // 查看所有下属
+                List<String> ids = this.userService.queryUserChild(Utils.getCurrentUserId(), "");
+                extend.put("userIds", ids);
+            } else {
+                // 查看自己的
+                extend.put("userId", Utils.getCurrentUserId());
+            }
+        } else if (userId == Utils.getCurrentUserId()) {
+            // 查看自己的
+            extend.put("userId", Utils.getCurrentUserId());
+        } else {
+            // 如果传了id时，则查看指定下属
+            boolean isChildUser = this.userService.isChildrenUser((Integer) userId);
+            if (!isChildUser) {
+                throw new CustomException("请确认你是否具有查看此用户的联系人权限");
+            }
+            extend.put("userId", userId);
+        }
+        long total = this.contactDao.count(contact,extend);
         List<Map<String, Object>> list = this.contactDao.queryAllByLimit(contact, extend);
         Map<String, Object> response = new HashMap<>();
         response.put("list", list);

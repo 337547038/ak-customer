@@ -53,4 +53,17 @@ public interface UserService {
     List<Map<String, Object>> login(User user, String ipAddress);
 
     List<Map<String, Object>> queryByIds(String ids);
+
+    /**
+     * 根据用户id返回所有子级
+     * @param userId 用户id
+     * @return 子级id数组
+     */
+    List<Map<String, Object>> queryUserChild(Integer userId);
+
+    List<String> queryUserChild(Integer userId, String type);
+
+    boolean isChildrenUser(Integer userId);
+
+    boolean hasChild();
 }

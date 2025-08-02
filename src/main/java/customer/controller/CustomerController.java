@@ -53,8 +53,11 @@ public class CustomerController {
             @Parameter(name = "extend.pageNum", description = "当前第几页"),
             @Parameter(name = "extend.pageSize", description = "每页显示多少条"),
             @Parameter(name = "extend.sort", description = "排序"),
-            @Parameter(name = "extend.columns", description = "返回指定查询字段"),
-            @Parameter(name = "query", description = "查询条件")
+            @Parameter(name = "extend.columns", description = "返回指定扩展字段可选user,contact可联合查询用户名联系人表"),
+            @Parameter(name = "extend.search", description = "可选child查询下属,myShare我共享的,shareWithMe共享给我的"),
+            @Parameter(name = "userId", description = "根据id查询指定下属用户"),
+            @Parameter(name = "status", description = "1正常，2公海，3无效"),
+            @Parameter(name = "**", description = "其他查询条件")
     })
     @PostMapping("list")
     public ResponseEntity<Map<String, Object>> queryByPage(@RequestBody Map<String, Object> pages) {
@@ -67,7 +70,7 @@ public class CustomerController {
             @Parameter(name = "extend.pageSize", description = "每页显示多少条"),
             @Parameter(name = "extend.sort", description = "排序"),
             @Parameter(name = "extend.columns", description = "返回指定查询字段"),
-            @Parameter(name = "query", description = "查询条件")
+            @Parameter(name = "keywords", description = "查询关键词")
     })
     @PostMapping("check")
     public ResponseEntity<Map<String, Object>> checkByPage(@RequestBody Map<String, Object> pages) {
@@ -77,7 +80,7 @@ public class CustomerController {
         keywords.put("code", pages.get("keywords"));
         keywords.put("tel", pages.get("keywords"));
         JSONObject obj = JSON.parseObject(JSON.toJSONString(pages.get("extend")));
-        obj.put("type", "check");
+        obj.put("search", "check");
         keywords.put("extend", obj);
         return ResponseEntity.ok(this.customerService.queryByPage(keywords));
     }
@@ -85,13 +88,19 @@ public class CustomerController {
     /**
      * 通过主键查询单条数据
      *
-     * @param query query.id主键,query.type
+     * @param query 参数
      * @return 单条数据
      */
     @Operation(summary = "根据id查询数据")
+    @Parameters({
+            @Parameter(name = "id", description = "查询id")
+    })
     @PostMapping("get")
     public ResponseEntity<Customer> queryById(@RequestBody Map<String, Object> query) {
-        return ResponseEntity.ok(this.customerService.queryById(query));
+        if (query.get("id") == null || query.get("id") == "") {
+            throw new CustomException("查询参数不能为空");
+        }
+        return ResponseEntity.ok(this.customerService.queryById((Integer) query.get("id")));
     }
 
     /**
@@ -113,9 +122,15 @@ public class CustomerController {
      * @param customer 实体
      * @return 影响行数
      */
-    @Operation(summary = "编辑数据")
+    @Operation(summary = "根据id编辑数据")
+    @Parameters({
+            @Parameter(name = "id", description = "要修改的id", required = true)
+    })
     @PostMapping("edit")
     public ResponseEntity<Integer> edit(@RequestBody Customer customer) {
+        if (customer.getId() == null || customer.getUserId() == null) {
+            throw new CustomException("参数异常");
+        }
         return ResponseEntity.ok(this.customerService.updateById(customer));
     }
 

@@ -53,7 +53,7 @@
       </el-tab-pane>
       <el-tab-pane label="分享详情" name="share" v-if="formModel.shareUserId">
         <ShareInfo
-            :disabled="tabsNameIsShare"
+            :disabled="disabled||tabsNameIsShare"
             ref="shareInfoRef"
             v-model:userIds="formModel.shareUserId"
             :customer-id="drawerObj.id"
@@ -143,8 +143,15 @@
         data.area = data.area.join(',')
       }
     }
-    if (type === 'detail' && props.tabsType === 'share2') {
-      data.type = 'share'
+    if (type === 'detail') {
+      switch (props.tabsType) {
+        case 'share2':
+          data.type = 'share'
+          break
+        case 'child':
+          data.type = 'child'
+          break
+      }
     }
     return data
   }

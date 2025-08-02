@@ -14,7 +14,7 @@
           {key:'del'}]"
   >
   </ak-list>
-  <el-dialog v-model="visible" width="800" :title="dialogTitle" class="form-dialog">
+  <el-dialog v-model="visible" width="800" :title="dialogTitle" class="form-dialog" :before-close="cancelClick">
     <ak-form
         class="flex-form flex-form-2"
         pk="id"
@@ -38,6 +38,15 @@
   import {dateFormatting} from '@/utils'
   import {ElMessage} from "element-plus";
 
+  const lazyLoadSelect = (node, resolve) => {
+    getRequest('deptList', {tid: node.data.id || 0}).then((res) => {
+      const list = res.data?.list || []
+      list.forEach(item => {
+        item.hasChildren = !item.hasChildren
+      })
+      resolve(list)
+    })
+  }
   const tableListEl = ref()
   const columns = ref([
     {
@@ -85,6 +94,21 @@
       }
     },
     {
+      prop: 'departmentId',
+      label: '所属部门',
+      formatter: row => row.departmentName,
+      search: {
+        clearable: true,
+        style: {width: '260px'},
+        render: 'tree-select',
+        placeholder: '请选择所属部门',
+        load: lazyLoadSelect,
+        lazy: true,
+        checkStrictly: true,
+        props: {children: 'children', label: 'name', value: 'id', isLeaf: 'hasChildren'}
+      }
+    },
+    {
       prop: 'roleId',
       label: '角色权限',
       search: {
@@ -107,7 +131,8 @@
     {
       prop: 'lastLogin',
       label: '最后登录时间',
-      width: 180,
+      width: 120,
+      showOverflowTooltip: true,
       render: 'datetime',
       search: false
     },
@@ -120,18 +145,21 @@
     {
       prop: 'creatTime',
       label: '创建时间',
-      width: 180,
+      width: 120,
+      showOverflowTooltip: true,
       render: 'datetime',
       search: false
     },
     {
       prop: 'updateTime',
       label: '更新时间',
-      width: 180,
+      width: 120,
+      showOverflowTooltip: true,
       render: 'datetime',
       search: false
     },
     {
+      fixed: 'right',
       label: '操作',
       render: 'buttons',
       width: 150,
@@ -171,6 +199,7 @@
   ])
 
   // form
+  const departmentTree = ref([])
   const dialogTitle = ref('新增用户')
   const isDetailForm = ref(true);
   const visible = ref(false)
@@ -179,12 +208,14 @@
   const addEditEvent = (detail: boolean, row?: any) => {
     visible.value = true
     isDetailForm.value = detail
-    formModel.value = {status: 1, sex: 1, password: 'defaultPassword'}
+    formModel.value = {status: 1, sex: 1}
     if (detail) {
       dialogTitle.value = '查看/编辑用户：' + row.userName
       nextTick(() => {
         formEl.value.getData({id: row.id})
       })
+      // 用于回显部门
+      departmentTree.value = [{id: row?.departmentId, name: row?.departmentName}];
     } else {
       dialogTitle.value = '新增用户'
     }
@@ -197,6 +228,7 @@
   }
   const cancelClick = () => {
     visible.value = false
+    formEl.value.resetFields()
   }
   const beforeSubmit = (params?: any, type: string) => {
     if (type !== 'detail') {
@@ -204,7 +236,7 @@
         params.roleId = params.roleId.join(',')
       }
     }
-    if(type==='add' && params.password==='defaultPassword'){
+    if (type === 'add' && params.password === '') {
       ElMessage.error('密码不能为空')
       return false
     }
@@ -226,15 +258,7 @@
       tableListEl.value.getData()
     }
   }
-  const lazyLoadSelect = (node, resolve) => {
-    getRequest('deptList', {tid: node.data.id || 0}).then((res) => {
-      const list = res.data?.list || []
-      list.forEach(item => {
-        item.hasChildren = !item.hasChildren
-      })
-      resolve(list)
-    })
-  }
+
   const formData = ref([
     {
       prop: 'userName',
@@ -256,13 +280,13 @@
       attr: {
         type: 'password',
       },
-      formItem: {
+      /*formItem: {
         rules: [{
           required: true,
           message: '请输入登录密码',
           trigger: 'blur'
         }]
-      }
+      }*/
     },
     {
       prop: 'status',
@@ -296,11 +320,11 @@
     {
       prop: 'tid',
       label: '直属上级',
-      tooltip: '默认为所属部门负责人',
+      //tooltip: '默认为所属部门负责人',
       render: 'component',
       component: markRaw(userSelect),
       attr: {
-        placeholder: '默认为所属部门负责人'
+        //placeholder: '默认为所属部门负责人'
       }
     },
     {
@@ -308,6 +332,7 @@
       label: '所属部门',
       render: 'tree-select',
       attr: {
+        data: departmentTree,
         placeholder: '请选择上级部门',
         load: lazyLoadSelect,
         lazy: true,

@@ -18,7 +18,7 @@
           >
         </el-form-item>
       </ak-form>
-      <div class="weixin">
+      <div class="weixin" style="padding:10px 0">
         <el-button type="text">微信扫码登录</el-button>
       </div>
     </div>
@@ -32,7 +32,7 @@
   import {getRequest} from "@/api"
   import {useRouter, useRoute} from 'vue-router'
   import {useLayoutStore} from '@/store/layout'
-  import {setStorage,removeStorage} from '@/utils'
+  import {setStorage, removeStorage} from '@/utils'
 
   const router = useRouter()
   const route = useRoute()
@@ -41,7 +41,7 @@
 
   const loginAfter = (data, success) => {
     if (success) {
-      removeStorage('resources',true)
+      removeStorage('resources', true)
       // 统一方法保存token
       useStore.setLoginInfo(data, true)
       // 获取权限菜单信息

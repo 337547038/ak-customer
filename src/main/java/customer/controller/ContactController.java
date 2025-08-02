@@ -18,7 +18,7 @@ import java.util.Map;
  * @author ak.design 337547038
  * @since 2025-07-03 13:51:56
  */
-@Tag(name = "Contact相关")
+@Tag(name = "Contact联系人相关")
 @RestController
 @RequestMapping("customer/contact")
 public class ContactController {
@@ -49,7 +49,12 @@ public class ContactController {
             @Parameter(name = "extend.pageSize",description = "每页显示多少条"),
             @Parameter(name = "extend.sort",description = "排序"),
             @Parameter(name = "extend.columns",description = "返回指定查询字段"),
-            @Parameter(name = "query",description = "查询条件")
+            @Parameter(name = "extend.search",description = "查询子级为child"),
+            @Parameter(name = "userId",description = "查询指定下属记录"),
+            @Parameter(name = "name",description = "查询联系人"),
+            @Parameter(name = "tid",description = "查询客户"),
+            @Parameter(name = "phone",description = "查询手机"),
+            @Parameter(name = "weixin",description = "查询微信")
     })
     @PostMapping("list")
     public ResponseEntity<Map<String, Object>> queryByPage(@RequestBody Map<String, Object> pages) {

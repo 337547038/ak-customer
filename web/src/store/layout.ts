@@ -21,7 +21,8 @@ export const useLayoutStore = defineStore('layout', {
     state: () => {
         return {
             breadcrumb: [],
-            tabs: tabs
+            tabs: tabs,
+            userInfo: getStorage('userInfo', true) || {}
         }
     },
     // 也可以定义为
@@ -58,14 +59,14 @@ export const useLayoutStore = defineStore('layout', {
             saveUserInfo && setStorage('userInfo', data, 0)
         },
         getSystemDict(key?: string) {
-            const storageDict = getStorage('akAllDict',true)
+            const storageDict = getStorage('akAllDict', true)
             if (key && storageDict) {
                 return storageDict[key]
             }
             return storageDict
         },
         updateSystemDict(update?: boolean) {
-            const storageDict = getStorage('akAllDict',true)
+            const storageDict = getStorage('akAllDict', true)
             if (!storageDict || update) {
                 getRequest('dictList', {status: 1}).then((res: any) => {
                     const result = res.data?.list || res.list
@@ -82,7 +83,7 @@ export const useLayoutStore = defineStore('layout', {
                                 temp[item.type] = list
                             }
                         })
-                        setStorage('akAllDict', temp,0)
+                        setStorage('akAllDict', temp, 0)
                     }
                 })
             }

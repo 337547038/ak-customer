@@ -54,15 +54,40 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     /**
+     * 判断当前登录的用户是否有权限操作当前记录
+     *
+     * @param id     当前记录id
+     * @param detail 可选detail,否则查询更新权限
+     * @return true or false
+     */
+    @Override
+    public boolean hasPermission(Integer id, String detail) {
+        Map<String, Object> query = new HashMap<>();
+        query.put("id", id);
+        query.put("userId", Utils.getCurrentUserId());
+        List<String> ids = this.userService.queryUserChild(Utils.getCurrentUserId(), "");
+        query.put("userIds", ids);
+        query.put("search", detail);
+        long total = this.customerDao.hasCount(query);
+        if (total > 0) {
+            return true;
+        } else {
+            throw new CustomException("记录不存在或请确认是否有权限操作此记录");
+        }
+    }
+
+    /**
      * 通过ID查询单条数据
      *
-     * @param query 主键
+     * @param id 主键
      * @return 实例对象
      */
     @Override
-    public Customer queryById(Map<String, Object> query) {
-        query.put("userId",Utils.getCurrentUserId());
-        return this.customerDao.queryById(query);
+    public Customer queryById(Integer id) {
+        if (hasPermission(id, "detail")) {
+            return this.customerDao.queryById(id);
+        }
+        return null;
     }
 
     /**
@@ -75,38 +100,45 @@ public class CustomerServiceImpl implements CustomerService {
     public Map<String, Object> queryByPage(Map<String, Object> pages) {
         Map<String, Object> extend = Utils.getPagination(pages);//处理分页信息
         Customer customer = JSON.parseObject(JSON.toJSONString(pages), Customer.class);//json字符串转java对象
-        // 根据参数使用不同的查询条件
-        Object type = extend.get("type");
-        if (type == null || type.equals("")) {
-            extend.put("type", "normal");
+        if (customer.getStatus() == null) {
+            customer.setStatus(1); // 默认查询正常用户
         }
-        String typeStr = extend.get("type").toString();
-        switch (typeStr) {
-            case "comm":
-                // 公海
-                customer.setStatus(2);
-                break;
-            case "invalid":
-                //　无效
-                customer.setStatus(3);
-                break;
-            case "check":
-                // 查重
-                customer.setStatus(1);
-                break;
-            case "share2": // 共享给我的
-                customer.setStatus(1);
-                customer.setShareUserId(Objects.requireNonNull(Utils.getCurrentUserId()).toString());
-                break;
-            case "share": //　我共享的
-            case "normal":
-            default:
-                // 查看自己
-                customer.setStatus(1);
-                customer.setUserId(Utils.getCurrentUserId());
-                break;
+        if (customer.getStatus() == 2 || customer.getStatus() == 3) {
+            // 公海/无效
+            extend.put("search", "comInvalid");
         }
-        long total = this.customerDao.count(customer);
+        String searchType = String.valueOf(extend.get("search"));
+        if (customer.getUserId() == null) {
+            switch (searchType) {
+                case "check":
+                case "comInvalid": // 公海和无效
+                    break;
+                case "myShare": // 我共享的
+                    customer.setUserId(Utils.getCurrentUserId());
+                    break;
+                case "shareWithMe": // 共享给我的
+                    customer.setShareUserId(Objects.requireNonNull(Utils.getCurrentUserId()).toString());
+                    break;
+                case "child": // 查看所有下属
+                    List<String> ids = this.userService.queryUserChild(Utils.getCurrentUserId(), "");
+                    extend.put("userIds", ids);
+                    break;
+                default:
+                    customer.setUserId(Utils.getCurrentUserId());
+                    break;
+            }
+        } else if (customer.getUserId().equals(Utils.getCurrentUserId())) {
+            // 传了等于自己的id时
+            customer.setUserId(Utils.getCurrentUserId());
+        } else {
+            // 查指定下属的，先判断该用户是不是当前登录用户的下属
+            boolean isChildUser = this.userService.isChildrenUser(customer.getUserId());
+            if (!isChildUser) {
+                throw new CustomException("查询异常，请确定有权限查看当前用户");
+            }
+            extend.put("search", "child");
+        }
+        long total = this.customerDao.count(customer, extend);
         List<Map<String, Object>> list = this.customerDao.queryAllByLimit(customer, extend);
         Map<String, Object> response = new HashMap<>();
         response.put("list", list);
@@ -158,7 +190,15 @@ public class CustomerServiceImpl implements CustomerService {
             throw new CustomException("已存在客户名称:" + customer.getCompany());
         }
         customer.setUpdateTime(new Date());
-        return this.customerDao.updateById(customer);
+        if (customer.getUserId().equals(Utils.getCurrentUserId())) {
+            // 如果传过来的修改参数有userId时,并等于当前用户直接更新
+            return this.customerDao.updateById(customer);
+        }
+        if (hasPermission(customer.getId(), "")) {
+            customer.setUserId(null);
+            return this.customerDao.updateById(customer);
+        }
+        return 0;
     }
 
     /**
@@ -299,6 +339,12 @@ public class CustomerServiceImpl implements CustomerService {
                 records.setTid(Integer.valueOf(id));
                 customerOperateRecordsService.insert(records);
             }
+        }
+        // 添加修改权限
+        if (!type.equals("toFollow")) {
+            List<String> userIds = this.userService.queryUserChild(Utils.getCurrentUserId(), "");
+            params.put("hasUserIds", userIds);
+            params.put("currentId", Utils.getCurrentUserId());
         }
         return this.customerDao.moveCustomerByIds(params, type);
     }

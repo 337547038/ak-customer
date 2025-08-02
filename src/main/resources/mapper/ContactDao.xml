@@ -42,6 +42,12 @@ id, name, sex, tel, phone, weixin, qq, email, position, tid, creatDate, lastTime
                     <if test="extend.userId != null">
                         and b.userId=#{extend.userId}
                     </if>
+                    <if test="extend.search == 'child'">
+                    and b.userId in
+                        <foreach collection="extend.userIds" item="item" separator="," open="(" close=")">
+                            #{item}
+                        </foreach>
+                    </if>
                     <if test="query.name != null and query.name != ''">
                         and a.name LIKE CONCAT('%', #{query.name}, '%')
                     </if>
@@ -101,56 +107,59 @@ id, name, sex, tel, phone, weixin, qq, email, position, tid, creatDate, lastTime
         <!--统计总行数-->
         <select id="count" resultType="java.lang.Long">
             select count(1)
-            from sys_contact
+            from sys_contact as a
             <where>
-                    <if test="id != null">
-                        and id = #{id}
-                    </if>
-                    <if test="name != null and name != ''">
-                        and name LIKE CONCAT('%', #{name}, '%')
-                    </if>
-                    <if test="sex != null">
-                        and sex = #{sex}
-                    </if>
-                    <if test="tel != null and tel != ''">
-                        and tel = #{tel}
-                    </if>
-                    <if test="phone != null and phone != ''">
-                        and phone = #{phone}
-                    </if>
-                    <if test="weixin != null and weixin != ''">
-                        and weixin = #{weixin}
-                    </if>
-                    <if test="qq != null and qq != ''">
-                        and qq = #{qq}
-                    </if>
-                    <if test="email != null and email != ''">
-                        and email = #{email}
-                    </if>
-                    <if test="position != null and position != ''">
-                        and position = #{position}
-                    </if>
-                    <if test="tid != null">
-                        and tid = #{tid}
-                    </if>
-                    <if test="creatDate != null">
-                        and creatDate = #{creatDate}
-                    </if>
-                    <if test="nextTime != null">
-                        and nextTime = #{nextTime}
-                    </if>
-                    <if test="decisionMaker != null">
-                        and decisionMaker = #{decisionMaker}
-                    </if>
-                    <if test="address != null and address != ''">
-                        and address = #{address}
-                    </if>
-                <if test="birthday != null">
-                        and birthday = #{birthday}
-                    </if>
-                    <if test="remark != null and remark != ''">
-                        and remark = #{remark}
-                    </if>
+                <if test="extend.userId != null">
+                    and b.userId=#{extend.userId}
+                </if>
+                <if test="extend.search == 'child'">
+                    and b.userId in
+                    <foreach collection="extend.userIds" item="item" separator="," open="(" close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                <if test="query.name != null and query.name != ''">
+                    and a.name LIKE CONCAT('%', #{query.name}, '%')
+                </if>
+                <if test="query.sex != null">
+                    and a.sex = #{query.sex}
+                </if>
+                <if test="query.tel != null and query.tel != ''">
+                    and a.tel = #{query.tel}
+                </if>
+                <if test="query.phone != null and query.phone != ''">
+                    and a.phone = #{query.phone}
+                </if>
+                <if test="query.weixin != null and query.weixin != ''">
+                    and a.weixin = #{query.weixin}
+                </if>
+                <if test="query.qq != null and query.qq != ''">
+                    and a.qq = #{query.qq}
+                </if>
+                <if test="query.email != null and query.email != ''">
+                    and a.email = #{query.email}
+                </if>
+                <if test="query.position != null and query.position != ''">
+                    and a.position = #{query.position}
+                </if>
+                <if test="query.tid != null">
+                    and a.tid = #{query.tid}
+                </if>
+                <if test="query.creatDate != null">
+                    and a.creatDate = #{query.creatDate}
+                </if>
+                <if test="query.nextTime != null">
+                    and a.nextTime = #{query.nextTime}
+                </if>
+                <if test="query.decisionMaker != null">
+                    and a.decisionMaker = #{query.decisionMaker}
+                </if>
+                <if test="query.address != null and query.address != ''">
+                    and a.address = #{query.address}
+                </if>
+                <if test="query.birthday != null">
+                    and a.birthday = #{query.birthday}
+                </if>
             </where>
         </select>
 

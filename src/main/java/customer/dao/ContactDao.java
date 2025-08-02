@@ -35,10 +35,11 @@ public interface ContactDao {
     /**
      * 统计总行数
      *
-     * @param contact 查询条件
+     *@param contact 筛选条件
+     *@param extend 扩展参数
      * @return 总行数
      */
-    long count(Contact contact);
+    long count(@Param("query") Contact contact, @Param("extend") Map<String,Object> extend);
 
     /**
      * 新增数据

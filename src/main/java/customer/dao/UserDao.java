@@ -67,5 +67,12 @@ public interface UserDao {
     void updateLogin(User user);
 
     List<Map<String,Object>> queryByIds(@Param("ids") String[] ids);
+
+    /**
+     * 根据用户id返回所有子级
+     * @param userId 用户id
+     * @return 子级列表
+     */
+    List<Map<String,Object>> queryUserChild(Integer userId);
 }
 

@@ -50,9 +50,6 @@ public class LogAspect {
         if (!logArgs.isEmpty()) {
             params = logArgs.get(0);
         }
-        //System.out.println(JSON.toJSONString(logArgs));
-        //System.out.println(logArgs.size());
-
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         if (Objects.isNull(attributes)) {
             return null;
@@ -66,14 +63,14 @@ public class LogAspect {
                     methodName,
                     request.getMethod(), request.getRemoteAddr(), JSON.toJSONString(params),uuid);
         }
-        Object result;
+        Object result=null;
         try {
             result = point.proceed();
         } catch (Exception e) {
             log.error("异常 : {},请求方法类型：{}", e, methodName);
             // 这里不能直接RuntimeException，有些是使用了CustomException自定义的
             //throw new RuntimeException(e);
-            result = point.proceed();
+            throw e;
         }
         if (log.isDebugEnabled()) {
             log.debug("{}响应 :{}", uuid,JSON.toJSONString(result));

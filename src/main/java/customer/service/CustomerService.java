@@ -12,13 +12,15 @@ import java.util.Map;
  */
 public interface CustomerService {
 
+    boolean hasPermission(Integer id, String searchType);
+
     /**
      * 通过ID查询单条数据
      *
-     * @param query 参数
+     * @param id 参数
      * @return 实例对象
      */
-    Customer queryById(Map<String,Object> query);
+    Customer queryById(Integer id);
     
     /**
      * 分页查询

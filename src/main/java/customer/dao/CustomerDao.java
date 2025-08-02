@@ -19,10 +19,10 @@ public interface CustomerDao {
     /**
      * 通过ID查询单条数据
      *
-     * @param query 参数
+     * @param id 参数
      * @return 实例对象
      */
-    Customer queryById(@Param("query") Map<String,Object> query);
+    Customer queryById(Integer id);
 
     /**
      * 查询指定行数据
@@ -38,9 +38,10 @@ public interface CustomerDao {
      * @param customer 查询条件
      * @return 总行数
      */
-    long count(Customer customer);
+    long count(@Param("query") Customer customer,@Param("extend") Map<String,Object> extend);
     long exist(Customer customer);
 
+    long hasCount(@Param("query") Map<String,Object> query);
     /**
      * 新增数据
      *

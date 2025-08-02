@@ -4,12 +4,9 @@
   import {getRequest} from '@/api'
 
   const click=()=>{
-    getRequest("followSave",{
-      "customerId":'123',
-      "contactId":'12',
-      type:1,
-      adc:'ab',
-      })
+    getRequest("customerDetail",{
+      id:6
+    })
   }
 </script>
 

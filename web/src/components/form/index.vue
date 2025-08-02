@@ -31,7 +31,7 @@
       <el-button type="primary" @click="onSubmit" v-if="btnText[0]"
       >{{ btnText[0] }}
       </el-button>
-      <el-button v-if="btnText[1]" @click="onReset">{{ btnText[1] }}</el-button>
+      <el-button v-if="btnText[1]" @click="resetFields(true)">{{ btnText[1] }}</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -151,10 +151,12 @@
       }
     })
   }
-  const onReset = () => {
+  const resetFields = (type?: boolean) => {
     formEl.value.resetFields()
-    //model.value = {}
-    emits('cancel')
+    if (type) { // 内部取消按钮时
+      emits('cancel')
+    }
+    //　外部调用时不需emits
   }
   // 设置初始值
   const setValue = (obj: any) => {
@@ -174,7 +176,7 @@
       if (props.before && typeof props.before === 'function') {
         params = props.before(params, 'detail') ?? params
       }
-      if (params === false || Object.keys(params).length === 0) {
+      if (params === false) {
         return false
       }
       loading.value = true
@@ -202,7 +204,7 @@
   onMounted(() => {
     getModelValue(props.data)
   })
-  defineExpose({onSubmit, onReset, setValue, getValue, getData})
+  defineExpose({onSubmit, resetFields, setValue, getValue, getData})
 </script>
 <style>
 .submit-btn-group {

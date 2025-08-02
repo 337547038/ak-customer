@@ -135,6 +135,7 @@
     if (type === 'get') {
       data.extend.type = props.invalidPage ? 'invalid' : 'comm'
     }
+    return data
   }
 </script>
 

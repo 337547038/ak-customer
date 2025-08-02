@@ -13,6 +13,7 @@ export default {
     userGet: "system/user/get",
     userInfo:'system/user/info',
     userListByIds: 'system/user/getByIds',
+    userChildList: 'system/user/child',
     userSave: "system/user/save",
     deptGet: "system/department/get",
     deptSave: "system/department/save",

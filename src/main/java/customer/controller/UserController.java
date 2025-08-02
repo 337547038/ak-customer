@@ -95,13 +95,19 @@ public class UserController {
         return ResponseEntity.ok(this.userService.queryById(query.get("id")));
     }
 
-    @Operation(summary = "根据id查询数据列表")
+    /**
+     * 根据用户ids返回用户名称,（已分享人根据id回显用户名称）
+     *
+     * @param params ids
+     * @return result list
+     */
+    @Operation(summary = "根据ids查询数据列表")
     @Parameters({
-            @Parameter(name = "ids", description = "查询id,多个使用豆号隔开",required = true)
+            @Parameter(name = "ids", description = "查询id,多个使用豆号隔开", required = true)
     })
     @PostMapping("getByIds")
     public ResponseEntity<List<Map<String, Object>>> queryByIds(@RequestBody Map<String, Object> params) {
-        if(params.get("ids")==null){
+        if (params.get("ids") == null) {
             throw new CustomException("查询id不能为空");
         }
         return ResponseEntity.ok(this.userService.queryByIds((String) params.get("ids")));
@@ -112,40 +118,12 @@ public class UserController {
     public ResponseEntity<User> queryByCurrentUser() {
         User user = this.userService.queryById(Utils.getCurrentUserId());
         // 查询直属上级
-        Integer tid = user.getTid();
-        Integer deptId = user.getDepartmentId();
-        Department department = new Department();
-        if (deptId != null) {
-            department = this.departmentService.queryById(deptId);
-        }
-        if (tid != null) {
-            User leader = this.userService.queryById(tid);
-            if (leader.getStatus() == 1) {
-                // 正常用户
-                user.setTidName(leader.getUserName());
-            } else {
-                // 当前用户状态不正常时，则从部门负责人中查找
-                user.setTidName(getLeaderNameByDeptId(deptId, department.getUserId()));
-            }
-        } else if (deptId != null) {
-            user.setTidName(getLeaderNameByDeptId(deptId, department.getUserId()));
-        }
+        User leader = this.userService.queryById(user.getTid());
+        user.setTidName(leader.getUserName());
+        // 查询所在部门
+        Department department = this.departmentService.queryById(user.getDepartmentId());
         user.setDepartmentName(department.getName());
         return ResponseEntity.ok(user);
-    }
-
-    private String getLeaderNameByDeptId(Integer deptId, Integer userId) {
-        if (deptId != null) {
-            // 先找出当前部门负责人
-            if (userId != null) {
-                User leader = this.userService.queryById(userId);
-                if (leader.getStatus() == 1) {
-                    // 正常用户
-                    return leader.getUserName();
-                }
-            }
-        }
-        return "";
     }
 
     /**
@@ -213,12 +191,14 @@ public class UserController {
         }
         JSONObject obj = JSONObject.from(list.get(0));
         Map<String, Object> map = new HashMap<>();
-        map.put("token", getToken(obj.getString("id"), obj.getString("userName"),Utils.EXPIRE_TIME));
+        map.put("token", getToken(obj.getString("id"), obj.getString("userName"), Utils.EXPIRE_TIME));
         map.put("refreshToken", getToken(obj.getString("id"), obj.getString("userName"), Utils.EXPIRE_TIME * 2));
         map.put("expire_time", Utils.EXPIRE_TIME);
         map.put("id", obj.getString("id"));
         map.put("userName", obj.getString("userName"));
         map.put("roleId", obj.getString("roleId"));
+        boolean hasChild = this.userService.hasChild();
+        map.put("hasChild", hasChild);
         return ResponseResult.success(map, "登录成功");
     }
 
@@ -260,5 +240,16 @@ public class UserController {
         return ResponseResult.success(newToken, "刷新token成功");
     }
 
+
+    /**
+     * 返回当前用户所有下属
+     *
+     * @return 返回当前用户所有下属
+     */
+    @Operation(summary = "查询当前用户所有下属列表")
+    @PostMapping("child")
+    public ResponseEntity<List<Map<String, Object>>> queryUserChild() {
+        return ResponseEntity.ok(this.userService.queryUserChild(Utils.getCurrentUserId()));
+    }
 }
 
