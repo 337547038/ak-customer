@@ -5,15 +5,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,6 +41,7 @@ public class LogAspect {
 
     @Around("log()")
     public Object around(ProceedingJoinPoint point) throws Throwable {
+        System.out.println("还是先到这里");
         String methodName = point.getSignature().toLongString();
         Object[] args = point.getArgs();
 
@@ -86,5 +91,29 @@ public class LogAspect {
             parameterNameAndValues.put(key, value);
         }
         return parameterNameAndValues;
+    }
+
+    @Before("@annotation(customer.config.PermissionCheck)")
+    public void before(JoinPoint joinPoint) throws Throwable {
+        // 获取方法上的注解
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();
+        Method method = signature.getMethod();
+        PermissionCheck permissionCheck = method.getAnnotation(PermissionCheck.class);
+
+        List<String> userPermissions = List.of("p1", "p2");
+        // 校验权限
+        if (permissionCheck.logical() == PermissionCheck.Logical.AND) {
+            System.out.println("需要全部权限");
+            // 需要全部权限
+            if (!userPermissions.containsAll(Arrays.asList(permissionCheck.value()))) {
+                throw new CustomException("无权限访问");
+            }
+        } else {
+            System.out.println("无权限访问");
+            // 只需任意一个权限
+            if (Arrays.stream(permissionCheck.value()).noneMatch(userPermissions::contains)) {
+                throw new CustomException("无权限访问");
+            }
+        }
     }
 }

@@ -30,6 +30,16 @@ public class GlobalException {
         return result;
     }
 
+    /**
+     * 校验异常处理
+     */
+    @ExceptionHandler(SecurityException.class)
+    public Map<String, Object> handleSecurityException(SecurityException e) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("code", ReturnCodeEnum.RC1.getCode());  //获取到我们定义的code
+        result.put("message", e.getMessage());        //获取到我们定义的msg
+        return result;
+    }
 
     /**
      * 处理使用@RequestBody校验失败会抛出MethodArgumentNotValidException异常;
