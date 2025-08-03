@@ -61,11 +61,10 @@ public class JwtInterceptor implements HandlerInterceptor {
             //log.error("token 解码失败");
             throw new CustomException(codeToken, "token异常，请重新登录.");
         }
-        // 根据 userId 查询 User
-        //　todo 每个请求接口请查一次用户核对，不理想
-        User user = userService.queryById(Integer.valueOf(userId));
-        if (user == null || user.getStatus() == 0) {
-            log.error("用户不存在，请重新登录。用户信息:{}", JSON.toJSONString(user));
+        // 根据 userId 查询 User。通过添加校验可通过修改用户状态来使其token失效，否则token一旦生成无法使其失效
+        boolean hasUser = userService.tokenVerify(Integer.valueOf(userId));
+        if (!hasUser) {
+            log.error("用户不存在，请重新登录。");
             throw new CustomException(codeToken, "用户不存在，请重新登录");
         }
         // 验证 token

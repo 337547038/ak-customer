@@ -1,6 +1,7 @@
 package customer.service;
 
 import customer.entity.User;
+import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,9 @@ public interface UserService {
     List<Map<String, Object>> login(User user, String ipAddress);
 
     List<Map<String, Object>> queryByIds(String ids);
+
+    @Cacheable(value = "tokenVerify", key = "#userId")
+    boolean tokenVerify(Integer userId);
 
     /**
      * 根据用户id返回所有子级

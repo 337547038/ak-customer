@@ -1,0 +1,149 @@
+{
+  "id": "4990179",
+  "name": "customer",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "22896017",
+      "name": "客户列表",
+      "font_class": "list",
+      "unicode": "e613",
+      "unicode_decimal": 58899
+    },
+    {
+      "icon_id": "774486",
+      "name": "9客户管理",
+      "font_class": "user2",
+      "unicode": "e686",
+      "unicode_decimal": 59014
+    },
+    {
+      "icon_id": "1391486",
+      "name": "用户管理",
+      "font_class": "user",
+      "unicode": "e648",
+      "unicode_decimal": 58952
+    },
+    {
+      "icon_id": "5229997",
+      "name": "1数据分析",
+      "font_class": "analysis1",
+      "unicode": "e636",
+      "unicode_decimal": 58934
+    },
+    {
+      "icon_id": "6429415",
+      "name": "1联系人",
+      "font_class": "contact",
+      "unicode": "e618",
+      "unicode_decimal": 58904
+    },
+    {
+      "icon_id": "7756415",
+      "name": "9排名",
+      "font_class": "ranking",
+      "unicode": "eb9d",
+      "unicode_decimal": 60317
+    },
+    {
+      "icon_id": "8137295",
+      "name": "1公海客户",
+      "font_class": "comm-user",
+      "unicode": "e6e3",
+      "unicode_decimal": 59107
+    },
+    {
+      "icon_id": "8337639",
+      "name": "3客户级别",
+      "font_class": "analysis3",
+      "unicode": "e6f7",
+      "unicode_decimal": 59127
+    },
+    {
+      "icon_id": "8387742",
+      "name": "7跟进记录",
+      "font_class": "follow-record",
+      "unicode": "e69c",
+      "unicode_decimal": 59036
+    },
+    {
+      "icon_id": "9738637",
+      "name": "1查重",
+      "font_class": "check",
+      "unicode": "e660",
+      "unicode_decimal": 58976
+    },
+    {
+      "icon_id": "10415853",
+      "name": "6客户行业",
+      "font_class": "analysis4",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "11441209",
+      "name": "客户管理",
+      "font_class": "kehuguanli",
+      "unicode": "e635",
+      "unicode_decimal": 58933
+    },
+    {
+      "icon_id": "13594833",
+      "name": "8跟进分析",
+      "font_class": "follows",
+      "unicode": "e68e",
+      "unicode_decimal": 59022
+    },
+    {
+      "icon_id": "26674516",
+      "name": "系统管理",
+      "font_class": "config",
+      "unicode": "e622",
+      "unicode_decimal": 58914
+    },
+    {
+      "icon_id": "26876053",
+      "name": "1角色分配",
+      "font_class": "role",
+      "unicode": "ea45",
+      "unicode_decimal": 59973
+    },
+    {
+      "icon_id": "28626137",
+      "name": "2员工业绩",
+      "font_class": "analysis5",
+      "unicode": "e62e",
+      "unicode_decimal": 58926
+    },
+    {
+      "icon_id": "35059276",
+      "name": "7员工数量",
+      "font_class": "user-num",
+      "unicode": "e64c",
+      "unicode_decimal": 58956
+    },
+    {
+      "icon_id": "35387979",
+      "name": "1名片识别",
+      "font_class": "card",
+      "unicode": "e722",
+      "unicode_decimal": 59170
+    },
+    {
+      "icon_id": "37992520",
+      "name": "4客户来源",
+      "font_class": "source",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "42142150",
+      "name": "1无效客户",
+      "font_class": "invalid",
+      "unicode": "e612",
+      "unicode_decimal": 58898
+    }
+  ]
+}

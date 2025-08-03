@@ -4,8 +4,8 @@
   import {getRequest} from '@/api'
 
   const click=()=>{
-    getRequest("customerDetail",{
-      id:6
+    getRequest("customer/contact/get",{
+      id:50
     })
   }
 </script>

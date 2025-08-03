@@ -2,6 +2,7 @@ package customer.service.impl;
 
 import com.alibaba.fastjson2.JSON;
 import customer.config.CustomException;
+import customer.service.CustomerService;
 import customer.service.UserService;
 import customer.utils.Utils;
 import customer.entity.Contact;
@@ -11,10 +12,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -30,8 +28,11 @@ public class ContactServiceImpl implements ContactService {
 
     private final UserService userService;
 
-    public ContactServiceImpl(UserService userService) {
+    private final CustomerService customerService;
+
+    public ContactServiceImpl(UserService userService, CustomerService customerService) {
         this.userService = userService;
+        this.customerService = customerService;
     }
 
     /**
@@ -42,8 +43,13 @@ public class ContactServiceImpl implements ContactService {
      */
     @Override
     public Contact queryById(Integer id) {
-
-        return this.contactDao.queryById(id);
+        // 先查询出客户再判断权限
+        Contact contact = contactDao.queryById(id);
+        if (!Objects.isNull(contact) && this.customerService.hasPermission(contact.getTid(), "detail")) {
+            return contact;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -75,12 +81,13 @@ public class ContactServiceImpl implements ContactService {
         } else {
             // 如果传了id时，则查看指定下属
             boolean isChildUser = this.userService.isChildrenUser((Integer) userId);
+            System.out.println(isChildUser + ":isChildUser");
             if (!isChildUser) {
                 throw new CustomException("请确认你是否具有查看此用户的联系人权限");
             }
             extend.put("userId", userId);
         }
-        long total = this.contactDao.count(contact,extend);
+        long total = this.contactDao.count(contact, extend);
         List<Map<String, Object>> list = this.contactDao.queryAllByLimit(contact, extend);
         Map<String, Object> response = new HashMap<>();
         response.put("list", list);
@@ -108,8 +115,10 @@ public class ContactServiceImpl implements ContactService {
      */
     @Override
     public Integer updateById(Contact contact) {
-        return this.contactDao.updateById(contact);
-        //return this.queryById(contact.getId());
+        if (this.customerService.hasPermission(contact.getTid(), "")) {
+            return this.contactDao.updateById(contact);
+        }
+        return 0;
     }
 
     /**
@@ -120,6 +129,11 @@ public class ContactServiceImpl implements ContactService {
      */
     @Override
     public boolean deleteById(String[] id) {
-        return this.contactDao.deleteById(id) > 0;
+        // 使用sql查询判断权限删除
+        List<String> ids = this.userService.queryUserChild(Utils.getCurrentUserId(), "");
+        Map<String, Object> extend = new HashMap<>();
+        extend.put("userIds", ids);
+        extend.put("userId", Utils.getCurrentUserId());
+        return this.contactDao.deleteById(id,extend) > 0;
     }
 }

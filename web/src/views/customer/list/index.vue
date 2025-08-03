@@ -1,9 +1,9 @@
 <template>
   <el-tabs v-model="activeName" class="demo-tabs" @tab-change="handleClick">
-    <el-tab-pane label="我的客户" name="list"></el-tab-pane>
+    <el-tab-pane label="我的客户" name="default"></el-tab-pane>
     <el-tab-pane label="下属客户" name="child"></el-tab-pane>
-    <el-tab-pane label="共享客户" name="share2"></el-tab-pane>
-    <el-tab-pane label="我共享的" name="share"></el-tab-pane>
+    <el-tab-pane label="共享客户" name="shareWithMe"></el-tab-pane>
+    <el-tab-pane label="我共享的" name="myShare"></el-tab-pane>
   </el-tabs>
   <ak-list
       ref="tableListEl"
@@ -38,7 +38,7 @@
   const userDialogRef = ref()
   const userMultiple = ref(false)
   //　tabs
-  const activeName = ref('list')
+  const activeName = ref('default')
   const handleClick = (name: string) => {
     getData()
   }
@@ -53,7 +53,7 @@
     tableListEl.value.getData()
   }
   const controlBtn = computed(() => {
-    if (activeName.value === 'share2') {
+    if (activeName.value === 'shareWithMe') {
       return []
     } else {
       return [
@@ -111,12 +111,12 @@
             return !row?.length
           },
           display: () => {
-            return activeName.value === 'list'
+            return activeName.value === 'default'
           },
           click: (row: { [key: string]: any }[]) => {
             userMultiple.value = true
             tableSelectRows.value = row
-            currentBtn.value = 'share'
+            currentBtn.value = 'myShare'
             userDialogRef.value.open()
           }
         },
@@ -128,7 +128,7 @@
             return !row?.length
           },
           display: () => {
-            return activeName.value === 'share'
+            return activeName.value === 'myShare'
           },
           click: (row: { [key: string]: any }[]) => {
             tableSelectRows.value = row
@@ -162,9 +162,9 @@
   const userSelectClick = (selectUser: any) => {
     // 提取所选行id
     const ids = tableSelectRows.value?.map(item => item.id).join(',')
-    if (currentBtn.value === 'share' || currentBtn.value === 'cancelShare') {
+    if (currentBtn.value === 'myShare' || currentBtn.value === 'cancelShare') {
       let userIds = ''
-      if (currentBtn.value === 'share') {
+      if (currentBtn.value === 'myShare') {
         userIds = selectUser === 'all' ? '0' : selectUser.map(item => item.id).join(',')
       }
       getRequest('customerShare', {ids: ids, userId: userIds, type: currentBtn.value})
@@ -192,7 +192,10 @@
   const beforeList = (type: string, data: any) => {
     if (type === 'get') {
       // 添加参数
-      data.extend.type = activeName.value
+      data.extend.columns = 'contact'
+      if (activeName.value !== "default") {
+        data.extend.search = activeName.value
+      }
     }
     return data
   }

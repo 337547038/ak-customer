@@ -34,7 +34,7 @@
   }>()
   const unWatch = watch(() => props.modelValue, (val: any): void => {
     value.value = val
-    if (val && options.value.length === 0) {
+    if (val) {
       remoteMethod("", val)
     }
   })
@@ -46,7 +46,7 @@
       loading.value = true
       let params = {company: query, userId: props.userId}
       if (id) {
-        params = {id: id}
+        params = {id: id, userId: props.userId}
       }
       getRequest("customerList", params)
           .then(res => {

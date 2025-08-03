@@ -133,7 +133,10 @@
   ]
   const beforeList = (type: string, data: any) => {
     if (type === 'get') {
-      data.extend.type = props.invalidPage ? 'invalid' : 'comm'
+      data.status = props.invalidPage ? 3 : 2
+      if(data.area){
+        data.area = data.area.join(',')
+      }
     }
     return data
   }

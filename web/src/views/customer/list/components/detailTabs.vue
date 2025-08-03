@@ -144,14 +144,6 @@
       }
     }
     if (type === 'detail') {
-      switch (props.tabsType) {
-        case 'share2':
-          data.type = 'share'
-          break
-        case 'child':
-          data.type = 'child'
-          break
-      }
     }
     return data
   }

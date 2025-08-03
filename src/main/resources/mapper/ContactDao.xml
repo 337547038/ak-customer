@@ -108,6 +108,7 @@ id, name, sex, tel, phone, weixin, qq, email, position, tid, creatDate, lastTime
         <select id="count" resultType="java.lang.Long">
             select count(1)
             from sys_contact as a
+            join sys_customer as b on a.tid = b.id
             <where>
                 <if test="extend.userId != null">
                     and b.userId=#{extend.userId}
@@ -228,8 +229,14 @@ id, name, sex, tel, phone, weixin, qq, email, position, tid, creatDate, lastTime
 
         <!--通过主键删除-->
         <delete id="deleteById">
-            delete
-            from sys_contact where id in
+            delete a
+            from sys_contact as a
+            join sys_customer as b on b.id=a.tid
+            where (b.userId=#{extend.userId} or b.userId in
+            <foreach collection="extend.userIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+            ) and a.id in
             <foreach collection="id" item="item" separator="," open="(" close=")">
             #{item}
         </foreach>
@@ -237,7 +244,7 @@ id, name, sex, tel, phone, weixin, qq, email, position, tid, creatDate, lastTime
 
     <delete id="deleteByCustomerId">
         delete
-        from sys_follow_records where tid in
+        from sys_contact where tid in
         <foreach collection="id" item="item" separator="," open="(" close=")">
             #{item}
         </foreach>

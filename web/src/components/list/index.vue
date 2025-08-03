@@ -167,7 +167,7 @@
   import IconSearchColumn from './components/iconSearchColumn.vue'
 
 
-  defineOptions({name:'AkList'})
+  defineOptions({name: 'AkList'})
   const props = withDefaults(
       defineProps<{
         tableProp?: any
@@ -242,8 +242,8 @@
     getData(1)
   }
   //筛选表单改变事件
-  const formFieldChange = (prop: string, value: any) => {
-    emits('formFieldChange', prop, value)
+  const formFieldChange = (prop: string, value: any, model: any) => {
+    emits('formFieldChange', prop, value, model)
   }
 
   //处理时间
@@ -271,7 +271,7 @@
     return custom[val]
   }
   const getTagVal = (val: string | number, replaceValue: any) => {
-    if (!replaceValue || val===undefined) {
+    if (!replaceValue || val === undefined) {
       return val
     } else {
       if (typeof replaceValue === 'string') {
@@ -493,7 +493,7 @@
     const source = 'get'
     if (listApi) {
       let params: any = {
-        extend:getPageInfo.value,
+        extend: getPageInfo.value,
         ...props.params,
         ...searchFormValue.value //条件筛选数据
       }

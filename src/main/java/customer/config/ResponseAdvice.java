@@ -45,7 +45,11 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
         }
         Map<String, Object> result = new HashMap<>();
         result.put("code", ReturnCodeEnum.RC1.getCode());
-        result.put("message", ReturnCodeEnum.RC1.getMessage());
+        if (o == null) {
+            result.put("message", "记录不存在");
+        } else {
+            result.put("message", ReturnCodeEnum.RC1.getMessage());
+        }
         result.put("data", o);
         result.put("timestamp", System.currentTimeMillis());
         return result;

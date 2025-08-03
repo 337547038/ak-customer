@@ -49,7 +49,7 @@ public class ContactController {
             @Parameter(name = "extend.pageSize",description = "每页显示多少条"),
             @Parameter(name = "extend.sort",description = "排序"),
             @Parameter(name = "extend.columns",description = "返回指定查询字段"),
-            @Parameter(name = "extend.search",description = "查询子级为child"),
+            @Parameter(name = "extend.search",description = "查询所有子级为child"),
             @Parameter(name = "userId",description = "查询指定下属记录"),
             @Parameter(name = "name",description = "查询联系人"),
             @Parameter(name = "tid",description = "查询客户"),

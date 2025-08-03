@@ -11,6 +11,7 @@
         :show-search="!disabled"
         :columnsIconVisible="!disabled"
         :keyColumns="keyColumns"
+        @formFieldChange="searchFormChange"
     >
       <template #expand="{row}">
         <div style="padding: 0 20px;margin-bottom: 8px;">跟进时间：{{ dateFormatting(row.dateTime) }}</div>
@@ -41,6 +42,7 @@
   import selectContact from './components/selectContact.vue'
   import validate from "@/components/form/validate";
   import {dateFormatting, getStorage} from "@/utils";
+  import {useLayoutStore} from "@/store/layout";
 
   const props = withDefaults(
       defineProps<{
@@ -48,12 +50,13 @@
         customerId?: number
         company?: string
         disabled?: boolean
-        keyColumns?:string
+        keyColumns?: string
       }>(),
       {
         isComponents: false
       }
   )
+  const layoutStore = useLayoutStore()
   const controlBtn = [
     {
       key: 'add',
@@ -83,7 +86,6 @@
         // 作为组件调用
         data.customerId = customerId2.value
       }
-      data.extend.userId = userInfo.value.id
     }
     return data
   }
@@ -101,6 +103,25 @@
   const showCompany = computed(() => {
     return !props.isComponents
   })
+
+  const showUserId = computed(() => {
+    if (props.isComponents) {
+      // 在列表页引用时，在查看下属会员客户时显示
+      return props.tabsName === 'child'
+    } else {
+      return layoutStore.userInfo?.hasChild
+    }
+  })
+  // 当前搜索表单的客户id,条件改变时更新
+  const searchCurrentCustomerId = ref()
+  const searchCustomerId = computed(() => {
+     if(props.isComponents) {
+       return props.customerId
+     }else {
+       return searchCurrentCustomerId.value
+     }
+  })
+  const currentUserId = ref()
   const columns = ref([
     {
       type: 'expand',
@@ -112,9 +133,31 @@
       type: 'selection',
     },
     {
+      label: '所属人员',
+      prop: 'userId',
+      show: false,
+      search: {
+        changeRefresh: true,
+        style: {width: '230px'},
+        visible: showUserId,
+        render: 'select',
+        ajax: {
+          api: 'userChildList',
+          data: {},
+          label: 'userName',
+          value: 'id'
+        },
+        clearable: true,
+        onChange: (val: number) => {
+          currentUserId.value = val
+        }
+      }
+    },
+    {
       label: '客户名称',
       prop: 'customerId',
       search: {
+        userId: currentUserId,
         visible: showCompany,
         render: 'component',
         component: markRaw(customerSelect)
@@ -130,7 +173,7 @@
       prop: 'contactId',
       width: 90,
       search: {
-        customerId: props.customerId,
+        customerId: searchCustomerId,
         placeholder: '请输入联系人,可使用%',
         render: 'component',
         component: markRaw(selectContact)
@@ -284,6 +327,19 @@
       // 客户名称改变时，清空联系人选择。将值传给联系人
       model.contactId = undefined
       customerId.value = val
+    }
+  }
+  // 条件查询表单改变事件
+  const searchFormChange = (prop: string, val: any,model:any) => {
+    if(prop==='userId' && layoutStore.userInfo?.hasChild){
+      // 清空已填写的客户名称及联系人信息
+      model.customerId = null
+      model.contactId = undefined
+    }
+    if(prop==='customerId'){
+      // 客户名称改变时，联系限制为当前客户下的
+      model.contactId = undefined
+      searchCurrentCustomerId.value = val
     }
   }
 

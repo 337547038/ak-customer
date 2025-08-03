@@ -50,7 +50,10 @@ public class FollowRecordsController {
             @Parameter(name = "extend.pageSize",description = "每页显示多少条"),
             @Parameter(name = "extend.sort",description = "排序"),
             @Parameter(name = "extend.columns",description = "返回指定查询字段"),
-            @Parameter(name = "query",description = "查询条件")
+            @Parameter(name = "extend.search",description = "查询所有子级为child"),
+            @Parameter(name = "userId",description = "查询指定下属记录"),
+            @Parameter(name = "contactId",description = "查询联系人id"),
+            @Parameter(name = "customerId",description = "查询客户")
     })
     @PostMapping("list")
     public ResponseEntity<Map<String, Object>> queryByPage(@RequestBody Map<String, Object> pages) {
@@ -63,12 +66,12 @@ public class FollowRecordsController {
      *@param query 主键
      * @return 单条数据
      */
-    @Operation(summary ="根据id查询数据")
+   /* @Operation(summary ="根据id查询数据")
     @PostMapping("get")
     public ResponseEntity<FollowRecords> queryById(@RequestBody Map<String, Integer> query) {
         return ResponseEntity.ok(this.followRecordsService.queryById(query.get("id")));
     }
-
+*/
     /**
      * 新增数据
      *
@@ -91,12 +94,12 @@ public class FollowRecordsController {
      * @param followRecords 实体
      * @return 影响行数
      */
-    @Operation(summary ="编辑数据")
+   /* @Operation(summary ="编辑数据")
     @PostMapping("edit")
     public ResponseEntity<Integer> edit(@RequestBody FollowRecords followRecords) {
         return ResponseEntity.ok(this.followRecordsService.updateById(followRecords));
     }
-
+*/
     /**
      * 删除数据，删除多个时使用豆号分隔
      *

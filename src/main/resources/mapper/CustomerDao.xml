@@ -127,6 +127,9 @@
     <select id="count" resultType="java.lang.Long">
         select count(1)
         from sys_customer as a
+        <if test="extend.columns=='contact'">
+            join `sys_user` as c ON a.userId=c.id
+        </if>
         <where>
             <bind name="andOr" value="extend.type=='search' ? 'or' : 'and'"/>
             <if test="query.id != null">
@@ -286,7 +289,11 @@
         where id in (${params.ids})
         <!--以下操作添加权限，保证操作是自己或下属的客户-->
         <if test="type!='toFollow' and params.hasUserIds!=null">
-            and (userId=params.currentId or userId in (${params.hasUserIds}))
+            and (userId=#{params.currentId} or userId in
+            <foreach collection="params.hasUserIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+            )
         </if>
     </update>
 
@@ -302,7 +309,9 @@
     <!--根据主键查询当前登录用户是否有操作权限-->
     <select id="hasCount" resultType="java.lang.Long">
         select count(1)
-        from sys_customer where id=#{query.id} and (userId=#{query.userId} or userId in
+        from sys_customer where id=#{query.id} and (userId=#{query.userId}
+        or (userId is null and (status=2 or status=3))
+        or userId in
         <foreach collection="query.userIds" item="item" separator="," open="(" close=")">
             #{item}
         </foreach>

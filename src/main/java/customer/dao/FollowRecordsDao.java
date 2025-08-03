@@ -36,9 +36,10 @@ public interface FollowRecordsDao {
      * 统计总行数
      *
      * @param followRecords 查询条件
+     * @param extend 扩展参数
      * @return 总行数
      */
-    long count(FollowRecords followRecords);
+    long count(@Param("query") FollowRecords followRecords,@Param("extend") Map<String,Object> extend);
 
     /**
      * 新增数据
@@ -62,7 +63,7 @@ public interface FollowRecordsDao {
      * @param id 主键
      * @return 影响行数
      */
-    int deleteById(@Param("id") String[] id);
+    int deleteById(@Param("id") String[] id,@Param("extend") Map<String, Object> extend);
 
     void deleteByCustomerId(@Param("id") String[] id);
 }

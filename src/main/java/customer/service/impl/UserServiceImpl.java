@@ -8,6 +8,7 @@ import customer.utils.Utils;
 import customer.entity.User;
 import customer.dao.UserDao;
 import customer.service.UserService;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -86,14 +87,15 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 修改数据
+     * 修改数据时同时将tokenVerify缓存失效
      *
      * @param user 实例对象
      * @return 影响的行数
      */
+    @CacheEvict(value = "tokenVerify", key = "#user.id")
     @Override
     public Integer updateById(User user) {
         return this.userDao.updateById(user);
-        //return this.queryById(user.getId());
     }
 
     /**
@@ -149,13 +151,26 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 用于token校验，token一旦生成可通过修改会员状态使其失效
+     * @param userId id
+     * @return true or false
+     */
+    @Cacheable(value = "tokenVerify", key = "#userId")
+    @Override
+    public boolean tokenVerify(Integer userId) {
+        User user = new User();
+        user.setId(userId);
+        user.setStatus(1);
+        return this.userDao.count(user) > 0;
+    }
+    /**
      * 根据用户id返回所有子级
      *
      * @param userId 用户id
      * @return 子级id数组
      */
     @Override
-    // 清空整个缓存
+    // 整个缓存
     @Cacheable(value = "userChild", key = "#userId")
     public List<Map<String, Object>> queryUserChild(Integer userId) {
         return this.userDao.queryUserChild(userId);

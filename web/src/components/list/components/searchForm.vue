@@ -7,7 +7,7 @@
           :prop="item.prop"
           :label="item.label"
           v-model="searchForm[item.prop]"
-          @change="changeField(item.prop, $event)"
+          @change="changeField(item, $event)"
       />
     </template>
     <el-form-item>
@@ -43,8 +43,11 @@
   })
   const formEl = ref()
   const searchForm = ref({})
-  const changeField = (prop: string, val: any) => {
-    emits('fieldChange', prop, val, searchForm.value)
+  const changeField = (obj: any, val: any) => {
+    if (obj.search?.changeRefresh) {
+      searchClick() // 刷新列表
+    }
+    emits('fieldChange', obj.prop, val, searchForm.value)
   }
   const clearClick = () => {
     //formEl.value.resetFields()

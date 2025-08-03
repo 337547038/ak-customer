@@ -81,7 +81,9 @@ public class CustomerController {
         keywords.put("tel", pages.get("keywords"));
         JSONObject obj = JSON.parseObject(JSON.toJSONString(pages.get("extend")));
         obj.put("search", "check");
+        obj.put("columns", "user");
         keywords.put("extend", obj);
+
         return ResponseEntity.ok(this.customerService.queryByPage(keywords));
     }
 

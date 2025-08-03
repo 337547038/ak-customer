@@ -1,8 +1,10 @@
 package customer.service.impl;
 
 import com.alibaba.fastjson2.JSON;
+import customer.config.CustomException;
 import customer.entity.Contact;
 import customer.service.ContactService;
+import customer.service.UserService;
 import customer.utils.Utils;
 import customer.entity.FollowRecords;
 import customer.dao.FollowRecordsDao;
@@ -15,6 +17,7 @@ import jakarta.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 跟进记录(FollowRecords)表服务实现类
@@ -28,9 +31,11 @@ public class FollowRecordsServiceImpl implements FollowRecordsService {
     private FollowRecordsDao followRecordsDao;
 
     private final ContactService contactService;
+    private final UserService userService;
 
-    public FollowRecordsServiceImpl(ContactService contactService) {
+    public FollowRecordsServiceImpl(ContactService contactService, UserService userService) {
         this.contactService = contactService;
+        this.userService = userService;
     }
 
     /**
@@ -55,7 +60,30 @@ public class FollowRecordsServiceImpl implements FollowRecordsService {
         Map<String, Object> extend = Utils.getPagination(pages);//处理分页信息
         FollowRecords followRecords = JSON.parseObject(JSON.toJSONString(pages), FollowRecords.class);//json字符串转java对象
 
-        long total = this.followRecordsDao.count(followRecords);
+        Object userId = pages.get("userId");
+        String typeStr = String.valueOf(extend.get("search"));
+
+        if (userId == null) {
+            if (Objects.equals(typeStr, "child")) {
+                // 查看所有下属
+                List<String> ids = this.userService.queryUserChild(Utils.getCurrentUserId(), "");
+                extend.put("userIds", ids);
+            } else {
+                // 查看自己的
+                extend.put("userId", Utils.getCurrentUserId());
+            }
+        } else if (userId == Utils.getCurrentUserId()) {
+            //　查自己的
+            extend.put("userId", Utils.getCurrentUserId());
+        } else {
+            // 查指定下属的
+            boolean isChildUser = this.userService.isChildrenUser((Integer) userId);
+            if (!isChildUser) {
+                throw new CustomException("请确认你是否具有查看此用户的联系人权限");
+            }
+            extend.put("userId", userId);
+        }
+        long total = this.followRecordsDao.count(followRecords,extend);
         List<Map<String, Object>> list = this.followRecordsDao.queryAllByLimit(followRecords, extend);
         Map<String, Object> response = new HashMap<>();
         response.put("list", list);
@@ -101,6 +129,10 @@ public class FollowRecordsServiceImpl implements FollowRecordsService {
      */
     @Override
     public boolean deleteById(String[] id) {
-        return this.followRecordsDao.deleteById(id) > 0;
+        List<String> ids = this.userService.queryUserChild(Utils.getCurrentUserId(), "");
+        Map<String, Object> extend = new HashMap<>();
+        extend.put("userIds", ids);
+        extend.put("userId", Utils.getCurrentUserId());
+        return this.followRecordsDao.deleteById(id,extend) > 0;
     }
 }

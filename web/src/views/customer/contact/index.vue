@@ -74,11 +74,6 @@
         // 作为组件调用,仅查询当前客户下的
         data.tid = props.tid
       }
-      // 查询指定下属于
-      if (layoutStore.userInfo?.hasChild && data.userId) {
-        data.extend.type = 'child'
-      }
-      data.userId=1
     }
     return data
   }
@@ -117,6 +112,7 @@
       prop: 'userId',
       show: false,
       search: {
+        changeRefresh:true,
         style: {width: '230px'},
         visible: showUserId,
         render: 'select',
@@ -275,7 +271,10 @@
     {
       label: '客户名称',
       prop: 'tid',
-      attr: {style: {width: '350px'}},
+      attr: {
+        style: {width: '350px'},
+        userId: currentUserId,
+      },
       render: 'component',
       component: markRaw(customerSelect),
       visible: showCompany,

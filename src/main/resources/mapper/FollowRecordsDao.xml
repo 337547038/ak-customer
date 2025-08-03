@@ -29,10 +29,17 @@
     <select id="queryAllByLimit">
         select
         a.id,a.customerId, a.contactId, a.contactName, a.userId, a.userName, a.dateTime, a.type, a.remark, b.company
-        from sys_follow_records as a join sys_customer as b on a.customerId = b.id
+        from sys_follow_records as a
+        join sys_customer as b on a.customerId = b.id
         <where>
             <if test="extend.userId != null">
                 and b.userId=#{extend.userId}
+            </if>
+            <if test="extend.search == 'child'">
+                and b.userId in
+                <foreach collection="extend.userIds" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
             </if>
             <if test="query.id != null">
                 and a.id = #{query.id}
@@ -78,34 +85,44 @@
     <!--统计总行数-->
     <select id="count" resultType="java.lang.Long">
         select count(1)
-        from sys_follow_records
+        from sys_follow_records as a
+        join sys_customer as b on a.customerId = b.id
         <where>
-            <if test="id != null">
-                and id = #{id}
+            <if test="extend.userId != null">
+                and b.userId=#{extend.userId}
             </if>
-            <if test="customerId != null">
-                and customerId = #{customerId}
+            <if test="extend.search == 'child'">
+                and b.userId in
+                <foreach collection="extend.userIds" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
             </if>
-            <if test="contactId != null">
-                and contactId = #{contactId}
+            <if test="query.id != null">
+                and a.id = #{query.id}
             </if>
-            <if test="contactName != null and contactName != ''">
-                and contactName = #{contactName}
+            <if test="query.customerId != null">
+                and a.customerId = #{query.customerId}
             </if>
-            <if test="userId != null">
-                and userId = #{userId}
+            <if test="query.contactId != null">
+                and a.contactId = #{query.contactId}
             </if>
-            <if test="userName != null and userName != ''">
-                and userName = #{userName}
+            <if test="query.contactName != null and query.contactName != ''">
+                and a.contactName = #{query.contactName}
             </if>
-            <if test="dateTime != null">
-                and dateTime = #{dateTime}
+            <if test="query.userId != null">
+                and a.userId = #{query.userId}
             </if>
-            <if test="type != null">
-                and type = #{type}
+            <if test="query.userName != null and query.userName != ''">
+                and a.userName = #{query.userName}
             </if>
-            <if test="remark != null and remark != ''">
-                and remark = #{remark}
+            <if test="query.dateTime != null">
+                and a.dateTime = #{query.dateTime}
+            </if>
+            <if test="query.type != null">
+                and a.type = #{query.type}
+            </if>
+            <if test="query.remark != null and query.remark != ''">
+                and a.remark = #{query.remark}
             </if>
         </where>
     </select>
@@ -150,8 +167,14 @@
 
     <!--通过主键删除-->
     <delete id="deleteById">
-        delete
-        from sys_follow_records where id in
+        delete a
+        from sys_follow_records as a
+        join sys_customer as b on b.id=a.customerId
+        where (b.userId=#{extend.userId} or b.userId in
+        <foreach collection="extend.userIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        ) and a.id in
         <foreach collection="id" item="item" separator="," open="(" close=")">
             #{item}
         </foreach>
