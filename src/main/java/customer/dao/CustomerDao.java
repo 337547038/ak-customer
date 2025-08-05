@@ -39,7 +39,7 @@ public interface CustomerDao {
      * @return 总行数
      */
     long count(@Param("query") Customer customer,@Param("extend") Map<String,Object> extend);
-    long exist(Customer customer);
+    List<Map<String,Object>> exist(Customer customer);
 
     long hasCount(@Param("query") Map<String,Object> query);
     /**

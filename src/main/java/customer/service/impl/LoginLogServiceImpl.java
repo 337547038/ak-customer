@@ -1,6 +1,7 @@
 package customer.service.impl;
 
 import com.alibaba.fastjson2.JSON;
+import customer.config.PermissionCheck;
 import customer.utils.Utils;
 import customer.entity.LoginLog;
 import customer.dao.LoginLogDao;
@@ -30,6 +31,7 @@ public class LoginLogServiceImpl implements LoginLogService {
      * @param id 主键
      * @return 实例对象
      */
+    @PermissionCheck(value = {"/system/log"})
     @Override
     public LoginLog queryById(Integer id) {
         return this.loginLogDao.queryById(id);
@@ -41,6 +43,7 @@ public class LoginLogServiceImpl implements LoginLogService {
      * @param pages 筛选条件分页对象
      * @return 查询结果
      */
+    @PermissionCheck(value = {"/system/log"})
     @Override
     public Map<String, Object> queryByPage(Map<String, Object> pages) {
         Map<String, Object> extend = Utils.getPagination(pages);//处理分页信息
@@ -60,6 +63,7 @@ public class LoginLogServiceImpl implements LoginLogService {
      * @param loginLog 实例对象
      * @return 实例对象
      */
+    @PermissionCheck(value = {"/system/log"})
     @Override
     public LoginLog insert(LoginLog loginLog) {
         this.loginLogDao.insert(loginLog);
@@ -72,6 +76,7 @@ public class LoginLogServiceImpl implements LoginLogService {
      * @param loginLog 实例对象
      * @return 影响的行数
      */
+    @PermissionCheck(value = {"/system/log"})
     @Override
     public Integer updateById(LoginLog loginLog) {
         return this.loginLogDao.updateById(loginLog);
@@ -84,6 +89,7 @@ public class LoginLogServiceImpl implements LoginLogService {
      * @param id 主键
      * @return 是否成功
      */
+    @PermissionCheck(value = {"/system/log"})
     @Override
     public boolean deleteById(String[] id) {
         return this.loginLogDao.deleteById(id) > 0;

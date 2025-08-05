@@ -2,8 +2,8 @@ import { getStorage } from '@/utils'
 
 export const permission = (val: string | undefined): boolean => {
   if (!val) {
-    // 为空时不作判断，返回true
-    return true
+    // 为空时不作判断，返回false
+    return false
   }
   const valList: string[] = val.split(',')
   const resources = getStorage('resources', true) || []

@@ -82,7 +82,7 @@ public class FollowRecordsController {
     @PostMapping("save")
     public ResponseEntity<Integer> add(@RequestBody FollowRecords followRecords) {
         followRecords.setUserId(Utils.getCurrentUserId());
-        followRecords.setUserName(Utils.getCurrentUserName());
+        followRecords.setUserName(Utils.getCurrentUser(""));
         followRecords.setDateTime(new Date());
         FollowRecords result = followRecordsService.insert(followRecords);
         return ResponseEntity.ok(result.getId());

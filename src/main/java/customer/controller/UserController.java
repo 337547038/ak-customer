@@ -185,18 +185,17 @@ public class UserController {
         }
         // 获取IP地址
         String ipAddress = request.getRemoteAddr();
-        List<Map<String, Object>> list = this.userService.login(user, ipAddress);
-        if (list.isEmpty()) {
+        User loginUser = this.userService.login(user, ipAddress);
+        if (loginUser == null) {
             return ResponseResult.fail("用户名或密码错误");
         }
-        JSONObject obj = JSONObject.from(list.get(0));
         Map<String, Object> map = new HashMap<>();
-        map.put("token", getToken(obj.getString("id"), obj.getString("userName"), Utils.EXPIRE_TIME));
-        map.put("refreshToken", getToken(obj.getString("id"), obj.getString("userName"), Utils.EXPIRE_TIME * 2));
+        map.put("token", getToken(loginUser, Utils.EXPIRE_TIME));
+        map.put("refreshToken", getToken(loginUser, Utils.EXPIRE_TIME * 2));
         map.put("expire_time", Utils.EXPIRE_TIME);
-        map.put("id", obj.getString("id"));
-        map.put("userName", obj.getString("userName"));
-        map.put("roleId", obj.getString("roleId"));
+        map.put("id", loginUser.getId());
+        map.put("userName", loginUser.getUserName());
+        map.put("roleId", loginUser.getRoleId());
         boolean hasChild = this.userService.hasChild();
         map.put("hasChild", hasChild);
         return ResponseResult.success(map, "登录成功");
@@ -234,8 +233,8 @@ public class UserController {
         }
         //生成新token
         Map<String, Object> newToken = new HashMap<>();
-        newToken.put("token", getToken(String.valueOf(user.getId()), user.getUserName(), Utils.EXPIRE_TIME));
-        newToken.put("refreshToken", getToken(String.valueOf(user.getId()), user.getUserName(), Utils.EXPIRE_TIME * 2));
+        newToken.put("token", getToken(user, Utils.EXPIRE_TIME));
+        newToken.put("refreshToken", getToken(user, Utils.EXPIRE_TIME * 2));
         newToken.put("expire_time", Utils.EXPIRE_TIME);
         return ResponseResult.success(newToken, "刷新token成功");
     }

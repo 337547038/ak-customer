@@ -2,9 +2,11 @@ package customer.service.impl;
 
 import com.alibaba.fastjson2.JSON;
 import customer.config.CustomException;
+import customer.config.PermissionCheck;
 import customer.dao.ContactDao;
 import customer.dao.CustomerOperateRecordsDao;
 import customer.dao.FollowRecordsDao;
+import customer.entity.Contact;
 import customer.entity.CustomerOperateRecords;
 import customer.entity.User;
 import customer.service.UserService;
@@ -156,9 +158,9 @@ public class CustomerServiceImpl implements CustomerService {
     public Customer insert(Customer customer) {
         Customer hasName = new Customer();
         hasName.setCompany(customer.getCompany());
-        long total = this.customerDao.exist(hasName);
-        if (total > 0) {
-            throw new CustomException("已存在客户名称:" + customer.getCompany());
+        List<Map<String, Object>> list = this.customerDao.exist(hasName);
+        if (!list.isEmpty()) {
+            throw new CustomException("已存在客户名称:" + customer.getCompany() + ",由" + list.get(0).get("userName") + "正在跟进");
         }
         customer.setUserId(Utils.getCurrentUserId());
         customer.setCreatTime(new Date());
@@ -167,7 +169,7 @@ public class CustomerServiceImpl implements CustomerService {
         CustomerOperateRecords cop = new CustomerOperateRecords();
         cop.setTid(customer.getId());
         cop.setUserId(Utils.getCurrentUserId());
-        cop.setUserName(Utils.getCurrentUserName());
+        cop.setUserName(Utils.getCurrentUser(""));
         cop.setDataTime(new Date());
         cop.setContent("创建了该数据记录");
         this.customerOperateRecordsService.insert(cop);
@@ -185,9 +187,9 @@ public class CustomerServiceImpl implements CustomerService {
         Customer hasName = new Customer();
         hasName.setCompany(customer.getCompany());
         hasName.setId(customer.getId());
-        long total = this.customerDao.exist(hasName);
-        if (total > 0) {
-            throw new CustomException("已存在客户名称:" + customer.getCompany());
+        List<Map<String, Object>> list = this.customerDao.exist(hasName);
+        if (!list.isEmpty()) {
+            throw new CustomException("已存在客户名称:" + customer.getCompany() + ",由" + list.get(0).get("userName") + "正在跟进");
         }
         customer.setUpdateTime(new Date());
         if (customer.getUserId().equals(Utils.getCurrentUserId())) {
@@ -207,6 +209,7 @@ public class CustomerServiceImpl implements CustomerService {
      * @param id 主键
      * @return 是否成功
      */
+    @PermissionCheck(value = {"delCustomer"})
     @Override
     public boolean deleteById(String[] id) {
         // 删除跟进信息
@@ -312,7 +315,7 @@ public class CustomerServiceImpl implements CustomerService {
         // 添加客户操作记录
         CustomerOperateRecords records = new CustomerOperateRecords();
         records.setUserId(Utils.getCurrentUserId());
-        records.setUserName(Utils.getCurrentUserName());
+        records.setUserName(Utils.getCurrentUser(""));
         records.setDataTime(new Date());
         switch (type) {
             case "toUser":
@@ -374,5 +377,47 @@ public class CustomerServiceImpl implements CustomerService {
             }
         }
         return i > 0;
+    }
+
+    /**
+     * 扫描名片一键入库
+     *
+     * @param params a
+     * @return a
+     */
+    @Override
+    public String scanCardInput(Map<String, Object> params) {
+        Customer customer = new Customer();
+        customer.setCompany(String.valueOf(params.get("company")));
+        List<Map<String, Object>> list = this.customerDao.exist(customer);
+        if (!list.isEmpty()) {
+            // 存在相同客户名称，检查是不是自己的
+            Integer userId = (Integer) list.get(0).get("userId");
+            if (userId.equals(Utils.getCurrentUserId())) {
+                // 自己的，添加联系人记录
+                addContact(params, (Integer) list.get(0).get("id"));
+                return "联系人新增成功";
+            } else {
+                // 不是自己的
+                return "客户名称：" + params.get("company") + "已由" + list.get(0).get("userName") + "负责跟进";
+            }
+        } else {
+            // 不存在，1新增客户　2新增联系人
+            insert(customer);
+            addContact(params, customer.getId());
+            return "入库成功";
+        }
+        //return null;
+    }
+
+    private void addContact(Map<String, Object> params, Integer customerId) {
+        Contact contact = new Contact();
+        contact.setName((String) params.get("name"));
+        contact.setPhone((String) params.get("phone"));
+        contact.setEmail((String) params.get("email"));
+        contact.setTid(customerId);
+        contact.setCreatDate(new Date());
+        contact.setDecisionMaker(3);
+        this.contactDao.insert(contact);
     }
 }

@@ -2,6 +2,7 @@ package customer.service.impl;
 
 import com.alibaba.fastjson2.JSON;
 import customer.config.CustomException;
+import customer.config.PermissionCheck;
 import customer.utils.Utils;
 import customer.entity.Dict;
 import customer.dao.DictDao;
@@ -9,8 +10,6 @@ import customer.service.DictService;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
-
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +31,7 @@ public class DictServiceImpl implements DictService {
      * @param id 主键
      * @return 实例对象
      */
+    @PermissionCheck(value = {"/system/dict"})
     @Override
     public Dict queryById(Integer id) {
         return this.dictDao.queryById(id);
@@ -43,7 +43,9 @@ public class DictServiceImpl implements DictService {
      * @param pages 筛选条件分页对象
      * @return 查询结果
      */
+
     @Override
+    //@PermissionCheck(value = {"/system/dict"})
     public Map<String, Object> queryByPage(Map<String, Object> pages) {
         Map<String, Object> extend = Utils.getPagination(pages);//处理分页信息
         Dict dict = JSON.parseObject(JSON.toJSONString(pages), Dict.class);//json字符串转java对象
@@ -62,6 +64,7 @@ public class DictServiceImpl implements DictService {
      * @param dict 实例对象
      * @return 实例对象
      */
+    @PermissionCheck(value = {"/system/dict"})
     @Override
     public Dict insert(Dict dict) {
         Dict hasDict = new Dict();
@@ -81,6 +84,7 @@ public class DictServiceImpl implements DictService {
      * @param dict 实例对象
      * @return 影响的行数
      */
+    @PermissionCheck(value = {"/system/dict"})
     @Override
     public Integer updateById(Dict dict) {
         Dict hasDict = new Dict();
@@ -103,6 +107,7 @@ public class DictServiceImpl implements DictService {
      * @param id 主键
      * @return 是否成功
      */
+    @PermissionCheck(value = {"/system/dict"})
     @Override
     public boolean deleteById(String[] id) {
         return this.dictDao.deleteById(id) > 0;

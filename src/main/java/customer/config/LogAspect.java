@@ -1,6 +1,8 @@
 package customer.config;
 
 import com.alibaba.fastjson2.JSON;
+import customer.service.RoleService;
+import customer.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -34,14 +36,31 @@ import java.util.stream.Stream;
 @Slf4j
 public class LogAspect {
 
+    private final RoleService roleService;
+
+    public LogAspect(RoleService roleService) {
+        this.roleService = roleService;
+    }
+
     @Pointcut("execution(public * customer.controller.*.*(..))")
     public void log() {
 
     }
 
+    private void printLog(String logType, String format, Object... arguments) {
+        if (log.isDebugEnabled()) {
+            if (Objects.equals(logType, "info")) {
+                log.info(format, arguments);
+            } else if (Objects.equals(logType, "error")) {
+                log.error(format, arguments);
+            } else if (Objects.equals(logType, "debug")) {
+                log.error(format, arguments);
+            }
+        }
+    }
+
     @Around("log()")
     public Object around(ProceedingJoinPoint point) throws Throwable {
-        System.out.println("还是先到这里");
         String methodName = point.getSignature().toLongString();
         Object[] args = point.getArgs();
 
@@ -61,25 +80,21 @@ public class LogAspect {
         }
         HttpServletRequest request = attributes.getRequest();
         UUID uuid = UUID.randomUUID(); //用于关联响应结果，否则同时多个请求分不清响应是属于哪个请求
-        if (log.isDebugEnabled()) {
-            log.info("请求URL：{},\n 请求头信息：{},\n 请求方法全路径：{},\n 请求方法类型：{}, 请求IP：{}, 请求参数：{},\n UUID：{}",
-                    request.getRequestURL(),
-                    JSON.toJSONString(getHeaders(request.getHeaderNames(), request)),
-                    methodName,
-                    request.getMethod(), request.getRemoteAddr(), JSON.toJSONString(params),uuid);
-        }
-        Object result=null;
+        printLog("info", "请求URL：{},\n 请求头信息：{},\n 请求方法全路径：{},\n 请求方法类型：{}, 请求IP：{}, 请求参数：{},\n UUID：{}",
+                request.getRequestURL(),
+                JSON.toJSONString(getHeaders(request.getHeaderNames(), request)),
+                methodName,
+                request.getMethod(), request.getRemoteAddr(), JSON.toJSONString(params), uuid);
+        Object result = null;
         try {
             result = point.proceed();
         } catch (Exception e) {
-            log.error("异常 : {},请求方法类型：{}", e, methodName);
+            printLog("error", "异常 : {},请求方法类型：{}", e, methodName);
             // 这里不能直接RuntimeException，有些是使用了CustomException自定义的
             //throw new RuntimeException(e);
             throw e;
         }
-        if (log.isDebugEnabled()) {
-            log.debug("{}响应 :{}", uuid,JSON.toJSONString(result));
-        }
+        printLog("debug", "{}响应 :{}", uuid, JSON.toJSONString(result));
         return result;
     }
 
@@ -100,18 +115,29 @@ public class LogAspect {
         Method method = signature.getMethod();
         PermissionCheck permissionCheck = method.getAnnotation(PermissionCheck.class);
 
-        List<String> userPermissions = List.of("p1", "p2");
+        // 从token里获取角色id,确保为登录状态
+        String roleIds = Utils.getCurrentUser("role");
+        Integer userId = Utils.getCurrentUserId();
+        if (userId == null) {
+            return;
+        }
+        if ((roleIds == null || roleIds.isEmpty())) {
+            throw new CustomException("无权限访问，请确认当前用户已配置了相应角色");
+        }
+        List<String> userPermissions = this.roleService.queryByIds(roleIds);
         // 校验权限
         if (permissionCheck.logical() == PermissionCheck.Logical.AND) {
-            System.out.println("需要全部权限");
+            //System.out.println("需要全部权限");
             // 需要全部权限
-            if (!userPermissions.containsAll(Arrays.asList(permissionCheck.value()))) {
+            if (!new HashSet<>(userPermissions).containsAll(Arrays.asList(permissionCheck.value()))) {
+                printLog("error", "无权限访问：{},会员id：{},请求方法类型：{}", permissionCheck.value(), Utils.getCurrentUserId(), method);
                 throw new CustomException("无权限访问");
             }
         } else {
-            System.out.println("无权限访问");
+            //System.out.println("无权限访问");
             // 只需任意一个权限
             if (Arrays.stream(permissionCheck.value()).noneMatch(userPermissions::contains)) {
+                printLog("error", "无权限访问：{},会员id：{},请求方法类型：{}", permissionCheck.value(), Utils.getCurrentUserId(), method);
                 throw new CustomException("无权限访问");
             }
         }

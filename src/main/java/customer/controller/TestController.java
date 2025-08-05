@@ -12,19 +12,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 
-
-@Tag(name = "图片验证码")
 @RestController
 @RequestMapping("/test")
 public class TestController {
 
     @PassToken
     @PostMapping("/get")
-    @PermissionCheck(value = {"permission1", "permission2"}, logical = PermissionCheck.Logical.AND)
+    //@PermissionCheck(value = {"permission1", "permission2"}, logical = PermissionCheck.Logical.AND)
     public ResponseEntity<String> getTest() {
 
-        return ResponseEntity.ok("map");
+        return ResponseEntity.ok(test01());
     }
-
-
+    @PermissionCheck(value = {"permission1", "permission2"}, logical = PermissionCheck.Logical.AND)
+    public String test01() {
+        return "a";
+    }
 }

@@ -593,6 +593,9 @@
     }
   }
   const showMessage = (msg: string, success?: boolean) => {
+    if (!msg) {
+      return
+    }
     if (success) {
       ElMessage.success(msg)
     } else {

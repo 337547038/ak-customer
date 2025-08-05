@@ -186,9 +186,10 @@
         </where>
     </select>
 
-    <select id="exist" resultType="java.lang.Long">
-        select count(1)
-        from sys_customer
+    <select id="exist">
+        select c.id,c.company,c.code,c.userId,u.userName
+        from sys_customer as c
+        left join sys_user as u on u.id=c.userId
         <where>
             <if test="id != null">
                 and id != #{id}
@@ -198,6 +199,9 @@
             </if>
             <if test="code != null and code != ''">
                 and code = #{code}
+            </if>
+            <if test="userId != null">
+                and userId = #{userId}
             </if>
         </where>
     </select>

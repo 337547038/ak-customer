@@ -1,6 +1,7 @@
 package customer.service.impl;
 
 import com.alibaba.fastjson2.JSON;
+import customer.config.PermissionCheck;
 import customer.utils.Utils;
 import customer.entity.Department;
 import customer.dao.DepartmentDao;
@@ -30,6 +31,7 @@ public class DepartmentServiceImpl implements DepartmentService {
      * @param id 主键
      * @return 实例对象
      */
+    @PermissionCheck(value = {"/system/dept"})
     @Override
     public Department queryById(Integer id) {
         return this.departmentDao.queryById(id);
@@ -60,6 +62,7 @@ public class DepartmentServiceImpl implements DepartmentService {
      * @param department 实例对象
      * @return 实例对象
      */
+    @PermissionCheck(value = {"/system/dept"})
     @Override
     public Department insert(Department department) {
         this.departmentDao.insert(department);
@@ -72,6 +75,7 @@ public class DepartmentServiceImpl implements DepartmentService {
      * @param department 实例对象
      * @return 影响的行数
      */
+    @PermissionCheck(value = {"/system/dept"})
     @Override
     public Integer updateById(Department department) {
         return this.departmentDao.updateById(department);
@@ -84,6 +88,7 @@ public class DepartmentServiceImpl implements DepartmentService {
      * @param id 主键
      * @return 是否成功
      */
+    @PermissionCheck(value = {"/system/dept"})
     @Override
     public boolean deleteById(String[] id) {
         // 检查有没子级

@@ -37,10 +37,11 @@
 </template>
 
 <script setup lang="ts">
-  import {ref, onMounted, computed} from 'vue'
+  import {ref, onMounted, computed, watch} from 'vue'
   import Field from '../field/index.vue'
   import {getRequest} from '@/api'
   import {ElMessage} from "element-plus";
+  import {onBeforeRouteLeave} from "vue-router";
 
   defineOptions({name: 'AkForm'})
 
@@ -58,13 +59,14 @@
         data?: formData[] // 表单项数据
         //formProps?: any // el表单组件props参数
         btnText?: string[] | boolean // 按钮文案
-        api: { add: string, edit: string, detail: string }
+        api?: { add: string, edit: string, detail: string }
         before?: (params: any, type: string) => boolean
         after?: (res: any, isSuccess?: boolean, type: string) => any
         params?: any // 附件参数
         rules?: any
         pk?: string | number // 主键，当提交的数据里包含了主键时，则提交修改接口
         hideFiled?: string[] // 不显示的字段
+        modelValue?: any
       }>(),
       {
         data: () => {
@@ -80,17 +82,28 @@
         },
         hideFiled: () => {
           return []
+        },
+        modelValue: () => {
+          return {}
         }
       }
   )
   const emits = defineEmits<{
-    // (e: 'update:modelValue', value: any): void
+    (e: 'update:modelValue', value: any): void
     (e: 'change', name: string, value: any, model: any): void
     (e: 'submit', value: any): void
     (e: 'cancel'): void
   }>()
+  // 使用defineModel时，当引用时没有使用v-model会报错model.xxx
+  // 使用defineModel({default:})时会导致输入框没法输入
   //const model = defineModel();
-  const model = defineModel();
+  const model = ref(props.modelValue)
+  const unWatch = watch(() => props.modelValue, () => {
+    model.value = props.modelValue
+  }, {deep: true})
+  const unWatch2 = watch(() => model.value, () => {
+    emits("update:modelValue", model.value)
+  }, {deep: true})
 
   const loading = ref(false)
 
@@ -108,47 +121,58 @@
 
   const formEl = ref()
   const onSubmit = async () => {
-    if (!formEl.value) return
-    await formEl.value.validate((valid: any, fields: any) => {
-      if (valid) {
-        let type = 'add'
-        let api = props.api?.add
-        if (props.pk && model.value[props.pk]) {
-          api = props.api?.edit
-          type = 'update'
-        }
-        if (api) {
-          let params = model.value
-          if (props.before && typeof props.before === 'function') {
-            params = props.before(JSON.parse(JSON.stringify(model.value)), type)
+    return new Promise((resolve, reject) => {
+      if (!formEl.value) return
+      formEl.value.validate((valid: any, fields: any) => {
+        if (valid) {
+          let type = 'add'
+          let api = props.api?.add
+          if (props.pk && model.value[props.pk]) {
+            api = props.api?.edit
+            type = 'update'
           }
-          if (params === false) {
-            return false
+          if (api) {
+            let params = model.value
+            if (props.before && typeof props.before === 'function') {
+              params = props.before(JSON.parse(JSON.stringify(model.value)), type)
+            }
+            if (params === false) {
+              return false
+            }
+            emits("submit", params)
+            loading.value = true
+            getRequest(api, params)
+                .then((res: any) => {
+                  let hasReturnAfter = null
+                  if (typeof props.after === 'function') {
+                    hasReturnAfter = props.after(res.data || res, true, type)
+                  }
+                  // after有return=false时，则阻止消息提示
+                  if (hasReturnAfter !== false) {
+                    ElMessage.success(res.message || '提交成功')
+                  }
+                  loading.value = false
+                  resolve(res)
+                  // 这里作全局提交结果处理
+                })
+                .catch((res: any) => {
+                  if (typeof props.after === 'function') {
+                    props.after(res, false, type)
+                  }
+                  loading.value = false
+                  reject(res)
+                  // 这里作全局异常提示处理
+                })
+          } else {
+            const t = '请配置props.api地址'
+            reject({config: true, message: t})
+            console.error(t)
           }
-          emits("submit", params)
-          loading.value = true
-          getRequest(api, params)
-              .then((res: any) => {
-                if (typeof props.after === 'function') {
-                  props.after(res.data || res, true, type)
-                }
-                ElMessage.success(res.message || '提交成功')
-                loading.value = false
-                // 这里作全局提交结果处理
-              })
-              .catch((res: any) => {
-                if (typeof props.after === 'function') {
-                  props.after(res, false, type)
-                }
-                loading.value = false
-                // 这里作全局异常提示处理
-              })
         } else {
-          console.error('请配置props.api地址')
+          reject({validate: true, ...fields})
+          console.log('error submit!', fields)
         }
-      } else {
-        console.log('error submit!', fields)
-      }
+      })
     })
   }
   const resetFields = (type?: boolean) => {
@@ -166,43 +190,54 @@
     return model.value
   }
   const changeField = (prop: string, val: any) => {
+    model.value[prop] = val
     emits('change', prop, val, model.value)
   }
   // 修改表单时，加载初始数据
   const getData = (data?: any) => {
-    const api = props.api?.detail
-    if (api) {
-      let params = Object.assign({}, props.params, data || {})
-      if (props.before && typeof props.before === 'function') {
-        params = props.before(params, 'detail') ?? params
+    return new Promise((resolve, reject) => {
+      const api = props.api?.detail
+      if (api) {
+        let params = Object.assign({}, props.params, data || {})
+        if (props.before && typeof props.before === 'function') {
+          params = props.before(params, 'detail') ?? params
+        }
+        if (params === false) {
+          return false
+        }
+        loading.value = true
+        getRequest(api, params)
+            .then((res: any) => {
+              let result = res.data
+              if (props.after && typeof props.after === 'function') {
+                result = props.after(result, true, 'detail') || result
+              }
+              model.value = result
+              loading.value = false
+              resolve(res)
+              // 这里作全局提交结果处理
+            })
+            .catch((res: any) => {
+              loading.value = false
+              // 这里作全局异常提示处理
+              if (typeof props.after === 'function') {
+                props.after(res, false, 'detail')
+              }
+              reject(res)
+            })
+      } else {
+        const t = "请设置api.detail"
+        reject(t)
+        console.error(t)
       }
-      if (params === false) {
-        return false
-      }
-      loading.value = true
-      getRequest(api, params)
-          .then((res: any) => {
-            let result = res.data
-            if (props.after && typeof props.after === 'function') {
-              result = props.after(result, true, 'detail') || result
-            }
-            model.value = result
-            loading.value = false
-            // 这里作全局提交结果处理
-          })
-          .catch((res: any) => {
-            loading.value = false
-            // 这里作全局异常提示处理
-            if (typeof props.after === 'function') {
-              props.after(res, false, 'detail')
-            }
-          })
-    } else {
-      console.error("请设置api.detail")
-    }
+    })
   }
   onMounted(() => {
     getModelValue(props.data)
+  })
+  onBeforeRouteLeave(() => {
+    unWatch()
+    unWatch2()
   })
   defineExpose({onSubmit, resetFields, setValue, getValue, getData})
 </script>

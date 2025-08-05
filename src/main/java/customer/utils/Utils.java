@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import customer.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -20,10 +21,11 @@ public class Utils {
 
     public static final long EXPIRE_TIME = 8 * 60 * 60 * 1000;//token过期时间
     public static final String HMAC256Secret = "your256secret";//token密钥
+
     /**
      * 公共分页处理方法
      */
-    public static Map<String, Object> getPagination(Map<String,Object> pages) {
+    public static Map<String, Object> getPagination(Map<String, Object> pages) {
         //其他参数包含了pageNum当前第几页,pageSize每页分几条,sort排序,columns指定字段
         //根据pageNum计算pageIndex,并对pageSize设置初始值
         JSONObject obj = new JSONObject();
@@ -58,16 +60,21 @@ public class Utils {
     }
 
     /**
-     * 从token中返回当前登录的用户名
+     * 从token中返回当前登录的用户名或角色
      *
      * @return 返回当前登录用户
      */
-    public static String getCurrentUserName() {
+    public static String getCurrentUser(String key) {
+        if (key == null || key.isEmpty()) {
+            key = "userName";
+        } else {
+            key = "roleId";
+        }
         try {
             HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
             String token = request.getHeader("Authorization");
             if (token != null) {
-                return JWT.decode(token).getClaim("userName").asString();
+                return JWT.decode(token).getClaim(key).asString();
             }
         } catch (Exception e) {
             return null;
@@ -101,15 +108,15 @@ public class Utils {
     /**
      * 生成token
      *
-     * @param userId   会员id
-     * @param username // 用户名
+     * @param user 　实例
      * @return token
      */
-    public static String getToken(String userId, String username, long expireTime) {
+    public static String getToken(User user, long expireTime) {
         Date date = new Date(System.currentTimeMillis() + expireTime);
-        return JWT.create().withAudience(userId)// 将 user id 保存到 token 里面,作为载荷
+        return JWT.create().withAudience(String.valueOf(user.getId()))// 将 user id 保存到 token 里面,作为载荷
                 .withExpiresAt(date)
-                .withClaim("userName", username)   // 自定义声明：写入用户名
+                .withClaim("userName", user.getUserName())   // 自定义声明：写入用户名
+                .withClaim("roleId", user.getRoleId())   // 自定义声明：写入用户名
                 .sign(Algorithm.HMAC256(HMAC256Secret));// 使用固定值 作为 token 的密钥
     }
 
@@ -127,6 +134,7 @@ public class Utils {
         String codeMd5 = convertToMD5(code);
         return Objects.equals(codeMd5, codeId);
     }
+
     /**
      * 移除字符串最后一个豆号
      *

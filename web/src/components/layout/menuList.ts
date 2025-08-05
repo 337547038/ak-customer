@@ -122,6 +122,11 @@ export default [
                 title: '字典管理',
                 path: '/system/dict',
                 icon: "Memo"
+            },
+            {
+                title: '清空缓存',
+                path: '/system/cache',
+                icon: "Delete"
             }
         ]
     }

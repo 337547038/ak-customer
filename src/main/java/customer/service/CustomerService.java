@@ -56,4 +56,6 @@ public interface CustomerService {
     boolean moveCustomerByIds(Map<String, Object> params, String type);
 
     boolean shareCustomer(Map<String, Object> params);
+
+    String scanCardInput(Map<String, Object> params);
 }

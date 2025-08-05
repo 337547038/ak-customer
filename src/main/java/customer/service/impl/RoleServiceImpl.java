@@ -1,10 +1,13 @@
 package customer.service.impl;
 
 import com.alibaba.fastjson2.JSON;
+import customer.config.PermissionCheck;
 import customer.utils.Utils;
 import customer.entity.Role;
 import customer.dao.RoleDao;
 import customer.service.RoleService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
@@ -29,6 +32,7 @@ public class RoleServiceImpl implements RoleService {
      * @param id 主键
      * @return 实例对象
      */
+    @PermissionCheck(value = {"/system/role"})
     @Override
     public Role queryById(Integer id) {
         return this.roleDao.queryById(id);
@@ -40,6 +44,7 @@ public class RoleServiceImpl implements RoleService {
      * @param pages 筛选条件分页对象
      * @return 查询结果
      */
+    //@PermissionCheck(value = {"/system/role"})
     @Override
     public Map<String, Object> queryByPage(Map<String, Object> pages) {
         Map<String, Object> extend = Utils.getPagination(pages);//处理分页信息
@@ -59,6 +64,7 @@ public class RoleServiceImpl implements RoleService {
      * @param role 实例对象
      * @return 实例对象
      */
+    @PermissionCheck(value = {"/system/role"})
     @Override
     public Role insert(Role role) {
         this.roleDao.insert(role);
@@ -68,11 +74,14 @@ public class RoleServiceImpl implements RoleService {
     /**
      * 修改数据
      *
-     * @param role 实例对象
+     * @param role 实例对象　修改或删除时时删除缓存
      * @return 影响的行数
      */
+    @PermissionCheck(value = {"/system/role"})
+    @CacheEvict(value = "rolePermission", allEntries = true)
     @Override
     public Integer updateById(Role role) {
+        // 清空缓存
         return this.roleDao.updateById(role);
         //return this.queryById(role.getId());
     }
@@ -83,10 +92,15 @@ public class RoleServiceImpl implements RoleService {
      * @param id 主键
      * @return 是否成功
      */
+    @PermissionCheck(value = {"/system/role"})
+    @CacheEvict(value = "rolePermission", allEntries = true)
     @Override
     public boolean deleteById(String[] id) {
         return this.roleDao.deleteById(id) > 0;
     }
+
+    // 每次接口请求都会查询当前用户的角色权限，用于验证是否有权限访问.并且在更新和删除时更新
+    @Cacheable(value = "rolePermission", key = "#ids")
     @Override
     public List<String> queryByIds(String ids) {
         List<Map<String, Object>> list = this.roleDao.queryByIds(ids);

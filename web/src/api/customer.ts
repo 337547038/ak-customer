@@ -5,6 +5,7 @@ export default {
     customerEdit: "customer/edit",
     customerList: "customer/list",
     customerImport: "customer/import",
+    customerScanCard:'customer/scanCard',
     customerRecords: "customer/records/list",
     customerMove: 'customer/moveByIds',//　移交客户给指定用户
     customerShare: 'customer/share',//　将客户分享给用户

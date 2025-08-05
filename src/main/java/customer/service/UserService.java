@@ -51,11 +51,10 @@ public interface UserService {
      */
     boolean deleteById(String[] id);
 
-    List<Map<String, Object>> login(User user, String ipAddress);
+    User login(User user, String ipAddress);
 
     List<Map<String, Object>> queryByIds(String ids);
 
-    @Cacheable(value = "tokenVerify", key = "#userId")
     boolean tokenVerify(Integer userId);
 
     /**

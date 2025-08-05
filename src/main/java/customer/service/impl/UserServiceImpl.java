@@ -2,6 +2,7 @@ package customer.service.impl;
 
 import com.alibaba.fastjson2.JSON;
 import customer.config.CustomException;
+import customer.config.PermissionCheck;
 import customer.entity.LoginLog;
 import customer.service.LoginLogService;
 import customer.utils.Utils;
@@ -53,6 +54,7 @@ public class UserServiceImpl implements UserService {
      * @param pages 筛选条件分页对象
      * @return 查询结果
      */
+   // @PermissionCheck(value = {"/system/user"})
     @Override
     public Map<String, Object> queryByPage(Map<String, Object> pages) {
         Map<String, Object> extend = Utils.getPagination(pages);//处理分页信息
@@ -72,6 +74,7 @@ public class UserServiceImpl implements UserService {
      * @param user 实例对象
      * @return 实例对象
      */
+    @PermissionCheck(value = {"/system/user"})
     @Override
     public User insert(User user) {
         User hasUser = new User();
@@ -92,6 +95,7 @@ public class UserServiceImpl implements UserService {
      * @param user 实例对象
      * @return 影响的行数
      */
+    @PermissionCheck(value = {"/system/user"})
     @CacheEvict(value = "tokenVerify", key = "#user.id")
     @Override
     public Integer updateById(User user) {
@@ -104,6 +108,7 @@ public class UserServiceImpl implements UserService {
      * @param id 主键
      * @return 是否成功
      */
+    @PermissionCheck(value = {"/system/user"})
     @Override
     public boolean deleteById(String[] id) {
         return this.userDao.deleteById(id) > 0;
@@ -116,25 +121,24 @@ public class UserServiceImpl implements UserService {
      * @param ipAddress 登录时的ip地址
      */
     @Override
-    public List<Map<String, Object>> login(User user, String ipAddress) {
+    public User login(User user, String ipAddress) {
         List<Map<String, Object>> list = this.userDao.queryAllByLimit(user, new HashMap<>());
         LoginLog log = new LoginLog();
         log.setUserName(user.getUserName());
         log.setLoginIp(ipAddress);
         log.setDateTime(new Date());
+        User loginUser = new User();
         if (!list.isEmpty()) {
             //更新登录信息
-            Map<String, Object> listObj = list.get(0);
-            Integer loginTimer = (Integer) listObj.get("loginTimer");
-            Integer id = (Integer) listObj.get("id");
+            loginUser = JSON.parseObject(JSON.toJSONString(list.get(0)), User.class);//json字符串转java对象
             User updateUser = new User();
-            updateUser.setId(id);
+            updateUser.setId(loginUser.getId());
             updateUser.setLastLogin(new Date());
-            updateUser.setLoginTimer(loginTimer + 1);
+            updateUser.setLoginTimer(loginUser.getLoginTimer() + 1);
             updateUser.setIp(ipAddress);
             userDao.updateLogin(updateUser);
             //添加登录日志
-            log.setUserId(id);
+            log.setUserId(loginUser.getId());
             log.setStatus(1);
         } else {
             log.setUserId(0); // 登录异常没有id
@@ -142,7 +146,7 @@ public class UserServiceImpl implements UserService {
             log.setRemark("密码:" + user.getPassword());
         }
         loginLogService.insert(log);
-        return list;
+        return loginUser;
     }
 
     @Override
@@ -151,7 +155,7 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * 用于token校验，token一旦生成可通过修改会员状态使其失效
+     * 用于token校验，token一旦生成可通过修改会员状态使其失效,每次请求会调用一次
      * @param userId id
      * @return true or false
      */
@@ -192,6 +196,7 @@ public class UserServiceImpl implements UserService {
      * @param userId 指定id
      * @return 是否
      */
+
     @Override
     @Cacheable(value = "userChild", key = "#userId+'ChildUser'")
     public boolean isChildrenUser(Integer userId) {

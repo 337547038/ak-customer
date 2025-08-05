@@ -19,7 +19,7 @@
         </el-form-item>
       </ak-form>
       <div class="weixin" style="padding:10px 0">
-        <el-button type="text">微信扫码登录</el-button>
+        <el-button type="primary" text>微信扫码登录</el-button>
       </div>
     </div>
   </div>

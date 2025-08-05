@@ -197,5 +197,19 @@ public class CustomerController {
         }
         return ResponseEntity.ok(this.customerService.shareCustomer(params));
     }
+
+    @Operation(summary = "扫描名片一键入库")
+    @Parameters({
+            @Parameter(name = "name", description = "联系人姓名", required = true),
+            @Parameter(name = "company", description = "客户名称", required = true),
+            @Parameter(name = "phone", description = "联系人姓名手机号", required = true)
+    })
+    @PostMapping("scanCard")
+    public ResponseEntity<String> scanCardInput(@RequestBody Map<String, Object> params) {
+        if (params.get("name") == null || params.get("company") == null || params.get("phone") == null) {
+            throw new CustomException("请按参数要求提交");
+        }
+        return ResponseEntity.ok(this.customerService.scanCardInput(params));
+    }
 }
 

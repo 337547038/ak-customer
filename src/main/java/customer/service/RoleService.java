@@ -51,6 +51,4 @@ public interface RoleService {
      */
     boolean deleteById(String[] id);
 
-
-
 }
