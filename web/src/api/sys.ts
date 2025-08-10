@@ -28,6 +28,5 @@ export default {
     roleGetByIds: "system/role/getByIds",
     upload:'system/upload',
     uploadDel:'system/upload/delete',
-    uploadDel:'system/upload/delete',
-    clearCache:'/cache/clearAll',
+    clearCache:'cache/clearAll',
 }

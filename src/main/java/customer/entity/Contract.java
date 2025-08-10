@@ -21,17 +21,27 @@ public class Contract implements Serializable {
 /**
      * 客户id
      */
-    private Integer cId;
+    private Integer customerId;
+/**
+     * 合同名称
+     */
+    private String name;
 /**
      * 合同编号
      */
-    private String num;
+    private String code;
 /**
      * 签订日期
      */
     private Date creatDate;
-
+/**
+     * 签约人
+     */
     private Integer userId;
+/**
+     * 公司签约人
+     */
+    private Integer contactId;
 /**
      * 合同金额
      */
@@ -50,6 +60,10 @@ public class Contract implements Serializable {
      * 有效期结束
      */
     private Date endDate;
+/**
+     * 1待确认2领导已确认3没通过
+     */
+    private Integer status;
 
 
 }

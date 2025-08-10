@@ -6,6 +6,34 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "10937700",
+      "name": "区域",
+      "font_class": "area",
+      "unicode": "e62b",
+      "unicode_decimal": 58923
+    },
+    {
+      "icon_id": "6241659",
+      "name": "合同管理",
+      "font_class": "contract",
+      "unicode": "e625",
+      "unicode_decimal": 58917
+    },
+    {
+      "icon_id": "9101222",
+      "name": "我的回款",
+      "font_class": "payment",
+      "unicode": "e61b",
+      "unicode_decimal": 58907
+    },
+    {
+      "icon_id": "9809638",
+      "name": "合同管理",
+      "font_class": "contract2",
+      "unicode": "e657",
+      "unicode_decimal": 58967
+    },
+    {
       "icon_id": "22896017",
       "name": "客户列表",
       "font_class": "list",

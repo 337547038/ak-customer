@@ -37,7 +37,16 @@
     <!--查询指定行数据-->
     <select id="queryAllByLimit">
         select
-        a.id, a.company, a.brandName, a.type, a.area, a.address, a.industry, a.code, a.source, a.tel, a.userId, a.creatTime, a.updateTime,a.status
+        <choose>
+            <when test="extend.columns=='diy' and extend.diyColumns!=null and extend.diyColumns!=''">
+                <foreach collection="extend.diyColumns" item="item" separator=",">
+                    a.${item}
+                </foreach>
+            </when>
+            <otherwise>
+                a.id, a.company, a.brandName, a.type, a.area, a.address, a.industry, a.code, a.source, a.tel, a.userId, a.creatTime, a.updateTime,a.status
+            </otherwise>
+        </choose>
         <if test="extend.columns=='user'">
             ,c.userName
         </if>
@@ -192,16 +201,16 @@
         left join sys_user as u on u.id=c.userId
         <where>
             <if test="id != null">
-                and id != #{id}
+                and c.id != #{id}
             </if>
             <if test="company != null and company != ''">
-                and company = #{company}
+                and c.company = #{company}
             </if>
             <if test="code != null and code != ''">
-                and code = #{code}
+                and c.code = #{code}
             </if>
             <if test="userId != null">
-                and userId = #{userId}
+                and c.userId = #{userId}
             </if>
         </where>
     </select>
@@ -275,30 +284,34 @@
 
     <update id="moveCustomerByIds">
         update sys_customer
-        <if test="type=='toCom'">
-            set userId=null,status=2,shareUserId=''
-        </if>
-        <if test="type=='toUser'">
-            set userId=#{params.userId},shareUserId=''
-        </if>
-        <if test="type=='toInvalid'">
-            set userId=null,status=3,shareUserId=''
-        </if>
-        <if test="type=='toFollow'">
-            set userId=#{params.userId},status=1
-        </if>
-        <if test="type=='toShare'">
-            set shareUserId=#{params.userId}
-        </if>
-        where id in (${params.ids})
-        <!--以下操作添加权限，保证操作是自己或下属的客户-->
-        <if test="type!='toFollow' and params.hasUserIds!=null">
-            and (userId=#{params.currentId} or userId in
-            <foreach collection="params.hasUserIds" item="item" separator="," open="(" close=")">
-                #{item}
-            </foreach>
-            )
-        </if>
+        <set>
+            <if test="type=='toCom'">
+                userId=null,status=2,shareUserId=''
+            </if>
+            <if test="type=='toUser'">
+                userId=#{params.userId},shareUserId=''
+            </if>
+            <if test="type=='toInvalid'">
+                userId=null,status=3,shareUserId=''
+            </if>
+            <if test="type=='toFollow'">
+                userId=#{params.userId},status=1
+            </if>
+            <if test="type=='toShare'">
+                shareUserId=#{params.userId}
+            </if>
+        </set>
+        <where>
+            id in (${params.ids})
+            <!--以下操作添加权限，保证操作是自己或下属的客户-->
+            <if test="type!='toFollow' and params.hasUserIds!=null">
+                and (userId=#{params.currentId} or userId in
+                <foreach collection="params.hasUserIds" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+                )
+            </if>
+        </where>
     </update>
 
     <!--通过主键删除，必须为公海或无效客户才能删除-->

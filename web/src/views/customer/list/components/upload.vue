@@ -1,5 +1,5 @@
 <template>
-  <el-form-item label="相关附件" style="width: 100%">
+  <el-form-item style="width: 100%">
     <el-upload
         v-model:file-list="fileList"
         :http-request="httpRequest"

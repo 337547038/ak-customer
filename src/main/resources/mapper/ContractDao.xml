@@ -1,175 +1,212 @@
 <?xml version="1.0" encoding="UTF-8"?>
-    <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-    <mapper namespace="customer.dao.ContractDao">
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="customer.dao.ContractDao">
 
-        <resultMap type="customer.entity.Contract" id="ContractMap">
-                <result property="id" column="id" jdbcType="INTEGER"/>
-                <result property="cId" column="cId" jdbcType="INTEGER"/>
-                <result property="num" column="num" jdbcType="VARCHAR"/>
-                <result property="creatDate" column="creatDate" jdbcType="TIMESTAMP"/>
-                <result property="userId" column="userId" jdbcType="INTEGER"/>
-                <result property="money" column="money" jdbcType="VARCHAR"/>
-                <result property="remark" column="remark" jdbcType="VARCHAR"/>
-                <result property="files" column="files" jdbcType="VARCHAR"/>
-                <result property="startDate" column="startDate" jdbcType="TIMESTAMP"/>
-                <result property="endDate" column="endDate" jdbcType="TIMESTAMP"/>
-        </resultMap>
+    <resultMap type="customer.entity.Contract" id="ContractMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="customerId" column="customerId" jdbcType="INTEGER"/>
+        <result property="name" column="name" jdbcType="VARCHAR"/>
+        <result property="code" column="code" jdbcType="VARCHAR"/>
+        <result property="creatDate" column="creatDate" jdbcType="TIMESTAMP"/>
+        <result property="userId" column="userId" jdbcType="INTEGER"/>
+        <result property="contactId" column="contactId" jdbcType="INTEGER"/>
+        <result property="money" column="money" jdbcType="VARCHAR"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="files" column="files" jdbcType="VARCHAR"/>
+        <result property="startDate" column="startDate" jdbcType="TIMESTAMP"/>
+        <result property="endDate" column="endDate" jdbcType="TIMESTAMP"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+    </resultMap>
 
     <sql id="commColumnsItem">
-id, cId, num, creatDate, userId, money, remark, files, startDate, endDate        
+        id, customerId, name, code, creatDate, userId, contactId, money, remark, files, startDate, endDate, status
     </sql>
-        <!--查询单个-->
-        <select id="queryById" resultMap="ContractMap">
-            select
-            <include refid="commColumnsItem" />
-            from sys_contract
-                where id = #{id}
-        </select>
+    <!--查询单个-->
+    <select id="queryById" resultMap="ContractMap">
+        select
+        <include refid="commColumnsItem"/>
+        from sys_contract
+        where id = #{id}
+    </select>
 
-        <!--查询指定行数据-->
-        <select id="queryAllByLimit">
-            select
-            <choose>
-                <when test="extend.columns != null and extend.columns!=''">
-                    ${extend.columns}
-                </when>
-                <otherwise>
-                    <include refid="commColumnsItem" />
-                </otherwise>
-            </choose>
-            from sys_contract
-            <where>
-                    <if test="query.id != null">
-                        and id = #{query.id}
-                    </if>
-                    <if test="query.cId != null">
-                        and cId = #{query.cId}
-                    </if>
-                    <if test="query.num != null and query.num != ''">
-                        and num = #{query.num}
-                    </if>
-                    <if test="query.creatDate != null">
-                        and creatDate = #{query.creatDate}
-                    </if>
-                    <if test="query.userId != null">
-                        and userId = #{query.userId}
-                    </if>
-                    <if test="query.money != null and query.money != ''">
-                        and money = #{query.money}
-                    </if>
-                    <if test="query.remark != null and query.remark != ''">
-                        and remark = #{query.remark}
-                    </if>
-                    <if test="query.files != null and query.files != ''">
-                        and files = #{query.files}
-                    </if>
-                    <if test="query.startDate != null">
-                        and startDate = #{query.startDate}
-                    </if>
-                    <if test="query.endDate != null">
-                        and endDate = #{query.endDate}
-                    </if>
-            </where>
-            <choose>
-                <when test="extend.sort != null and extend.sort!=''">
-                    order by ${extend.sort}
-                </when>
-                <otherwise>
-                    order by id desc
-                </otherwise>
-            </choose>
-            <if test="extend.pageSize >0">
-            limit #{extend.pageIndex}, #{extend.pageSize}
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit">
+        select c.id, c.customerId, c.name, c.code, c.creatDate, c.userId, c.contactId, c.money, c.startDate, c.endDate, c.status
+        ,cu.company as customerName,co.name as contactName,SUM(p.money) AS payment
+        from sys_contract c
+        left join sys_customer cu on cu.id=c.customerId
+        left join sys_contact co on co.id=c.userId
+        left join sys_contract_payment p on p.contractId=c.id
+        <where>
+            <if test="query.id != null">
+                and c.id = #{query.id}
             </if>
-        </select>
+            <if test="query.customerId != null">
+                and c.customerId = #{query.customerId}
+            </if>
+            <if test="query.name != null and query.name != ''">
+                and c.name = #{query.name}
+            </if>
+            <if test="query.code != null and query.code != ''">
+                and c.code = #{query.code}
+            </if>
+            <if test="query.creatDate != null">
+                and c.creatDate = #{query.creatDate}
+            </if>
+            <if test="query.userId != null">
+                and c.userId = #{query.userId}
+            </if>
+            <if test="query.contactId != null">
+                and c.contactId = #{query.contactId}
+            </if>
+            <if test="query.money != null and query.money != ''">
+                and c.money = #{query.money}
+            </if>
+            <if test="query.remark != null and query.remark != ''">
+                and c.remark = #{query.remark}
+            </if>
+            <if test="query.files != null and query.files != ''">
+                and c.files = #{query.files}
+            </if>
+            <if test="query.startDate != null">
+                and c.startDate = #{query.startDate}
+            </if>
+            <if test="query.endDate != null">
+                and c.endDate = #{query.endDate}
+            </if>
+            <if test="query.status != null">
+                and c.status = #{query.status}
+            </if>
+        </where>
+        <choose>
+            <when test="extend.sort != null and extend.sort!=''">
+                order by ${extend.sort}
+            </when>
+            <otherwise>
+                order by c.id desc
+            </otherwise>
+        </choose>
+        <if test="extend.pageSize >0">
+            limit #{extend.pageIndex}, #{extend.pageSize}
+        </if>
+    </select>
 
-        <!--统计总行数-->
-        <select id="count" resultType="java.lang.Long">
-            select count(1)
-            from sys_contract
-            <where>
-                    <if test="id != null">
-                        and id = #{id}
-                    </if>
-                    <if test="cId != null">
-                        and cId = #{cId}
-                    </if>
-                    <if test="num != null and num != ''">
-                        and num = #{num}
-                    </if>
-                    <if test="creatDate != null">
-                        and creatDate = #{creatDate}
-                    </if>
-                    <if test="userId != null">
-                        and userId = #{userId}
-                    </if>
-                    <if test="money != null and money != ''">
-                        and money = #{money}
-                    </if>
-                    <if test="remark != null and remark != ''">
-                        and remark = #{remark}
-                    </if>
-                    <if test="files != null and files != ''">
-                        and files = #{files}
-                    </if>
-                    <if test="startDate != null">
-                        and startDate = #{startDate}
-                    </if>
-                    <if test="endDate != null">
-                        and endDate = #{endDate}
-                    </if>
-            </where>
-        </select>
+    <!--统计总行数-->
+    <select id="count" resultType="java.lang.Long">
+        select count(1)
+        from sys_contract
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="customerId != null">
+                and customerId = #{customerId}
+            </if>
+            <if test="name != null and name != ''">
+                and name = #{name}
+            </if>
+            <if test="code != null and code != ''">
+                and code = #{code}
+            </if>
+            <if test="creatDate != null">
+                and creatDate = #{creatDate}
+            </if>
+            <if test="userId != null">
+                and userId = #{userId}
+            </if>
+            <if test="contactId != null">
+                and contactId = #{contactId}
+            </if>
+            <if test="money != null and money != ''">
+                and money = #{money}
+            </if>
+            <if test="remark != null and remark != ''">
+                and remark = #{remark}
+            </if>
+            <if test="files != null and files != ''">
+                and files = #{files}
+            </if>
+            <if test="startDate != null">
+                and startDate = #{startDate}
+            </if>
+            <if test="endDate != null">
+                and endDate = #{endDate}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
 
-        <!--新增所有列-->
-        <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-            insert into sys_contract(cId, num, creatDate, userId, money, remark, files, startDate, endDate)
-                values
-            (#{cId}, #{num}, #{creatDate}, #{userId}, #{money}, #{remark}, #{files}, #{startDate}, #{endDate})
-        </insert>
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into sys_contract(customerId, name, code, creatDate, userId, contactId, money, remark, files, startDate, endDate, status)
+        values (#{customerId}, #{name}, #{code}, #{creatDate}, #{userId}, #{contactId}, #{money}, #{remark}, #{files}, #{startDate}, #{endDate}, #{status})
+    </insert>
 
-        <!--通过主键修改数据-->
-        <update id="updateById">
-            update sys_contract
-            <set>
-                    <if test="cId != null">
-                        cId = #{cId},
-                    </if>
-                    <if test="num != null and num != ''">
-                        num = #{num},
-                    </if>
-                    <if test="creatDate != null">
-                        creatDate = #{creatDate},
-                    </if>
-                    <if test="userId != null">
-                        userId = #{userId},
-                    </if>
-                    <if test="money != null and money != ''">
-                        money = #{money},
-                    </if>
-                    <if test="remark != null and remark != ''">
-                        remark = #{remark},
-                    </if>
-                    <if test="files != null and files != ''">
-                        files = #{files},
-                    </if>
-                    <if test="startDate != null">
-                        startDate = #{startDate},
-                    </if>
-                    <if test="endDate != null">
-                        endDate = #{endDate},
-                    </if>
-            </set>
-            where id = #{id}
-        </update>
+    <!--通过主键修改数据-->
+    <update id="updateById">
+        update sys_contract
+        <set>
+            <if test="customerId != null">
+                customerId = #{customerId},
+            </if>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="code != null and code != ''">
+                code = #{code},
+            </if>
+            <if test="creatDate != null">
+                creatDate = #{creatDate},
+            </if>
+            <if test="userId != null">
+                userId = #{userId},
+            </if>
+            <if test="contactId != null">
+                contactId = #{contactId},
+            </if>
+            <if test="money != null and money != ''">
+                money = #{money},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+            <if test="files != null and files != ''">
+                files = #{files},
+            </if>
+            <if test="startDate != null">
+                startDate >= #{startDate},
+            </if>
+            <if test="endDate != null">
+                #{endDate} >= endDate,
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
 
-        <!--通过主键删除-->
-        <delete id="deleteById">
-            delete
-            from sys_contract where id in
-            <foreach collection="id" item="item" separator="," open="(" close=")">
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from sys_contract where (userId=#{extend.userId} or userId in
+        <foreach collection="extend.userIds" item="item" separator="," open="(" close=")">
             #{item}
         </foreach>
-        </delete>
+        ) and id in
+        <foreach collection="id" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </delete>
 
-    </mapper>
+    <select id="queryIsMeOrChild" resultType="java.lang.Long">
+        select count(1)
+        from sys_contract where id=${query.contractId} and (userId =${query.userId} or userId in
+         <foreach collection="query.userIds" item="item" separator="," open="(" close=")">
+          #{item}
+         </foreach>)
+        </select>
+
+</mapper>

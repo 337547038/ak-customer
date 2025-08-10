@@ -10,39 +10,39 @@ export default [
         icon: 'icon-analysis1',
         children: [
             {
-                icon: 'icon-analysis5',
-                title: '员工业绩',
-                path: '/analysis/1',
-            },
-            {
                 icon: 'icon-analysis3',
                 title: '客户级别',
-                path: '/analysis/2',
+                path: '/analysis/type',
             },
             {
                 icon: 'icon-source',
                 title: '客户来源',
-                path: '/analysis/3',
+                path: '/analysis/source',
             },
             {
                 icon: 'icon-analysis4',
                 title: '客户行业',
-                path: '/analysis/4',
+                path: '/analysis/industry',
+            },
+            {
+                icon: 'icon-area',
+                title: '客户区域',
+                path: '/analysis/area',
             },
             {
                 icon: 'icon-user-num',
                 title: '员工客户量',
-                path: '/analysis/5',
+                path: '/analysis/customer',
             },
             {
                 icon: 'icon-follows',
                 title: '跟进分析',
-                path: '/analysis/061',
+                path: '/analysis/follow',
             },
             {
                 icon: 'icon-ranking',
                 title: '合同排行',
-                path: '/analysis/16',
+                path: '/analysis/contract',
             }
         ]
     },
@@ -94,8 +94,25 @@ export default [
         ]
     },
     {
+        title: '合同管理',
+        icon: 'icon-contract',
+        menuIndex: "contract",
+        children: [
+            {
+                title: '我的合同',
+                icon: 'icon-contract2',
+                path: "/contract/contract"
+            },
+            {
+                title: '我的回款',
+                icon: 'icon-payment',
+                path: "/contract/payment"
+            }
+        ]
+    },
+    {
         title: '系统管理',
-        icon: 'setting',
+        icon: 'icon-config',
         menuIndex: "system",
         children: [
             {

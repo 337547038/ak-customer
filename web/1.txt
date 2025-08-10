@@ -1,7 +1,5 @@
-icon:
-icon-export
-icon-import
-icon-toUser 移交
-icon-com 转入公海
-icon-share　共享客户
-icon-invalid 无效客户
+待处理
+1.展示用户信息时将显示完整的上级和完整部门
+2.打包时排除echarts
+3.去掉所属人员列
+4.查看下属时应能根据具体的人

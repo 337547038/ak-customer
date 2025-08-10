@@ -1,9 +1,11 @@
 import request from '../utils/request'
 import sys from './sys'
 import customer from './customer'
+import analysis from './analysis'
+import contract from './contract'
 
 
-const allApi: any = Object.assign({}, sys, customer)
+const allApi: any = Object.assign({}, sys, customer, analysis, contract)
 const apiPrefix: string = 'api/'
 export const getRequest = (apiKey: string, data?: any, options = {}) => {
     let url = allApi[apiKey] || apiKey

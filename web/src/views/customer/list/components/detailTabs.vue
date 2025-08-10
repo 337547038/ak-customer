@@ -17,8 +17,12 @@
             :disabled="disabled||tabsNameIsShare"
             :api="{ detail: 'customerDetail',add:'customerSave', edit:'customerEdit' }"
             v-model="formModel">
-          <template #files>
-            <uploadFiles v-model="formModel.files" v-if="visible"/>
+          <template #files="{rows}">
+            <uploadFiles
+                :prop="rows.prop"
+                :label="rows.label"
+                v-model="formModel.files"
+                v-if="visible"/>
           </template>
         </ak-form>
       </el-tab-pane>

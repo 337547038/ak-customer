@@ -5,6 +5,7 @@ import cn.hutool.captcha.LineCaptcha;
 import com.alibaba.fastjson2.JSONObject;
 import customer.config.PassToken;
 import customer.utils.Utils;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,7 @@ import java.util.Map;
 @RequestMapping("/system/captcha")
 public class CaptchaController {
 
+    @Operation(summary ="获取图片验证码")
     @PassToken
     @PostMapping("/get")
     public ResponseEntity<Map<String, Object>> getCaptcha() throws IOException {

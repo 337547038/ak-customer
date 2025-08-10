@@ -258,5 +258,59 @@ id, userName, status, creatTime, updateTime, lastLogin, loginTimer, ip, remark, 
         from subordinates
         where id != #{id}
     </select>
+    <!--用于统计用户有多少客户及合同-->
+    <select id="queryUserCustomerNum">
+        SELECT
+        u.id,u.userName,COUNT(DISTINCT c.id) AS customerCount,
+        COUNT(DISTINCT CASE WHEN con.id IS NOT NULL THEN c.id END) AS contractCount
+        FROM
+        sys_user as u
+        LEFT JOIN sys_customer c ON u.id = c.userId
+        LEFT JOIN sys_contract con ON c.id = con.customerId and con.status=1
+        WHERE u.status=1 and c.status=1 and (u.id=#{userId} or u.id in
+        <foreach collection="userIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        )
+        GROUP BY u.id, u.userName
+        ORDER BY customerCount DESC
+    </select>
+    <!--跟进分析-->
+    <select id="queryUserFollow">
+        SELECT
+        u.id AS userId,
+        u.userName,
+        COUNT(DISTINCT f.customerId) AS followedCustomerCount, -- 跟进的客户数量（去重）
+        COUNT(f.id) AS followUpCount, -- 跟进次数
+        (SELECT COUNT(*) FROM sys_customer c WHERE c.userId = u.id) AS totalCustomers, -- 总客户数
+        MAX(f.dateTime) AS lastFollowUpTime -- 最后跟进时间
+        FROM
+        sys_user u
+        LEFT JOIN
+        sys_customer c ON u.id = c.userId and c.status=1
+        LEFT JOIN
+        sys_follow_records f ON c.id = f.customerId
+        WHERE
+        u.status=1 and (u.id = #{userId} or u.id in
+        <foreach collection="userIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        )
+        GROUP BY
+        u.id, u.userName;
+    </select>
+    <!--统计每个用户的合同-->
+    <select id="queryUserContract">
+        SELECT u.id AS userId,u.userName,COUNT(c.id) AS count,COALESCE(SUM(c.money), 0) AS totalMoney,COALESCE(SUM(c.payment), 0) AS totalPayment
+        FROM sys_user u
+        LEFT JOIN sys_contract c ON u.id = c.userId AND CURRENT_DATE BETWEEN c.startDate AND c.endDate
+        WHERE u.status=1 and (u.id=#{userId} or u.id in
+        <foreach collection="userIds" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+        )
+        GROUP BY u.id, u.userName
+        ORDER BY totalMoney DESC
+    </select>
 
     </mapper>

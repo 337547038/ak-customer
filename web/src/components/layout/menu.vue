@@ -1,5 +1,6 @@
 <template>
   <el-menu
+      :unique-opened="true"
       :collapse="collapse"
       active-text-color="#ffd04b"
       background-color="rgb(48 65 86)"

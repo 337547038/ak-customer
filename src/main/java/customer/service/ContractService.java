@@ -49,4 +49,5 @@ public interface ContractService {
      */
     boolean deleteById(String[] id);
 
+    boolean isMeOrChild(Integer contractId);
 }

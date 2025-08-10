@@ -140,6 +140,15 @@ public class CustomerServiceImpl implements CustomerService {
             }
             extend.put("search", "child");
         }
+        if (extend.get("columns") == "diy" && extend.get("diyColumns") != null) {
+            Object col = extend.get("diyColumns");
+            if (col instanceof String) {
+                // 将 String 转换为 List<String>
+                List<String> list = new ArrayList<>();
+                list.add((String) col);
+                extend.put("diyColumns", list);
+            }
+        }
         long total = this.customerDao.count(customer, extend);
         List<Map<String, Object>> list = this.customerDao.queryAllByLimit(customer, extend);
         Map<String, Object> response = new HashMap<>();
@@ -306,7 +315,7 @@ public class CustomerServiceImpl implements CustomerService {
     /**
      * 移动客户
      *
-     * @param params 　ids需要移动的客户id，userId移动目标对象
+     * @param params ids需要移动的客户id，userId移动目标对象
      * @param type   类型 toUser移交
      * @return 结果
      */
@@ -355,7 +364,7 @@ public class CustomerServiceImpl implements CustomerService {
     /**
      * 分享或取消分享
      *
-     * @param params 　{ids:需要分享的客户id,userId:分享给谁,type=share分享否则为取消分享}
+     * @param params {ids:需要分享的客户id,userId:分享给谁,type=share分享否则为取消分享}
      * @return 成功与否
      */
     @Override

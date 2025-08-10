@@ -9,7 +9,7 @@
             v-bind="item"
         ><span v-html="item.title"></span
         ></el-text>
-        <slot :name="item.prop" v-else-if="item.render==='scope'&&item.prop"/>
+        <slot :name="item.prop" :rows="item" v-else-if="item.render==='scope'&&item.prop"/>
         <field
             v-else
             v-bind="item.attr"

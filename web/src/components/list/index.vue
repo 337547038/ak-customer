@@ -178,7 +178,7 @@
         pagination?: { pageSize: number; current: number } | boolean
         before?: (type: EventType, params: any) => boolean
         after?: (type: EventType, res: any, isSuccess?: boolean) => any
-        pk: number | string // 主键，用于删除等
+        pk?: number | string // 主键，用于删除等
         controlBtn?: Button[]
         showSearch?: boolean
         fixedBottomScroll?: boolean | string
@@ -208,6 +208,7 @@
             current: 1
           }
         },
+        pk:'id',
         showSearch: true,
         fixedBottomScroll: true,
         searchIconVisible: true,
@@ -475,6 +476,7 @@
 
   const handleSizeChange = (page: number) => {
     pageSize.value = page
+    console.log("1")
     getData()
   }
   const handleCurrentChange = (val: number) => {
@@ -510,8 +512,8 @@
             if (props.after) {
               data = props.after(source, data, true) || data
             }
-            tableData.value = data.list
-            total.value = data.total
+            tableData.value = data.list||data||[]
+            total.value = data.total||0
             loading.value = false
           })
           .catch((res) => {

@@ -25,7 +25,14 @@
     value: 'code',
     lazy: true,
     lazyLoad(node, resolve) {
-      const {level, value} = node
+      let {level, value} = node
+      if (['11', '12', '31', '50'].includes(value)) {
+        level = level + 1
+        value = value + '01'
+      }
+      if(['81','82'].includes(value)){
+        level = level + 1
+      }
       resolve(getCityArea(level, value))
     },
   }

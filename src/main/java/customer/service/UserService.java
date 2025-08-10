@@ -69,4 +69,12 @@ public interface UserService {
     boolean isChildrenUser(Integer userId);
 
     boolean hasChild();
+
+    List<Map<String, Object>> userCustomer();
+
+
+    List<Map<String,Object>> queryUserFollow();
+
+    @Cacheable(value = "analysis", key = "T(customer.utils.Utils).getCurrentUserId()+'_contract'")
+    List<Map<String, Object>> queryUserContract();
 }

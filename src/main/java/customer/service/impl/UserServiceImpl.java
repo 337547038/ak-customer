@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
      * @param pages 筛选条件分页对象
      * @return 查询结果
      */
-   // @PermissionCheck(value = {"/system/user"})
+    // @PermissionCheck(value = {"/system/user"})
     @Override
     public Map<String, Object> queryByPage(Map<String, Object> pages) {
         Map<String, Object> extend = Utils.getPagination(pages);//处理分页信息
@@ -95,7 +95,7 @@ public class UserServiceImpl implements UserService {
      * @param user 实例对象
      * @return 影响的行数
      */
-    @PermissionCheck(value = {"/system/user"})
+    //@PermissionCheck(value = {"/system/user"})
     @CacheEvict(value = "tokenVerify", key = "#user.id")
     @Override
     public Integer updateById(User user) {
@@ -156,6 +156,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 用于token校验，token一旦生成可通过修改会员状态使其失效,每次请求会调用一次
+     *
      * @param userId id
      * @return true or false
      */
@@ -167,6 +168,7 @@ public class UserServiceImpl implements UserService {
         user.setStatus(1);
         return this.userDao.count(user) > 0;
     }
+
     /**
      * 根据用户id返回所有子级
      *
@@ -221,5 +223,41 @@ public class UserServiceImpl implements UserService {
         user.setStatus(1);
         long total = this.userDao.count(user);
         return total > 0;
+    }
+
+    /**
+     * 统计当前用户及下属的客户数量及合合
+     * @return list
+     */
+    @Cacheable(value = "analysis", key = "T(customer.utils.Utils).getCurrentUserId()+'_userCustomer'")
+    @Override
+    public List<Map<String, Object>> userCustomer() {
+        Integer userId = Utils.getCurrentUserId();
+        List<String> list = queryUserChild(userId, "");
+        return this.userDao.queryUserCustomerNum(userId, list);
+    }
+
+    /**
+     * 统计员工跟进分析
+     * @return list
+     */
+    @Cacheable(value = "analysis", key = "T(customer.utils.Utils).getCurrentUserId()+'_follow'")
+    @Override
+    public List<Map<String,Object>> queryUserFollow() {
+        Integer userId = Utils.getCurrentUserId();
+        List<String> list = queryUserChild(userId, "");
+        return this.userDao.queryUserFollow(userId,list);
+    }
+
+    /**
+     * 分析统计合同排行
+     * @return list
+     */
+    @Cacheable(value = "analysis", key = "T(customer.utils.Utils).getCurrentUserId()+'_contract'")
+    @Override
+    public List<Map<String, Object>> queryUserContract() {
+        Integer userId = Utils.getCurrentUserId();
+        List<String> list = queryUserChild(userId, "");
+        return this.userDao.queryUserContract(userId,list);
     }
 }
