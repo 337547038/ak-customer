@@ -12,4 +12,6 @@ public interface AnalysisService {
     List<Map<String, Object>> customerFollow();
 
     List<Map<String, Object>> customerContract();
+
+    Map<String, Object> summary();
 }

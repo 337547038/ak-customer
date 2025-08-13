@@ -38,7 +38,7 @@ public interface ContractDao {
      * @param contract 查询条件
      * @return 总行数
      */
-    long count(Contract contract);
+    long count(@Param("query") Contract contract,@Param("extend") Map<String,Object> extend);
 
     /**
      * 新增数据

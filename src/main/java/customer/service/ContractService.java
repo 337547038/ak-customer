@@ -50,4 +50,6 @@ public interface ContractService {
     boolean deleteById(String[] id);
 
     boolean isMeOrChild(Integer contractId);
+
+    Long total(Contract contract, Map<String, Object> extend);
 }

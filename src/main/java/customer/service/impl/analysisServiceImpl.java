@@ -1,10 +1,10 @@
 package customer.service.impl;
 
 import customer.config.PermissionCheck;
-import customer.service.AnalysisService;
-import customer.service.CustomerService;
+import customer.entity.Contract;
+import customer.entity.ContractPayment;
+import customer.service.*;
 
-import customer.service.UserService;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,10 +16,16 @@ public class analysisServiceImpl implements AnalysisService {
 
     private final CustomerService customerService;
     private final UserService userService;
+    private final ContractService contractService;
+    private final ContractPaymentService contractPaymentService;
+    private final ContactService contactService;
 
-    public analysisServiceImpl(CustomerService customerService, UserService userService) {
+    public analysisServiceImpl(CustomerService customerService, UserService userService, ContractService contractService, ContractPaymentService contractPaymentService, ContactService contactService) {
         this.customerService = customerService;
         this.userService = userService;
+        this.contractService = contractService;
+        this.contractPaymentService = contractPaymentService;
+        this.contactService = contactService;
     }
 
     @Cacheable(value = "analysis", key = "T(customer.utils.Utils).getCurrentUserId()+'_'+ #params.get('userId')+ '_Customer'")
@@ -62,5 +68,27 @@ public class analysisServiceImpl implements AnalysisService {
     @Override
     public List<Map<String, Object>> customerContract() {
         return this.userService.queryUserContract();
+    }
+
+    @Override
+    public Map<String, Object> summary() {
+        Map<String, Object> extend = new HashMap<>();
+        extend.put("search", "child");
+        Contract contract = new Contract();
+        contract.setStatus(1);
+        long todoContract = this.contractService.total(contract, extend);
+        Map<String, Object> result = new HashMap<>();
+        result.put("contract", todoContract); // 待审核合同
+        ContractPayment contractPayment = new ContractPayment();
+        contractPayment.setStatus(1);
+        long todoPayment = this.contractPaymentService.total(contractPayment, extend);
+        result.put("payment", todoPayment);
+        // 待跟进客户列表
+        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> listExtend = new HashMap<>();
+
+        params.put("extend", listExtend);
+        Map<String, Object> list = this.contactService.queryByPage(params);
+        return result;
     }
 }

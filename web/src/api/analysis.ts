@@ -3,4 +3,5 @@ export default {
     analysisCustomerNum:'analysis/customerNum',
     analysisFollow:'analysis/follow',
     analysisContract:'analysis/contract',
+    analysisSummary:'analysis/summary',
 }

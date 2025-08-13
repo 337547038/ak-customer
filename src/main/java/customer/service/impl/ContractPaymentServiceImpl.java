@@ -64,8 +64,16 @@ public class ContractPaymentServiceImpl implements ContractPaymentService {
         Map<String, Object> extend = Utils.getPagination(pages);//处理分页信息
         ContractPayment contractPayment = JSON.parseObject(JSON.toJSONString(pages), ContractPayment.class);//json字符串转java对象
         Object userId = pages.get("userId");
-        if (userId == null || userId == Utils.getCurrentUserId()) {
-            // 查看自己的
+        if (userId == null) {
+            if (extend.get("search") == "child") {
+                // 查询所有下属
+                List<String> ids = this.userService.queryUserChild(Utils.getCurrentUserId(), "");
+                extend.put("userIds", ids);
+            } else {
+                // 查看自己的
+                extend.put("userId", Utils.getCurrentUserId());
+            }
+        } else if (userId == Utils.getCurrentUserId()) {
             extend.put("userId", Utils.getCurrentUserId());
         } else {
             // 查看指定下属的
@@ -126,5 +134,10 @@ public class ContractPaymentServiceImpl implements ContractPaymentService {
         extend.put("userIds", ids);
         extend.put("userId", Utils.getCurrentUserId());
         return this.contractPaymentDao.deleteById(id, extend) > 0;
+    }
+
+    @Override
+    public Long total(ContractPayment contractPayment, Map<String, Object> extend) {
+        return this.contractPaymentDao.count(contractPayment, extend);
     }
 }

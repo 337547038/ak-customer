@@ -48,7 +48,8 @@ public class ContractController {
             @Parameter(name = "extend.pageSize",description = "每页显示多少条"),
             @Parameter(name = "extend.sort",description = "排序"),
             @Parameter(name = "extend.columns",description = "返回指定查询字段"),
-            @Parameter(name = "query",description = "查询条件")
+            @Parameter(name = "**",description = "查询条件"),
+            @Parameter(name = "extend.search",description = "可选child查询下属"),
     })
     @PostMapping("list")
     public ResponseEntity<Map<String, Object>> queryByPage(@RequestBody Map<String, Object> pages) {

@@ -69,13 +69,17 @@ public class ContractServiceImpl implements ContractService {
                 }
             }
         } else {
-            // 没传时只能查看自己的
-            contract.setUserId(Utils.getCurrentUserId());
+            if (extend.get("search") == "child") {
+                // 查询所有下属
+                List<String> ids = this.userService.queryUserChild(Utils.getCurrentUserId(), "");
+                extend.put("userIds", ids);
+            } else {
+                // 没传时只能查看自己的
+                contract.setUserId(Utils.getCurrentUserId());
+            }
         }
-        long total = this.contractDao.count(contract);
-        System.out.println("total = " + total);
+        long total = this.contractDao.count(contract, extend);
         List<Map<String, Object>> list = this.contractDao.queryAllByLimit(contract, extend);
-        System.out.println(list);
         Map<String, Object> response = new HashMap<>();
         response.put("list", list);
         response.put("total", total);
@@ -107,8 +111,9 @@ public class ContractServiceImpl implements ContractService {
     @PermissionCheck(value = {"/contract/contract"})
     @Override
     public Integer updateById(Contract contract) {
+        //　每次修改将状态改为待审核
+        contract.setStatus(1);
         return this.contractDao.updateById(contract);
-        //return this.queryById(contract.getId());
     }
 
     /**
@@ -143,5 +148,10 @@ public class ContractServiceImpl implements ContractService {
         List<String> ids = this.userService.queryUserChild(Utils.getCurrentUserId(), "");
         extend.put("userIds", ids);
         return this.contractDao.queryIsMeOrChild(extend) > 0;
+    }
+
+    @Override
+    public Long total(Contract contract, Map<String, Object> extend) {
+        return this.contractDao.count(contract, extend);
     }
 }

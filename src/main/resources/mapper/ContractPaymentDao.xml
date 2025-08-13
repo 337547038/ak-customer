@@ -33,8 +33,13 @@
         from sys_contract_payment as p
         join sys_contract c on c.id=p.contractId
         left join sys_customer cu on cu.id=c.customerId
-
         <where>
+            <if test="extend.userIds != null and extend.userId==null">
+                and c.userId in
+                <foreach collection="extend.userIds" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
             <if test="extend.userId != null">
                 and c.userId = #{extend.userId}
             </if>
@@ -85,6 +90,12 @@
         from sys_contract_payment p
         join sys_contract c on c.id=p.contractId
         <where>
+            <if test="extend.userIds != null and extend.userId==null">
+                and c.userId in
+                <foreach collection="extend.userIds" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
             <if test="extend.userId != null">
                 and c.userId = #{extend.userId}
             </if>

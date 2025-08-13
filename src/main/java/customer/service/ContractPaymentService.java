@@ -49,4 +49,5 @@ public interface ContractPaymentService {
      */
     boolean deleteById(String[] id);
 
+    Long total(ContractPayment contractPayment, Map<String, Object> extend);
 }

@@ -32,6 +32,7 @@ public class AnalysisController {
 
     /**
      * 统计员工客户数量及合同
+     *
      * @return list
      */
     @Operation(summary = "员工客户数量统计")
@@ -50,5 +51,16 @@ public class AnalysisController {
     @PostMapping("contract")
     public List<Map<String, Object>> customerContract() {
         return analysisService.customerContract();
+    }
+
+    /**
+     * 首页汇总
+     *
+     * @return result
+     */
+    @Operation(summary = "首页汇总")
+    @PostMapping("summary")
+    public Map<String, Object> summary() {
+        return analysisService.summary();
     }
 }

@@ -81,7 +81,6 @@ public class ContactServiceImpl implements ContactService {
         } else {
             // 如果传了id时，则查看指定下属
             boolean isChildUser = this.userService.isChildrenUser((Integer) userId);
-            System.out.println(isChildUser + ":isChildUser");
             if (!isChildUser) {
                 throw new CustomException("请确认你是否具有查看此用户的联系人权限");
             }
