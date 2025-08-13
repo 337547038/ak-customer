@@ -57,6 +57,8 @@ public interface UserService {
 
     boolean tokenVerify(Integer userId);
 
+    String queryUserFather(Integer userId);
+
     /**
      * 根据用户id返回所有子级
      * @param userId 用户id

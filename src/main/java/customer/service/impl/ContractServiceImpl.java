@@ -73,7 +73,9 @@ public class ContractServiceImpl implements ContractService {
             contract.setUserId(Utils.getCurrentUserId());
         }
         long total = this.contractDao.count(contract);
+        System.out.println("total = " + total);
         List<Map<String, Object>> list = this.contractDao.queryAllByLimit(contract, extend);
+        System.out.println(list);
         Map<String, Object> response = new HashMap<>();
         response.put("list", list);
         response.put("total", total);

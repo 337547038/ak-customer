@@ -2,6 +2,27 @@ import {markRaw} from "vue";
 import ProvincesCity from "@/components/provincesCity/index.vue";
 import getCityByCode from "@/utils/getCityByCode";
 
+export const columnUser = {
+    label: '所属人员',
+    prop: 'userId',
+    width: 100,
+    search: {
+        changeRefresh: true,
+        style: {width: '230px'},
+        render: 'select',
+        ajax: {
+            api: 'userChildList',
+            data: {},
+            label: 'userName',
+            value: 'id'
+        },
+        clearable: true
+    },
+    formatter: (row: any) => {
+        return row.userName
+    }
+}
+
 export default [
     {
         type: 'selection',
@@ -15,19 +36,13 @@ export default [
     {
         prop: 'company',
         label: '客户名称',
-        width: 180,
+        width: 240,
         showOverflowTooltip: true
-    },
-    {
-        prop: 'userName',
-        label: '所属人员',
-        width: 90,
-        search: false
     },
     {
         prop: 'type',
         label: '合作类型',
-        width: 120,
+        width: 150,
         render: 'tag',
         replaceValue: 'cooperationType',
         search: {
@@ -45,13 +60,13 @@ export default [
         formatter: (row: any, column: any, cellValue: any) => {
             return getCityByCode(cellValue)
         },
-        width: 160,
+        width: 200,
         showOverflowTooltip: true
     },
     {
         prop: 'industry',
         label: '行业分类',
-        width: 120,
+        width: 150,
         render: 'tag',
         replaceValue: 'industryType',
         search: {
@@ -62,7 +77,7 @@ export default [
     {
         prop: 'source',
         label: '来源',
-        width: 100,
+        width: 140,
         render: 'tag',
         replaceValue: 'source',
         search: {
@@ -73,7 +88,7 @@ export default [
     {
         prop: 'lastTime',
         label: '最近联系时间',
-        width: 120,
+        width: 150,
         showOverflowTooltip: true,
         render: 'datetime',
         search: false
@@ -83,7 +98,7 @@ export default [
         label: '下次联系时间',
         render: 'datetime',
         search: false,
-        width: 120,
+        width: 150,
         showOverflowTooltip: true
     },
     {
@@ -91,13 +106,13 @@ export default [
         label: '创建时间',
         render: 'datetime',
         search: false,
-        width: 120,
+        width: 150,
         showOverflowTooltip: true
     },
     {
         prop: 'updateTime',
         label: '更新时间',
-        width: 120,
+        width: 150,
         showOverflowTooltip: true,
         render: 'datetime',
         search: false
@@ -106,9 +121,8 @@ export default [
         prop: 'operation',
         label: '操作',
         render: 'buttons',
-        width: 70,
         search: false,
-        fixed:'right',
+        fixed: 'right',
         buttons: [
             {
                 key: 'detail',
@@ -117,22 +131,7 @@ export default [
                 attr: {
                     text: true
                 }
-            },
-            /*{
-                key: 'follow',
-                label: '跟进',
-                attr: {
-                    text: true
-                }
-            },*/
-            /*{
-                key: 'del',
-                label: '删除',
-                icon: '',
-                attr: {
-                    text: true
-                }
-            }*/
+            }
         ]
     }
 ]

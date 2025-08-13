@@ -73,7 +73,7 @@ public interface UserDao {
      * @param userId 用户id
      * @return 子级列表
      */
-    List<Map<String,Object>> queryUserChild(Integer userId);
+    List<Map<String,Object>> queryUserChildFather(@Param("userId") Integer userId, @Param("isChild") boolean isChild);
 
     List<Map<String,Object>> queryUserCustomerNum(@Param("userId") Integer userId, @Param("userIds") List<String> userIds);
     List<Map<String,Object>> queryUserFollow(@Param("userId") Integer userId, @Param("userIds") List<String> userIds);

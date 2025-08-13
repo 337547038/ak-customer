@@ -37,7 +37,7 @@ id, userName, status, creatTime, updateTime, lastLogin, loginTimer, ip, remark, 
         <select id="queryAllByLimit">
             select
             u.id, userName, u.status, creatTime, updateTime, lastLogin, loginTimer, ip, u.remark, departmentId,d.name as departmentName, u.tid, phone, weixin, qq, sex, roleId,bindWX
-            from sys_user as u join sys_department as d on departmentId=d.id
+            from sys_user as u left join sys_department as d on departmentId=d.id
             <where>
                     <if test="query.id != null">
                         and u.id = #{query.id}
@@ -244,19 +244,26 @@ id, userName, status, creatTime, updateTime, lastLogin, loginTimer, ip, remark, 
             #{item}
         </foreach>
     </select>
-    <!--根据用户id返回所有子级，不包含自己-->
-    <select id="queryUserChild">
-        WITH RECURSIVE subordinates AS (SELECT id, userName, status
-                                        FROM sys_user
-                                        WHERE status = 1
-                                          and id = #{id}
-                                        UNION ALL
-                                        SELECT u.id, u.userName, u.status
-                                        FROM sys_user u
-                                                 JOIN subordinates s ON u.tid = s.id and u.status = 1)
+    <!--根据用户id返回所有子级或父级，不包含自己-->
+    <select id="queryUserChildFather">
+        WITH RECURSIVE subordinates AS (SELECT id, userName, status,tid
+        FROM sys_user
+        WHERE status = 1
+        and id = #{userId}
+        UNION ALL
+        SELECT u.id, u.userName, u.status,u.tid
+        FROM sys_user u
+        JOIN subordinates s ON
+        <if test="isChild">
+            u.tid = s.id
+        </if>
+        <if test="!isChild">
+            u.id = s.tid
+        </if>
+        and u.status = 1)
         select id,userName
         from subordinates
-        where id != #{id}
+        where id != #{userId}
     </select>
     <!--用于统计用户有多少客户及合同-->
     <select id="queryUserCustomerNum">
@@ -301,9 +308,10 @@ id, userName, status, creatTime, updateTime, lastLogin, loginTimer, ip, remark, 
     </select>
     <!--统计每个用户的合同-->
     <select id="queryUserContract">
-        SELECT u.id AS userId,u.userName,COUNT(c.id) AS count,COALESCE(SUM(c.money), 0) AS totalMoney,COALESCE(SUM(c.payment), 0) AS totalPayment
+        SELECT u.id AS userId,u.userName,COUNT(c.id) AS count,COALESCE(SUM(c.money), 0) AS totalMoney,COALESCE(SUM(p.money), 0) AS totalPayment
         FROM sys_user u
         LEFT JOIN sys_contract c ON u.id = c.userId AND CURRENT_DATE BETWEEN c.startDate AND c.endDate
+        left join sys_contract_payment p on p.contractId=c.id
         WHERE u.status=1 and (u.id=#{userId} or u.id in
         <foreach collection="userIds" item="item" separator="," open="(" close=")">
             #{item}

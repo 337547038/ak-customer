@@ -1,6 +1,6 @@
 <template>
   <el-form :inline="true" class="search-form" :model="searchForm" ref="formEl">
-    <template v-for="(item, index) in columnsFilter" :key="index">
+    <template v-for="(item, index) in columnsFilter" :key="item.prop||item.type">
       <field
           v-bind="item.search"
           :render="item.search?.render"

@@ -44,6 +44,12 @@
             :company="drawerObj.company"
             ref="contactRef"/>
       </el-tab-pane>
+      <el-tab-pane label="合同" name="contract" v-if="!isAddForm">
+        <Contract
+            :isComponents="true"
+            :cId="drawerObj.id"
+            ref="contractRef"/>
+      </el-tab-pane>
       <el-tab-pane label="操作记录" name="operate" v-if="!isAddForm">
         <el-timeline>
           <el-timeline-item
@@ -76,6 +82,7 @@
   import uploadFiles from './upload.vue'
   import Follow from "../../follow/index.vue";
   import ShareInfo from "./shareInfo.vue";
+  import Contract from "@/views/contract/contract/index.vue";
 
   const props = withDefaults(
       defineProps<{
@@ -122,6 +129,7 @@
   }
   //tabs
   const contactRef = ref()
+  const contractRef = ref()
   const followRef = ref()
   const shareInfoRef = ref()
   const handleClick = (name: string) => {
@@ -131,6 +139,9 @@
         break;
       case 'contact':
         contactRef.value.getData()
+        break;
+      case 'contract':
+        contractRef.value.getData()
         break;
       case 'operate':
         getOperateList()

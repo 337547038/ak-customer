@@ -24,12 +24,11 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.*;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import java.util.stream.Collectors;
+
 import jakarta.annotation.Resource;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static customer.utils.Utils.getToken;
 
@@ -92,7 +91,18 @@ public class UserController {
     @Operation(summary = "根据id查询数据")
     @PostMapping("get")
     public ResponseEntity<User> queryById(@RequestBody Map<String, Integer> query) {
-        return ResponseEntity.ok(this.userService.queryById(query.get("id")));
+        User user = this.userService.queryById(query.get("id"));
+        // 加载完整部门
+        if (user.getDepartmentId() != null) {
+            String path = this.departmentService.queryDeptFullPathString(user.getDepartmentId());
+            user.setDepartmentName(path);
+        }
+        // 加载完整上级
+        if (user.getTid() != null) {
+            String path = this.userService.queryUserFather(user.getId());
+            user.setTidName(path);
+        }
+        return ResponseEntity.ok(user);
     }
 
     /**
@@ -118,8 +128,12 @@ public class UserController {
     public ResponseEntity<User> queryByCurrentUser() {
         User user = this.userService.queryById(Utils.getCurrentUserId());
         // 查询直属上级
-        User leader = this.userService.queryById(user.getTid());
-        user.setTidName(leader.getUserName());
+        if (user.getTid() != null) {
+            User leader = this.userService.queryById(user.getTid());
+            user.setTidName(leader.getUserName());
+        } else {
+            user.setTidName("无直属上级");
+        }
         // 查询所在部门
         Department department = this.departmentService.queryById(user.getDepartmentId());
         user.setDepartmentName(department.getName());

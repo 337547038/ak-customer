@@ -6,13 +6,13 @@ import customer.utils.Utils;
 import customer.entity.Department;
 import customer.dao.DepartmentDao;
 import customer.service.DepartmentService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * (Department)表服务实现类
@@ -31,7 +31,7 @@ public class DepartmentServiceImpl implements DepartmentService {
      * @param id 主键
      * @return 实例对象
      */
-    @PermissionCheck(value = {"/system/dept"})
+    //@PermissionCheck(value = {"/system/dept"})
     @Override
     public Department queryById(Integer id) {
         return this.departmentDao.queryById(id);
@@ -99,5 +99,40 @@ public class DepartmentServiceImpl implements DepartmentService {
             return false;
         }
         return this.departmentDao.deleteById(id) > 0;
+    }
+
+    /**
+     * 根据部门id查询完整部分路径
+     *
+     * @param id 部门id
+     * @return list
+     */
+    @Cacheable(value = "department",key="'departmentPath_'+#id")
+    @Override
+    public List<Map<String, Object>> queryDeptFullPath(Integer id) {
+        return this.departmentDao.queryDeptFullPath(id);
+    }
+
+
+    /**
+     * 根据部门id查询完整部分路径
+     *
+     * @param id 部门id
+     * @return 路径字符串
+     */
+    @Cacheable(value = "department",key="'departmentPathString_'+#id")
+    @Override
+    public String queryDeptFullPathString(Integer id) {
+        List<Map<String, Object>> list = this.departmentDao.queryDeptFullPath(id);
+        return list.stream()
+                .map(map -> String.valueOf(map.get("name")))  // 提取 name
+                .filter(Objects::nonNull)    // 过滤 null
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toList(),
+                        names -> {
+                            Collections.reverse(names);  // 逆序
+                            return String.join(",", names);  // 拼接成字符串
+                        }
+                ));
     }
 }

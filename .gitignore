@@ -28,6 +28,8 @@ target/
 build/
 logs/
 upload/
+web/docs
+/docs
 !**/src/main/**/build/
 !**/src/test/**/build/
 

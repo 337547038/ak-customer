@@ -318,29 +318,6 @@
       label: 'qq号码'
     },
     {
-      prop: 'tid',
-      label: '直属上级',
-      //tooltip: '默认为所属部门负责人',
-      render: 'component',
-      component: markRaw(userSelect),
-      attr: {
-        //placeholder: '默认为所属部门负责人'
-      }
-    },
-    {
-      prop: 'departmentId',
-      label: '所属部门',
-      render: 'tree-select',
-      attr: {
-        data: departmentTree,
-        placeholder: '请选择上级部门',
-        load: lazyLoadSelect,
-        lazy: true,
-        checkStrictly: true,
-        props: {children: 'children', label: 'name', value: 'id', isLeaf: 'hasChildren'}
-      }
-    },
-    {
       prop: 'roleId',
       label: '角色权限',
       render: 'select',
@@ -358,6 +335,48 @@
       formItem: {
         rules: [validate('required', '请选择角色权限')],
       }
+    },
+    {
+      prop: 'departmentId',
+      label: '所属部门',
+      render: 'tree-select',
+      attr: {
+        clearable: true,
+        data: departmentTree,
+        placeholder: '请选择上级部门',
+        load: lazyLoadSelect,
+        lazy: true,
+        checkStrictly: true,
+        props: {children: 'children', label: 'name', value: 'id', isLeaf: 'hasChildren'}
+      },
+      formItem: {
+        rules: [{
+          required: true,
+          message: '请选择所属部门',
+          trigger: 'blur'
+        }]
+      }
+    },
+    {
+      prop: 'tid',
+      label: '直属上级',
+      render: 'component',
+      component: markRaw(userSelect),
+      attr: {
+        //placeholder: '默认为所属部门负责人'
+      }
+    },
+    {
+      prop: 'departmentName',
+      label:'所属部门',
+      render:'text',
+      visible: isDetailForm
+    },
+    {
+      prop: 'tidName',
+      label:'直属上级',
+      render:'text',
+      visible: isDetailForm
     },
     {
       prop: 'creatTime',

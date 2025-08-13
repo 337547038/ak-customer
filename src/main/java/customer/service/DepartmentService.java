@@ -2,6 +2,7 @@ package customer.service;
 
 import customer.entity.Department;
 
+import java.util.List;
 import java.util.Map;
 /**
  * (Department)表服务接口
@@ -49,4 +50,7 @@ public interface DepartmentService {
      */
     boolean deleteById(String[] id);
 
+    List<Map<String,Object>> queryDeptFullPath(Integer id);
+
+    String queryDeptFullPathString(Integer id);
 }

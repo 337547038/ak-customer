@@ -78,6 +78,7 @@
                 and c.status = #{query.status}
             </if>
         </where>
+        GROUP BY c.id
         <choose>
             <when test="extend.sort != null and extend.sort!=''">
                 order by ${extend.sort}

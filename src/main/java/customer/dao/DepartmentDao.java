@@ -64,5 +64,7 @@ public interface DepartmentDao {
      */
     int deleteById(@Param("id") String[] id);
 
+    List<Map<String,Object>> queryDeptFullPath(@Param("id") Integer id);
+
 }
 

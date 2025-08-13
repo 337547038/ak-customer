@@ -238,9 +238,11 @@ public class CustomerServiceImpl implements CustomerService {
      */
     @Override
     public boolean importXlsx(MultipartFile file) {
-        if (!file.getOriginalFilename().endsWith(".xlsx")) {
+        if (!Objects.requireNonNull(file.getOriginalFilename()).endsWith(".xlsx")) {
             throw new CustomException(0, "请上传正确的文件格式");
         }
+        //0客户名称　1所属区域　2地址　3统一社会信用代码　4电话　5网址　6品牌名称
+        //7联系人　8手机　9微信　10ＱＱ　11电子邮件　12职位
         try {
             InputStream inputStream = file.getInputStream();
             Workbook workbook = new XSSFWorkbook(inputStream);
@@ -254,21 +256,43 @@ public class CustomerServiceImpl implements CustomerService {
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
                 Customer customer = new Customer();
-                // 这里应该要过滤重复的用户名 todo
                 customer.setCompany(getCellValue(row.getCell(0)));
-                customer.setArea(getCellValue(row.getCell(1)));
-                customer.setAddress(getCellValue(row.getCell(2)));
-                customer.setCode(getCellValue(row.getCell(3)));
-                customer.setTel(getCellValue(row.getCell(4)));
-                customer.setWeb(getCellValue(row.getCell(5)));
-                customer.setBrandName(getCellValue(row.getCell(6)));
-                customer.setCreatTime(new Date());
-                customer.setUserId(Utils.getCurrentUserId());
-                // 读取单元格数据
+
+                List<Map<String, Object>> list = this.customerDao.exist(customer);
+                Contact contact = new Contact();
+                contact.setName(getCellValue(row.getCell(7)));
+                contact.setPhone(getCellValue(row.getCell(8)));
+                contact.setWeixin(getCellValue(row.getCell(9)));
+                contact.setWeixin(getCellValue(row.getCell(10)));
+                contact.setEmail(getCellValue(row.getCell(11)));
+                contact.setPosition(getCellValue(row.getCell(12)));
+
+                if (!list.isEmpty()) {
+                    // 存在相同客户名称，检查是不是自己的
+                    Integer userId = (Integer) list.get(0).get("userId");
+                    if (userId.equals(Utils.getCurrentUserId())) {
+                        // 自己的，添加联系人记录
+                        contact.setTid((Integer) list.get(0).get("id"));
+                        insertContact(contact);
+                    }
+                } else {
+                    customer.setArea(getCellValue(row.getCell(1)));
+                    customer.setAddress(getCellValue(row.getCell(2)));
+                    customer.setCode(getCellValue(row.getCell(3)));
+                    customer.setTel(getCellValue(row.getCell(4)));
+                    customer.setWeb(getCellValue(row.getCell(5)));
+                    customer.setBrandName(getCellValue(row.getCell(6)));
+                    customer.setCreatTime(new Date());
+                    customer.setUserId(Utils.getCurrentUserId());
+                    // 读取单元格数据
                 /*String name = getCellValue(row.getCell(0));
                 Integer age = parseIntCellValue(row.getCell(1));
                 */
-                this.customerDao.insert(customer);
+                    this.customerDao.insert(customer);
+                    // 添加联系人
+                    contact.setTid(customer.getId());
+                    insertContact(contact);
+                }
             }
             return true;
         } catch (IOException e) {
@@ -311,6 +335,14 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
+
+    private void insertContact(Contact contact) {
+        if (contact.getTid() != null && contact.getName() != null && contact.getPhone() != null) {
+            contact.setCreatDate(new Date());
+            contact.setDecisionMaker(3);
+            this.contactDao.insert(contact);
+        }
+    }
 
     /**
      * 移动客户

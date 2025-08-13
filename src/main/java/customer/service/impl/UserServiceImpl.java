@@ -170,6 +170,27 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 根据id获取当前会员所有上级
+     * @param userId 当前用户id
+     * @return 所有上级
+     */
+    @Override
+    @Cacheable(value = "userChild", key = "'fatherList_'+#userId")
+    public String queryUserFather(Integer userId) {
+        List<Map<String, Object>> list = this.userDao.queryUserChildFather(userId,false);
+        return list.stream()
+                .map(map -> String.valueOf(map.get("userName")))  // 提取 name
+                .filter(Objects::nonNull)    // 过滤 null
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toList(),
+                        names -> {
+                            Collections.reverse(names);  // 逆序
+                            return String.join(",", names);  // 拼接成字符串
+                        }
+                ));
+    }
+
+    /**
      * 根据用户id返回所有子级
      *
      * @param userId 用户id
@@ -179,13 +200,13 @@ public class UserServiceImpl implements UserService {
     // 整个缓存
     @Cacheable(value = "userChild", key = "#userId")
     public List<Map<String, Object>> queryUserChild(Integer userId) {
-        return this.userDao.queryUserChild(userId);
+        return this.userDao.queryUserChildFather(userId,true);
     }
 
     @Override
     @Cacheable(value = "userChild", key = "#userId+'String'")
     public List<String> queryUserChild(Integer userId, String type) {
-        List<Map<String, Object>> list = this.userDao.queryUserChild(userId);
+        List<Map<String, Object>> list = this.userDao.queryUserChildFather(userId,true);
         // 提取所有id并转为List<String>
         return list.stream()
                 .map(map -> String.valueOf(map.get("id"))) // 确保转换为String
@@ -202,7 +223,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Cacheable(value = "userChild", key = "#userId+'ChildUser'")
     public boolean isChildrenUser(Integer userId) {
-        List<Map<String, Object>> list = this.userDao.queryUserChild(Utils.getCurrentUserId());
+        List<Map<String, Object>> list = queryUserChild(Utils.getCurrentUserId());
         if (list == null || userId == null) {
             return false;
         }

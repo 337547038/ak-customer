@@ -6,6 +6,7 @@
       :api="{list:'contractList',del:'contractDel'}"
       :control-btn="[{key:'add',click:()=>{addClick()}}]"
       @formFieldChange="searchFormChange"
+      :auto-load="!isComponents"
       :before="beforeList">
     <template #code="{row}">
       <el-tag type="danger" v-if="getShowTag(row)">已过期</el-tag>
@@ -57,6 +58,7 @@
   const props = withDefaults(
       defineProps<{
         isComponents?: boolean
+        cId?: number
       }>(),
       {}
   )
@@ -123,19 +125,20 @@
         userId: currentUserId,
         visible: showCompany,
         component: markRaw(customerSelect)
-      }
+      },
+      show: showCompany,
     },
     {
       prop: 'money',
       label: '合同金额',
       search: false,
-      width:110
+      width: 110
     },
     {
       prop: 'payment',
       label: '已收款项',
       search: false,
-      width:110
+      width: 110
     },
     {
       prop: 'contactId',
@@ -144,7 +147,7 @@
       formatter: (row) => {
         return row.contactName
       },
-      width:100
+      width: 100
     },
     {
       prop: 'startDate',
@@ -167,7 +170,7 @@
       label: '创建时间',
       render: 'date',
       search: false,
-      width:100
+      width: 100
     },
     {
       prop: 'status',
@@ -185,7 +188,7 @@
       prop: 'operate',
       label: '操作',
       render: 'buttons',
-      width:180,
+      width: 180,
       fixed: 'right',
       buttons: [
         {
@@ -232,6 +235,9 @@
         params.startDate = params.startEndDate[0]
         params.endDate = params.startEndDate[1]
         delete params.startEndDate
+      }
+      if (props.cId) {
+        params.customerId = props.cId
       }
     }
     return params
@@ -379,6 +385,12 @@
   const getShowTag = (row: any) => {
     return row.startDate < new Date() && row.endDate > new Date()
   }
+
+  const getData = () => {
+    tableListRef.value.getData()
+  }
+
+  defineExpose({getData})
 </script>
 
 <style scoped lang="scss">

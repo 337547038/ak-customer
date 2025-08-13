@@ -1,14 +1,14 @@
 <template>
   <el-tabs v-model="activeName" class="demo-tabs" @tab-change="handleClick">
     <el-tab-pane label="我的客户" name="default"></el-tab-pane>
-    <el-tab-pane label="下属客户" name="child"></el-tab-pane>
+    <el-tab-pane label="下属客户" name="child" v-if="hasChild"></el-tab-pane>
     <el-tab-pane label="共享客户" name="shareWithMe"></el-tab-pane>
     <el-tab-pane label="我共享的" name="myShare"></el-tab-pane>
   </el-tabs>
   <ak-list
       ref="tableListEl"
       pk="id"
-      :columns="columns"
+      :columns="columnsFilter"
       :api="{ list: 'customerList',export:'customerExport'}"
       :controlBtn="controlBtn"
       :before="beforeList"
@@ -28,20 +28,39 @@
 <script setup lang="ts">
   import {ref, computed} from 'vue'
   import importDialog from './components/import.vue'
-  import columns from './columns'
+  import columns, {columnUser} from './columns'
   import {Button} from "@/components/list/types";
   import DetailTable from './components/detailTabs.vue'
   import UserDialog from '@/components/userDialog/index.vue'
   import {getRequest} from "@/api";
   import {ElMessage} from "element-plus";
+  import {useLayoutStore} from "@/store/layout";
+
+  const layoutStore = useLayoutStore()
 
   const userDialogRef = ref()
   const userMultiple = ref(false)
   //　tabs
   const activeName = ref('default')
+
+  const hasChild = computed(() => {
+    return layoutStore.userInfo?.hasChild
+  })
   const handleClick = (name: string) => {
     getData()
   }
+
+  const columnsFilter = computed(() => {
+    if (activeName.value === 'child') {
+      return [
+        ...columns.slice(0, 3),
+        columnUser,
+        ...columns.slice(3),
+      ]
+    }
+    return columns
+  })
+
   // list btn
   const importDialogRef = ref()
   // list
