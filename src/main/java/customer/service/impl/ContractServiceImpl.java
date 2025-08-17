@@ -3,6 +3,8 @@ package customer.service.impl;
 import com.alibaba.fastjson2.JSON;
 import customer.config.CustomException;
 import customer.config.PermissionCheck;
+import customer.service.CommonService;
+import customer.service.CustomerService;
 import customer.service.UserService;
 import customer.utils.Utils;
 import customer.entity.Contract;
@@ -28,8 +30,11 @@ public class ContractServiceImpl implements ContractService {
 
     private final UserService userService;
 
-    public ContractServiceImpl(UserService userService) {
+    private final CommonService commonService;
+
+    public ContractServiceImpl(UserService userService, CommonService commonService) {
         this.userService = userService;
+        this.commonService = commonService;
     }
 
     /**
@@ -57,9 +62,9 @@ public class ContractServiceImpl implements ContractService {
     @PermissionCheck(value = {"/contract/contract"})
     @Override
     public Map<String, Object> queryByPage(Map<String, Object> pages) {
-        Map<String, Object> extend = Utils.getPagination(pages);//处理分页信息
+        Map<String, Object> extend = this.commonService.queryParams(pages);//处理分页信息
         Contract contract = JSON.parseObject(JSON.toJSONString(pages), Contract.class);//json字符串转java对象
-        if (contract.getUserId() != null) {
+        /*if (contract.getUserId() != null) {
             // 传了查询用户id
             if (!contract.getUserId().equals(Utils.getCurrentUserId())) {
                 // 不是查自己的
@@ -69,7 +74,7 @@ public class ContractServiceImpl implements ContractService {
                 }
             }
         } else {
-            if (extend.get("search") == "child") {
+            if ("child".equals(extend.get("search"))) {
                 // 查询所有下属
                 List<String> ids = this.userService.queryUserChild(Utils.getCurrentUserId(), "");
                 extend.put("userIds", ids);
@@ -77,7 +82,7 @@ public class ContractServiceImpl implements ContractService {
                 // 没传时只能查看自己的
                 contract.setUserId(Utils.getCurrentUserId());
             }
-        }
+        }*/
         long total = this.contractDao.count(contract, extend);
         List<Map<String, Object>> list = this.contractDao.queryAllByLimit(contract, extend);
         Map<String, Object> response = new HashMap<>();
@@ -111,9 +116,12 @@ public class ContractServiceImpl implements ContractService {
     @PermissionCheck(value = {"/contract/contract"})
     @Override
     public Integer updateById(Contract contract) {
-        //　每次修改将状态改为待审核
-        contract.setStatus(1);
-        return this.contractDao.updateById(contract);
+        if (isMeOrChild(contract.getId())) {
+            return this.contractDao.updateById(contract);
+        } else {
+            throw new CustomException("请确认你有权限修改此合同数据");
+        }
+
     }
 
     /**
@@ -152,6 +160,9 @@ public class ContractServiceImpl implements ContractService {
 
     @Override
     public Long total(Contract contract, Map<String, Object> extend) {
+        if ("child".equals(extend.get("search")) && extend.get("userIds") == null) {
+            extend.put("userIds", this.userService.queryUserChild(Utils.getCurrentUserId(), ""));
+        }
         return this.contractDao.count(contract, extend);
     }
 }

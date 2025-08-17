@@ -24,7 +24,7 @@
   const props = withDefaults(
       defineProps<{
         modelValue?: number
-        userId?: number // 查询指定会员下的客户
+        userId?: number|null // 查询指定会员下的客户
       }>(),
       {}
   )

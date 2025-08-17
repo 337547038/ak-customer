@@ -67,5 +67,8 @@ public interface CustomerDao {
     int deleteById(@Param("id") String[] id);
 
     boolean moveCustomerByIds(@Param("params") Map<String,Object> params,@Param("type") String type);
+
+    List<Map<String,Object>> queryNotFollowRecords(Integer userId);
+    List<Map<String,Object>> queryContactBirthday(Integer userId);
 }
 

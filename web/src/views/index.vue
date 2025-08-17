@@ -5,22 +5,22 @@
       <div class="flex">
         <div class="item" v-if="hasChild">
           <i class="icon-contract2" style="color: #ee614e"></i>
-          <div class="text">
-            <p class="num">{{ todo.contract }}</p>
+          <div class="text" @click="toPage('contract')">
+            <p class="num">{{ todo.contract || 0 }}</p>
             <p>待审批合同</p>
           </div>
         </div>
         <div class="item" v-if="hasChild">
           <i class="icon-payment" style="color:#f6bc33;"></i>
-          <div class="text">
-            <p class="num">{{ todo.payment }}</p>
+          <div class="text" @click="toPage('payment')">
+            <p class="num">{{ todo.payment || 0 }}</p>
             <p>待审批回款</p>
           </div>
         </div>
         <div class="item">
           <i class="icon-follow-record" style="color:#cd94ff;"></i>
           <div class="text">
-            <p class="num">{{ todo.follow }}</p>
+            <p class="num">{{ todo.follow?.length || 0 }}</p>
             <p>待跟进客户</p>
           </div>
         </div>
@@ -41,10 +41,10 @@
           </el-tooltip>
         </h3>
         <div class="item">
-          <ul>
-            <li>广州有限公司<span>2019-12-12</span></li>
-            <li>广州有限公司<span>2019-12-12</span></li>
+          <ul v-if="todo.follow?.length">
+            <li v-for="item in todo.follow" :key="item.id">{{ item.company }}<span>{{ dateFormatting(item.nextTime) }}</span></li>
           </ul>
+          <p v-else>暂无需跟进的客户</p>
         </div>
       </div>
       <div class="border-box">
@@ -61,18 +61,19 @@
           </el-tooltip>
         </h3>
         <div class="item">
-          <ul>
-            <li>广州有限公司<span>2019-12-12</span></li>
-            <li>广州有限公司<span>2019-12-12</span></li>
+          <ul v-if="todo.notFollow?.length">
+            <li v-for="item in tod.notFollow" :key="item.id">{{ item.company }}<span>{{ dateFormatting(item.lastFollowDate) }}</span></li>
           </ul>
+          <p v-else>暂无数据，请继续保持!</p>
         </div>
       </div>
       <div class="border-box">
         <h3>客户生日提醒</h3>
         <div class="item">
-          <ul>
-            <li>广州有限公司　张总　<span>8月16</span></li>
+          <ul v-if="todo.birthday?.length">
+            <li v-for="item in todo.birthday" :key="item.id">{{ item.company }}　{{ item.contactName }}　<span>{{ dateFormatting(item.birthday, '{m}-{d}') }}</span></li>
           </ul>
+          <p v-else>暂无数据</p>
         </div>
       </div>
     </div>
@@ -87,6 +88,10 @@
   import {useLayoutStore} from "@/store/layout";
   import {computed, ref, onMounted} from "vue";
   import {getRequest} from "@/api";
+  import {dateFormatting} from "@/utils";
+  import {useRouter} from "vue-router";
+
+  const router = useRouter();
 
   const layerStore = useLayoutStore()
   const hasChild = computed(() => {
@@ -99,9 +104,20 @@
           todo.value = res.data || {}
         })
   }
+
+  const toPage = (type: string) => {
+    if (type === 'contract' && todo.value.contract > 0) {
+      router.push({path: "/contract/contract", query: {search: 'todo'}})
+    }
+    if (type === 'payment' && todo.value.payment > 0) {
+      router.push({path: "/contract/payment", query: {search: 'todo'}})
+    }
+  }
+
   onMounted(() => {
     getData()
   })
+
 
 </script>
 <style scoped lang="scss">

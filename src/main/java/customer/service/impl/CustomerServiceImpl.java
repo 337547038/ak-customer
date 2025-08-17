@@ -402,7 +402,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public boolean shareCustomer(Map<String, Object> params) {
         Customer customer = new Customer();
-        if (Objects.equals(params.get("type"), "share")) {
+        if (Objects.equals(params.get("type"), "myShare")) {
             customer.setShareUserId((String) params.get("userId"));
         } else {
             customer.setShareUserId("cancel");
@@ -460,5 +460,25 @@ public class CustomerServiceImpl implements CustomerService {
         contact.setCreatDate(new Date());
         contact.setDecisionMaker(3);
         this.contactDao.insert(contact);
+    }
+
+    /**
+     * 查询超过30天没跟进记录的客户信息
+     * @param userId 当前用户id
+     * @return list
+     */
+    @Override
+    public List<Map<String, Object>> queryNotFollowRecords(Integer userId) {
+        return this.customerDao.queryNotFollowRecords(userId);
+    }
+
+    /**
+     * 联合contact查询快到生日的用户
+     * @param userId 当前用户
+     * @return list
+     */
+    @Override
+    public List<Map<String,Object>> queryContactBirthday(Integer userId) {
+        return this.customerDao.queryContactBirthday(userId);
     }
 }

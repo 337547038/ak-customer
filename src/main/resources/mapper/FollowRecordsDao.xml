@@ -53,9 +53,9 @@
             <if test="query.contactName != null and query.contactName != ''">
                 and a.contactName = #{query.contactName}
             </if>
-            <if test="query.userId != null">
+            <!--<if test="query.userId != null">
                 and a.userId = #{query.userId}
-            </if>
+            </if>-->
             <if test="query.userName != null and query.userName != ''">
                 and a.userName = #{query.userName}
             </if>
@@ -109,9 +109,9 @@
             <if test="query.contactName != null and query.contactName != ''">
                 and a.contactName = #{query.contactName}
             </if>
-            <if test="query.userId != null">
+            <!--<if test="query.userId != null">
                 and a.userId = #{query.userId}
-            </if>
+            </if>-->
             <if test="query.userName != null and query.userName != ''">
                 and a.userName = #{query.userName}
             </if>
@@ -146,9 +146,9 @@
             <if test="contactName != null and contactName != ''">
                 contactName = #{contactName},
             </if>
-            <if test="userId != null">
+           <!-- <if test="userId != null">
                 userId = #{userId},
-            </if>
+            </if>-->
             <if test="userName != null and userName != ''">
                 userName = #{userName},
             </if>

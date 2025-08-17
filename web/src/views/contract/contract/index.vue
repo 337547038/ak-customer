@@ -45,15 +45,16 @@
 </template>
 
 <script setup lang="ts">
-  import {computed, markRaw, nextTick, ref} from "vue";
+  import {computed, markRaw, nextTick, ref, watch} from "vue";
   import customerSelect from "@/components/customerSelect/index.vue";
   import {useLayoutStore} from "@/store/layout";
   import validate from "@/components/form/validate";
-  import selectContact from "@/views/customer/follow/components/selectContact.vue";
+  import Index from "@/components/contactSelect/index.vue";
   import uploadFiles from '@/views/customer/list/components/upload.vue'
   import AkList from "@/components/list/index.vue";
   import {dateFormatting} from "@/utils";
   import PaymentForm from "../components/paymentForm.vue";
+  import {useRoute, onBeforeRouteLeave} from "vue-router";
 
   const props = withDefaults(
       defineProps<{
@@ -63,6 +64,7 @@
       {}
   )
 
+  const route = useRoute()
   const layoutStore = useLayoutStore()
   const formDisabled = ref(false)
   const tableListRef = ref()
@@ -79,6 +81,7 @@
   })
   const paymentFormRef = ref()
   const currentUserId = ref()
+  const currentContractUserId = ref() // 当前合同所有人
   const columns = ref([
     {
       label: '所属人员',
@@ -188,9 +191,22 @@
       prop: 'operate',
       label: '操作',
       render: 'buttons',
-      width: 180,
+      width: 210,
       fixed: 'right',
       buttons: [
+        {
+          label: '审核',
+          attr: {
+            type: 'danger',
+            text: true
+          },
+          display: (row: any) => {
+            return layoutStore.userInfo?.hasChild && row.userId !== layoutStore.userInfo?.id && row.status === 1
+          },
+          click: (row: any) => {
+            addClick(row, true)
+          }
+        },
         {
           label: '收款',
           attr: {
@@ -239,24 +255,33 @@
       if (props.cId) {
         params.customerId = props.cId
       }
+      if (route.query.search === 'todo') {
+        // 查看需审核的合同
+        params.extend.search = 'child'
+      }
     }
     return params
 
   }
 
+  const isCheck = ref(false) // 是否为审核状态
   const visible = ref(false)
-  const addClick = (row?: { [key: string]: any }) => {
+  const addClick = (row?: { [key: string]: any }, check?: boolean) => {
     formDisabled.value = false
     visible.value = true
+    title.value = '新增合同'
     if (row) {
-      title.value = '修改合同'
+      title.value = check ? '审批合同' : '修改合同'
+      isCheck.value = !!check
       nextTick(() => {
         // 没有选择所属人员时，即查看自己时，2已确认状态不能修改
         //　选择了人员时，即查看下属的，可以修改
         if (!currentUserId.value) {
           formDisabled.value = row.status === 2 // 不能修改
         }
+        currentContractUserId.value = row.userId
         formRef.value.getData({id: row.id})
+        customerId.value = row.customerId
       })
     }
   }
@@ -273,6 +298,9 @@
       visible: showCompany,
       formItem: {
         rules: [validate('required', '客户名称不能为空', 'change')]
+      },
+      attr: {
+        userId: currentContractUserId
       }
     },
     {
@@ -295,9 +323,10 @@
       attr: {
         placeholder: '请输入联系人,可使用%',
         customerId: customerId,
+        userId: currentContractUserId
       },
       render: 'component',
-      component: markRaw(selectContact),
+      component: markRaw(Index),
       formItem: {
         rules: [validate('required', '公司签约人不能为空', 'change')]
       }
@@ -334,6 +363,13 @@
       }
     },
     {
+      label: '审核',
+      prop: 'status',
+      render: 'select',
+      options: [{value: 1, label: '待审核'}, {value: 2, label: '通过'}, {value: 3, label: '拒绝'}],
+      visible: isCheck
+    },
+    {
       label: '备注',
       prop: 'remark',
       attr: {
@@ -357,9 +393,9 @@
     formRef.value.resetFields()
   }
   const beforeForm = (model: any, type: string) => {
-    /*if (type === 'add' && props.isComponents) {
-      model.customerId = props.customerId
-    }*/
+    if (type === 'add' && props.isComponents) {
+      model.customerId = props.cId
+    }
     return model
   }
   const afterForm = (result: any, success: boolean, type: string) => {
@@ -389,6 +425,13 @@
   const getData = () => {
     tableListRef.value.getData()
   }
+
+  const unWatch = watch(() => route.query, () => {
+    getData()
+  })
+  onBeforeRouteLeave(() => {
+    unWatch()
+  })
 
   defineExpose({getData})
 </script>

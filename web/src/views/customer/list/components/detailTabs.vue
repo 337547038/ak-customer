@@ -33,6 +33,7 @@
             ref="followRef"
             keyColumns="customerFollow"
             :customerId="drawerObj.id"
+            :userId="drawerObj.userId"
             :company="drawerObj.company"/>
       </el-tab-pane>
       <el-tab-pane label="联系人" name="contact" v-if="!isAddForm">

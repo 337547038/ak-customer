@@ -3,6 +3,7 @@
       ref="tableListRef"
       :columns="columns"
       pk="id"
+      :before="beforeList"
       :api="{list:'contractPaymentList',del:'contractPaymentDel'}"
       :control-btn="[
           {
@@ -14,11 +15,13 @@
 </template>
 
 <script setup lang="ts">
-  import {computed, markRaw, ref} from "vue";
+  import {computed, markRaw, ref, watch} from "vue";
   import customerSelect from "@/components/customerSelect/index.vue";
   import {useLayoutStore} from "@/store/layout";
   import PaymentForm from "../components/paymentForm.vue";
+  import {onBeforeRouteLeave, useRoute} from "vue-router";
 
+  const route = useRoute();
   const currentUserId = ref() // 有id表示当前为查看下属
   const layoutStore = useLayoutStore()
   const tableListRef = ref()
@@ -26,7 +29,7 @@
   const showUserId = computed(() => {
     return layoutStore.userInfo?.hasChild
   })
-  const columns = [
+  const columns = ref([
     {
       label: '下属人员',
       prop: 'userId',
@@ -45,6 +48,7 @@
         clearable: true,
         onChange: (val: any) => {
           currentUserId.value = val
+          console.log(val)
         }
       }
     },
@@ -62,7 +66,7 @@
       },
       search: {
         render: 'component',
-        //userId: currentUserId,
+        userId: currentUserId,
         component: markRaw(customerSelect)
       }
     },
@@ -80,7 +84,7 @@
       prop: "money",
       label: "回款金额",
       search: false,
-      width:100
+      width: 100
     },
     {
       prop: "datetime",
@@ -97,19 +101,19 @@
       replaceValue: 'accountType',
 //      custom:{},
       search: false,
-      width:100
+      width: 100
     },
     {
       prop: "status",
       label: "审核状态",
       render: 'tag',
-      replaceValue: {0: '待审核', 1: '通过', 2: '拒绝'},
-      custom: {0: 'primary', 1: 'success', 2: 'danger'},
+      replaceValue: {1: '待审核', 2: '通过', 3: '拒绝'},
+      custom: {1: 'primary', 2: 'success', 3: 'danger'},
       search: {
         render: 'select',
-        options: {0: '待审核', 1: '通过', 2: '拒绝'}
+        options: {1: '待审核', 2: '通过', 3: '拒绝'}
       },
-      width:100
+      width: 100
     },
     {
       prop: "creatDate",
@@ -122,9 +126,22 @@
     {
       prop: 'operate',
       label: '操作',
-      width: 150,
+      width: 200,
       render: 'buttons',
       buttons: [
+        {
+          label: '审核',
+          attr: {
+            type: 'danger',
+            text: true
+          },
+          display: (row: any) => {
+            return layoutStore.userInfo?.hasChild && row.userId !== layoutStore.userInfo?.id && row.status === 1
+          },
+          click: (row: any) => {
+            addEditClick(true, row, true)
+          }
+        },
         {
           key: 'edit',
           label: '详情',
@@ -145,14 +162,32 @@
       ],
       search: false
     },
-  ]
+  ])
 
-  const addEditClick = (edit: boolean, row?: { [key: string]: any }) => {
-    paymentFormRef.value.open(edit, row)
+  const addEditClick = (edit: boolean, row?: { [key: string]: any }, check?: boolean) => {
+    paymentFormRef.value.open(edit, row, check)
   }
   const formCallback = () => {
     tableListRef.value.getData()
   }
+
+  const beforeList = (type: string, params: any) => {
+    if (type === 'get') {
+      if (route.query.search === 'todo') {
+        // 查看需审核的合同
+        params.extend.search = 'child'
+      }
+    }
+    return params
+
+  }
+
+  const unWatch = watch(() => route.query, () => {
+    tableListRef.value.getData()
+  })
+  onBeforeRouteLeave(() => {
+    unWatch()
+  })
 </script>
 
 <style scoped lang="scss">

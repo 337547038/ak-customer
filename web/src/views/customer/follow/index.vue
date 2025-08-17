@@ -39,7 +39,7 @@
 <script setup lang="ts">
   import {ref, markRaw, nextTick, computed} from 'vue'
   import customerSelect from '@/components/customerSelect/index.vue'
-  import selectContact from './components/selectContact.vue'
+  import contactSelect from '@/components/contactSelect/index.vue'
   import validate from "@/components/form/validate";
   import {dateFormatting, getStorage} from "@/utils";
   import {useLayoutStore} from "@/store/layout";
@@ -48,6 +48,7 @@
       defineProps<{
         isComponents?: boolean
         customerId?: number
+        userId?: number
         company?: string
         disabled?: boolean
         keyColumns?: string
@@ -76,15 +77,15 @@
   const userInfo = computed(() => {
     return getStorage('userInfo', true) || {}
   })
-  const customerId = ref()
-  const customerId2 = computed(() => {
-    return customerId.value || props.customerId
+  const formCustomerId = computed(() => {
+    return props.customerId || formModel.value.customerId
   })
   const beforeList = (type: string, data: any) => {
     if (type === 'get') {
       if (props.isComponents) {
         // 作为组件调用
-        data.customerId = customerId2.value
+        data.customerId = props.customerId
+        data.userId = props.userId
       }
     }
     return data
@@ -112,21 +113,24 @@
       return layoutStore.userInfo?.hasChild
     }
   })
-  // 当前搜索表单的客户id,条件改变时更新
-  const searchCurrentCustomerId = ref()
-  const searchCustomerId = computed(() => {
-     if(props.isComponents) {
-       return props.customerId
-     }else {
-       return searchCurrentCustomerId.value
-     }
+  const searchFormModel = ref({}) // 查询表单的值
+  const searchUserId = computed(() => {
+    return props.userId || searchFormModel.value?.userId
   })
-  const currentUserId = ref()
+  const searchCustomerId = computed(() => {
+    if (props.isComponents) {
+      return props.customerId
+    } else {
+      return searchFormModel.value.customerId
+    }
+  })
+
   const columns = ref([
     {
       type: 'expand',
       prop: 'expand',
-      search: false
+      search: false,
+      width: 30
     },
     {
       prop: 'checked',
@@ -147,17 +151,14 @@
           label: 'userName',
           value: 'id'
         },
-        clearable: true,
-        onChange: (val: number) => {
-          currentUserId.value = val
-        }
+        clearable: true
       }
     },
     {
       label: '客户名称',
       prop: 'customerId',
       search: {
-        userId: currentUserId,
+        userId: searchUserId,
         visible: showCompany,
         render: 'component',
         component: markRaw(customerSelect)
@@ -173,10 +174,11 @@
       prop: 'contactId',
       width: 90,
       search: {
+        userId: searchUserId,
         customerId: searchCustomerId,
         placeholder: '请输入联系人,可使用%',
         render: 'component',
-        component: markRaw(selectContact)
+        component: markRaw(contactSelect)
       },
       formatter: (row: any) => {
         return row.contactName
@@ -243,6 +245,7 @@
   const formCancelClick = () => {
     visible.value = false
     formModel.value = {}
+    formRef.value.resetFields()
   }
 
   const beforeForm = (model: any, type: string) => {
@@ -277,14 +280,15 @@
       prop: 'contactId',
       attr: {
         placeholder: '请输入联系人,可使用%',
-        customerId: customerId2,
+        customerId: formCustomerId,
+        userId: searchUserId,
         onBlur: (val: number, name: string) => {
           // 同时提交联系人姓名
           formModel.value.contactName = name
         }
       },
       render: 'component',
-      component: markRaw(selectContact),
+      component: markRaw(contactSelect),
       formItem: {
         rules: [validate('required', '联系人不能为空', 'change')]
       }
@@ -326,21 +330,20 @@
     if (prop === 'customerId' && val) {
       // 客户名称改变时，清空联系人选择。将值传给联系人
       model.contactId = undefined
-      customerId.value = val
     }
   }
   // 条件查询表单改变事件
-  const searchFormChange = (prop: string, val: any,model:any) => {
-    if(prop==='userId' && layoutStore.userInfo?.hasChild){
+  const searchFormChange = (prop: string, val: any, model: any) => {
+    if (prop === 'userId' && layoutStore.userInfo?.hasChild) {
       // 清空已填写的客户名称及联系人信息
       model.customerId = null
       model.contactId = undefined
     }
-    if(prop==='customerId'){
+    if (prop === 'customerId') {
       // 客户名称改变时，联系限制为当前客户下的
       model.contactId = undefined
-      searchCurrentCustomerId.value = val
     }
+    searchFormModel.value = model
   }
 
   const getData = () => {

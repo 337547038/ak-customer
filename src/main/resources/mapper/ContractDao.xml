@@ -29,60 +29,58 @@
         where id = #{id}
     </select>
 
+    <sql id="queryList">
+        <if test="extend.userId != null">
+            and c.userId = #{extend.userId}
+        </if>
+        <if test="extend.search=='child' and extend.userIds!=null and extend.userId==null">
+            and c.userId in
+            <foreach collection="extend.userIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="query.id != null">
+            and c.id = #{query.id}
+        </if>
+        <if test="query.customerId != null">
+            and c.customerId = #{query.customerId}
+        </if>
+        <if test="query.name != null and query.name != ''">
+            and c.name = #{query.name}
+        </if>
+        <if test="query.code != null and query.code != ''">
+            and c.code = #{query.code}
+        </if>
+        <if test="query.creatDate != null">
+            and c.creatDate = #{query.creatDate}
+        </if>
+        <if test="query.contactId != null">
+            and c.contactId = #{query.contactId}
+        </if>
+        <if test="query.money != null and query.money != ''">
+            and c.money = #{query.money}
+        </if>
+        <if test="query.startDate != null">
+            and c.startDate >= #{query.startDate}
+        </if>
+        <if test="query.endDate != null">
+            and c.endDate &lt;= #{query.endDate}
+        </if>
+        <if test="query.status != null">
+            and c.status = #{query.status}
+        </if>
+    </sql>
+
     <!--查询指定行数据-->
     <select id="queryAllByLimit">
         select c.id, c.customerId, c.name, c.code, c.creatDate, c.userId, c.contactId, c.money, c.startDate, c.endDate, c.status
         ,cu.company as customerName,co.name as contactName,SUM(p.money) AS payment
         from sys_contract c
         left join sys_customer cu on cu.id=c.customerId
-        left join sys_contact co on co.id=c.userId
+        left join sys_contact co on co.id=c.contactId
         left join sys_contract_payment p on p.contractId=c.id
         <where>
-            <if test="extend.userIds != null and query.userId==null">
-                and c.userId in
-                <foreach collection="extend.userIds" item="item" separator="," open="(" close=")">
-                    #{item}
-                </foreach>
-            </if>
-            <if test="query.id != null">
-                and c.id = #{query.id}
-            </if>
-            <if test="query.customerId != null">
-                and c.customerId = #{query.customerId}
-            </if>
-            <if test="query.name != null and query.name != ''">
-                and c.name = #{query.name}
-            </if>
-            <if test="query.code != null and query.code != ''">
-                and c.code = #{query.code}
-            </if>
-            <if test="query.creatDate != null">
-                and c.creatDate = #{query.creatDate}
-            </if>
-            <if test="query.userId != null">
-                and c.userId = #{query.userId}
-            </if>
-            <if test="query.contactId != null">
-                and c.contactId = #{query.contactId}
-            </if>
-            <if test="query.money != null and query.money != ''">
-                and c.money = #{query.money}
-            </if>
-            <if test="query.remark != null and query.remark != ''">
-                and c.remark = #{query.remark}
-            </if>
-            <if test="query.files != null and query.files != ''">
-                and c.files = #{query.files}
-            </if>
-            <if test="query.startDate != null">
-                and c.startDate = #{query.startDate}
-            </if>
-            <if test="query.endDate != null">
-                and c.endDate = #{query.endDate}
-            </if>
-            <if test="query.status != null">
-                and c.status = #{query.status}
-            </if>
+            <include refid="queryList"/>
         </where>
         GROUP BY c.id
         <choose>
@@ -103,51 +101,7 @@
         select count(1)
         from sys_contract c
         <where>
-            <if test="extend.userIds != null and query.userId==null">
-                and c.userId in
-                <foreach collection="extend.userIds" item="item" separator="," open="(" close=")">
-                    #{item}
-                </foreach>
-            </if>
-            <if test="query.id != null">
-                and c.id = #{query.id}
-            </if>
-            <if test="query.customerId != null">
-                and c.customerId = #{query.customerId}
-            </if>
-            <if test="query.name != null and query.name != ''">
-                and c.name = #{query.name}
-            </if>
-            <if test="query.code != null and query.code != ''">
-                and c.code = #{query.code}
-            </if>
-            <if test="query.creatDate != null">
-                and c.creatDate = #{query.creatDate}
-            </if>
-            <if test="query.userId != null">
-                and c.userId = #{query.userId}
-            </if>
-            <if test="query.contactId != null">
-                and c.contactId = #{query.contactId}
-            </if>
-            <if test="query.money != null and query.money != ''">
-                and c.money = #{query.money}
-            </if>
-            <if test="query.remark != null and query.remark != ''">
-                and c.remark = #{query.remark}
-            </if>
-            <if test="query.files != null and query.files != ''">
-                and c.files = #{query.files}
-            </if>
-            <if test="query.startDate != null">
-                and c.startDate = #{query.startDate}
-            </if>
-            <if test="query.endDate != null">
-                and c.endDate = #{query.endDate}
-            </if>
-            <if test="query.status != null">
-                and c.status = #{query.status}
-            </if>
+            <include refid="queryList"/>
         </where>
     </select>
 
@@ -170,12 +124,12 @@
             <if test="code != null and code != ''">
                 code = #{code},
             </if>
-            <if test="creatDate != null">
+            <!--<if test="creatDate != null">
                 creatDate = #{creatDate},
-            </if>
-            <if test="userId != null">
+            </if>-->
+            <!--<if test="userId != null">
                 userId = #{userId},
-            </if>
+            </if>-->
             <if test="contactId != null">
                 contactId = #{contactId},
             </if>
@@ -189,10 +143,10 @@
                 files = #{files},
             </if>
             <if test="startDate != null">
-                startDate >= #{startDate},
+                startDate = #{startDate},
             </if>
             <if test="endDate != null">
-                #{endDate} >= endDate,
+                endDate=#{endDate},
             </if>
             <if test="status != null">
                 status = #{status},

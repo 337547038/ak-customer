@@ -338,5 +338,41 @@
         </if>
         )
     </select>
+    <!--查询超过30天无跟进记录的客户-->
+    <select id="queryNotFollowRecords">
+        SELECT a.id,
+               a.company,
+               (SELECT MAX(datetime) FROM sys_follow_records WHERE customerId = a.id) AS lastFollowDate
+        FROM sys_customer a where a.userId=#{userId}
+        HAVING lastFollowDate IS NULL
+            OR DATE_SUB(CURDATE(), INTERVAL 30 DAY) >= lastFollowDate
+        limit 0 ,10
+    </select>
+    <select id="queryContactBirthday">
+        SELECT
+        a.id,
+        a.company,
+        b.name AS contactName,
+        b.birthday
+        FROM
+        sys_customer a
+        JOIN
+        sys_contact b ON a.id = b.tid
+        WHERE a.userId=#{userId} and
+        -- 计算今年生日的日期是否在未来7天内
+        -- 计算今年生日的日期是否在未来7天内
+        (DAYOFYEAR(b.birthday) >= DAYOFYEAR(CURDATE()) AND
+        DAYOFYEAR(b.birthday) &lt;= DAYOFYEAR(DATE_ADD(CURDATE(), INTERVAL 7 DAY)))
+        -- 或者明年生日的日期（处理跨年情况）
+        OR (DAYOFYEAR(CURDATE()) > DAYOFYEAR(DATE_SUB(DATE_ADD(CURDATE(), INTERVAL 7 DAY), INTERVAL 1 YEAR)) AND
+        DAYOFYEAR(b.birthday) &lt;= DAYOFYEAR(DATE_ADD(CURDATE(), INTERVAL 7 DAY)) - 365)
+        ORDER BY
+        CASE
+        WHEN DAYOFYEAR(b.birthday) >= DAYOFYEAR(CURDATE())
+        THEN DAYOFYEAR(b.birthday) - DAYOFYEAR(CURDATE())
+        ELSE 365 - DAYOFYEAR(CURDATE()) + DAYOFYEAR(b.birthday)
+        END
+        LIMIT 0,10
+    </select>
 
 </mapper>

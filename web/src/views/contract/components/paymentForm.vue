@@ -3,10 +3,11 @@
       v-model="visible"
       width="800" :title="title"
       class="form-dialog"
+      destroy-on-close
       :before-close="formCancelClick">
     <el-alert title="审核通过，不能修改数据" type="success" v-if="formDisabled"/>
     <ak-form
-        :disabeld="formDisabled"
+        :disabled="formDisabled"
         pk="id"
         ref="formRef"
         :data="formData"
@@ -26,7 +27,7 @@
 
   const props = withDefaults(
       defineProps<{
-        userId?: number // 查看下属时
+        userId?: number|undefined // 查看下属时
       }>(),
       {}
   )
@@ -38,7 +39,7 @@
   const visible = ref(false);
   const title = ref("");
   const formDisabled = computed(() => {
-    return !props.userId && formModel.value.status === 1 // 已确认不能修改
+    return !props.userId && formModel.value.status === 2 // 已确认不能修改
   });
   const formRef = ref<HTMLFormElement>();
   const formModel = ref({})
@@ -48,6 +49,12 @@
     formModel.value = {}
     formRef.value.resetFields()
   }
+  const currentContractUserId = ref() // 点击行时更新，当查看下属时，同列表存在不同用户的
+  // 当前合同所有人id
+  const contractUserId = computed(() => {
+    return currentContractUserId.value || props.userId
+  })
+  const isCheckStatus = ref(false) // 是否为审核状态
   const formData = ref([
     {
       prop: "code",
@@ -65,7 +72,9 @@
       },
       ajax: {
         api: 'contractList',
-        data: {},
+        data: {
+          userId: contractUserId
+        },
         label: 'name',
         value: 'id'
       },
@@ -103,6 +112,13 @@
       }
     },
     {
+      label: '审核',
+      prop: 'status',
+      render: 'select',
+      options: [{value: 1, label: '待审核'}, {value: 2, label: '通过'}, {value: 3, label: '拒绝'}],
+      visible: isCheckStatus
+    },
+    {
       prop: "remark",
       label: '备注',
       attr: {
@@ -115,9 +131,15 @@
     }
   ])
 
-  const open = (edit: boolean, row?: { [key: string]: any }) => {
+
+  const open = (edit: boolean, row?: { [key: string]: any }, check?: boolean) => {
     visible.value = true
     title.value = edit ? '修改合同回款' : '新增合同回款'
+    if (check) {
+      title.value = '审批/查看回款详情'
+    }
+    currentContractUserId.value = row?.userId
+    isCheckStatus.value = !!check
     if (edit && row) {
       nextTick(() => {
         formRef.value.getData({id: row.id})

@@ -3,6 +3,7 @@ package customer.service;
 import customer.entity.Customer;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 /**
  * (Customer)表服务接口
@@ -58,4 +59,8 @@ public interface CustomerService {
     boolean shareCustomer(Map<String, Object> params);
 
     String scanCardInput(Map<String, Object> params);
+
+    List<Map<String, Object>> queryNotFollowRecords(Integer userId);
+
+    List<Map<String,Object>> queryContactBirthday(Integer userId);
 }

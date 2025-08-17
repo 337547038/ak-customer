@@ -29,12 +29,12 @@
     <select id="queryAllByLimit">
         select
         p.id, p.code, p.contractId, p.money, p.datetime, p.creatDate, p.account, p.status,
-        c.name as contractName,c.code as contractCode,cu.company as customerName
+        c.name as contractName,c.code as contractCode,cu.company as customerName,c.userId
         from sys_contract_payment as p
         join sys_contract c on c.id=p.contractId
         left join sys_customer cu on cu.id=c.customerId
         <where>
-            <if test="extend.userIds != null and extend.userId==null">
+            <if test="extend.userIds != null and extend.search=='child' and extend.userId==null">
                 and c.userId in
                 <foreach collection="extend.userIds" item="item" separator="," open="(" close=")">
                     #{item}
@@ -90,7 +90,7 @@
         from sys_contract_payment p
         join sys_contract c on c.id=p.contractId
         <where>
-            <if test="extend.userIds != null and extend.userId==null">
+            <if test="extend.userIds != null and extend.search=='child' and extend.userId==null">
                 and c.userId in
                 <foreach collection="extend.userIds" item="item" separator="," open="(" close=")">
                     #{item}

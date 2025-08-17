@@ -5,6 +5,7 @@ import customer.entity.Contract;
 import customer.entity.ContractPayment;
 import customer.service.*;
 
+import customer.utils.Utils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -86,9 +87,16 @@ public class analysisServiceImpl implements AnalysisService {
         // 待跟进客户列表
         Map<String, Object> params = new HashMap<>();
         Map<String, Object> listExtend = new HashMap<>();
-
+        listExtend.put("pageSize", 10);
         params.put("extend", listExtend);
+        params.put("nextTime", new Date());
         Map<String, Object> list = this.contactService.queryByPage(params);
+        result.put("follow", list.get("list"));
+        // 查询超过30天没跟进记录的用户
+        List<Map<String, Object>> notFollow = this.customerService.queryNotFollowRecords(Utils.getCurrentUserId());
+        result.put("notFollow", notFollow);
+        List<Map<String, Object>> birthday = this.customerService.queryContactBirthday(Utils.getCurrentUserId());
+        result.put("birthday", birthday);
         return result;
     }
 }

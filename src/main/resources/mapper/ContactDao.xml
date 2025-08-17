@@ -39,6 +39,9 @@ id, name, sex, tel, phone, weixin, qq, email, position, tid, creatDate, lastTime
             a.id,a.name, a.sex, a.tel, a.phone, a.weixin, a.qq, a.email, a.position, a.tid, a.creatDate,a.lastTime, a.nextTime, a.decisionMaker, a.address, a.birthday, b.company
             from sys_contact as a join sys_customer as b on a.tid = b.id
             <where>
+                <if test="query.id != null">
+                    and a.id = #{query.id}
+                </if>
                 <if test="extend.userId != null">
                     and b.userId=#{extend.userId}
                 </if>
@@ -111,6 +114,9 @@ id, name, sex, tel, phone, weixin, qq, email, position, tid, creatDate, lastTime
             from sys_contact as a
             join sys_customer as b on a.tid = b.id
             <where>
+                <if test="query.id != null">
+                    and a.id = #{query.id}
+                </if>
                 <if test="extend.userId != null">
                     and b.userId=#{extend.userId}
                 </if>
@@ -204,15 +210,15 @@ id, name, sex, tel, phone, weixin, qq, email, position, tid, creatDate, lastTime
                     <if test="tid != null">
                         tid = #{tid},
                     </if>
-                    <if test="creatDate != null">
+                    <!--<if test="creatDate != null">
                         creatDate = #{creatDate},
-                    </if>
+                    </if>-->
                     <if test="lastTime != null">
                         lastTime = #{lastTime},
                     </if>
-                    <if test="nextTime != null">
+                    <!--<if test="nextTime != null">
                         nextTime = #{nextTime},
-                    </if>
+                    </if>-->
                     <if test="decisionMaker != null">
                         decisionMaker = #{decisionMaker},
                     </if>
@@ -225,6 +231,7 @@ id, name, sex, tel, phone, weixin, qq, email, position, tid, creatDate, lastTime
                     <if test="remark != null and remark != ''">
                         remark = #{remark},
                     </if>
+                nextTime = #{nextTime}
             </set>
             where id = #{id}
         </update>

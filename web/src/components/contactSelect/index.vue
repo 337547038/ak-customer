@@ -26,6 +26,7 @@
         //placeholder?: string
         modelValue?: number | undefined
         customerId?: number // 客户id
+        userId?: number // 查询指定下属会员
       }>(),
       {}
   )
@@ -35,8 +36,10 @@
   }>()
   const unWatch = watch(() => props.modelValue, (val: any): void => {
     value.value = val
-    if (val && options.value.length === 0) {
-      remoteMethod("", val)
+    if (val) {
+      nextTick(() => {
+        remoteMethod("", val)
+      })
     }
   })
   const options = ref([])
@@ -45,9 +48,9 @@
   const remoteMethod = (query: string, id?: number) => {
     if (query || id) {
       loading.value = true
-      let params = {name: query.replace('%', ''), tid: props.customerId}
+      let params = {name: query.replace('%', ''), tid: props.customerId, userId:props.userId}
       if (id) {
-        params = {id: id}
+        params = {id: id, userId:props.userId}
       }
       getRequest("contactList", params)
           .then(res => {
