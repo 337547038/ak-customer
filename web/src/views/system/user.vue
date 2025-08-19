@@ -121,7 +121,7 @@
         },
         clearable: true
       },
-      show: false
+      visible: false
     },
     {
       prop: 'loginTimer',

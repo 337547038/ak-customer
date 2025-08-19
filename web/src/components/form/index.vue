@@ -108,7 +108,14 @@
   const loading = ref(false)
 
   const dataFilter = computed(() => {
-    return props.data.filter(item => item.visible !== false && !props.hideFiled.includes(item.prop))
+    // return props.data.filter(item => item.visible !== false && !props.hideFiled.includes(item.prop))
+    return props.data.filter(item => {
+      let visible = item.visible
+      if (typeof item.visible === 'function') {
+        visible = item.visible()
+      }
+      return visible !== false && !props.hideFiled.includes(item.prop)
+    })
   })
   //获取初始值
   const getModelValue = (data: formData[]) => {

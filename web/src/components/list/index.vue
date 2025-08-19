@@ -165,6 +165,7 @@
   import {useLayoutStore} from '@/store/layout'
 
   import IconSearchColumn from './components/iconSearchColumn.vue'
+  import columns from "@/views/customer/list/columns";
 
 
   defineOptions({name: 'AkList'})
@@ -208,7 +209,7 @@
             current: 1
           }
         },
-        pk:'id',
+        pk: 'id',
         showSearch: true,
         fixedBottomScroll: true,
         searchIconVisible: true,
@@ -225,14 +226,25 @@
   const loading = ref(false)
   const layoutStore = useLayoutStore()
   const columnsCheck = ref([])
-  const columnsFilter = computed(() => {
-    if (!columnsCheck.value?.length) {
-      return props.columns.filter((item: Columns) => item.show !== false)
+  const visibleFilters = (val: any) => {
+    if (typeof val === "function") {
+      return val()
     } else {
-      return props.columns.filter((item: Columns) => {
-        return columnsCheck.value.includes(item.prop || item.type) && item.show !== false
-      })
+      return val
     }
+  }
+  const columnsFilter = computed(() => {
+    return props.columns.filter((item: Columns) => {
+      let visible = item.visible
+      if (typeof item.visible === 'function') {
+        visible = item.visible()
+      }
+      if (columnsCheck.value.length) {
+        return columnsCheck.value.includes(item.prop || item.type) && visible !== false
+      } else {
+        return visible !== false
+      }
+    })
   })
   const containerEl = ref()
   //条件搜索相关
@@ -512,8 +524,8 @@
             if (props.after) {
               data = props.after(source, data, true) || data
             }
-            tableData.value = data.list||data||[]
-            total.value = data.total||0
+            tableData.value = data.list || data || []
+            total.value = data.total || 0
             loading.value = false
           })
           .catch((res) => {

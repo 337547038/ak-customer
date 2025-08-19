@@ -7,9 +7,9 @@
         :api="{ list: 'contactList',del:'contactDel'}"
         :controlBtn="controlBtn"
         :before="beforeList"
-        :show-search="!disabled"
-        :columnsIconVisible="!disabled"
-        :auto-load="!isComponents"
+        :show-search="!detailTabProps.disabled"
+        :columnsIconVisible="!detailTabProps.disabled"
+        :auto-load="!detailTabProps.isComponents"
         :keyColumns="keyColumns"
     >
     </ak-list>
@@ -31,25 +31,19 @@
 </template>
 
 <script setup lang="ts">
-  import {ref, markRaw, nextTick, computed} from 'vue'
+  import {ref, markRaw, nextTick, computed, inject} from 'vue'
   import customerSelect from '@/components/customerSelect/index.vue'
   import validate from "@/components/form/validate";
   import {useLayoutStore} from '@/store/layout'
 
   const props = withDefaults(
       defineProps<{
-        isComponents?: boolean
-        tid?: number
         company?: string
-        disabled?: boolean
         keyColumns?: string
-        tabsName?: string
       }>(),
-      {
-        isComponents: false
-      }
+      {}
   )
-
+  const detailTabProps = inject('detailTabsProps', ref({}));
   const layoutStore = useLayoutStore()
   const controlBtn = [
     {
@@ -57,7 +51,7 @@
         addEditEvent(true)
       },
       display: () => {
-        return !props.disabled
+        return !detailTabProps.value.disabled
       }
     }
   ]
@@ -70,9 +64,15 @@
 
   const beforeList = (type: string, data: any) => {
     if (type === 'get') {
-      if (props.isComponents) {
+      if (detailTabProps.value.isComponents) {
         // 作为组件调用,仅查询当前客户下的
-        data.tid = props.tid
+        data.tid = detailTabProps.value.customerId
+        data.userId = detailTabProps.value.userId
+        if (detailTabProps.value.tabsName === 'shareWithMe') {
+          // 查看共享给我/公海/无效的客户时，这里添加个参数
+          data.specialCustomer = detailTabProps.value.customerId
+          data.extend.search = 'comInvalidShare'
+        }
       }
     }
     return data
@@ -90,18 +90,19 @@
     }
   }
   const showCompany = computed(() => {
-    return !props.isComponents
+    return !detailTabProps.value.isComponents
   })
   const showUserId = computed(() => {
-    if (props.isComponents) {
+    if (detailTabProps.value.isComponents) {
       // 在列表页引用时，在查看下属会员客户时显示
-      return props.tabsName === 'child'
+      return detailTabProps.value.tabsName === 'child'
     } else {
       return layoutStore.userInfo?.hasChild
     }
   })
   const currentUserId = ref()
   const isDecisionMaker = {1: '是', 2: '否', 3: '未知'}
+
   const columns = ref([
     {
       prop: 'checked',
@@ -110,9 +111,9 @@
     {
       label: '所属人员',
       prop: 'userId',
-      show: false,
+      visible: false,
       search: {
-        changeRefresh:true,
+        changeRefresh: true,
         style: {width: '230px'},
         visible: showUserId,
         render: 'select',
@@ -140,7 +141,7 @@
       formatter: (row: any) => {
         return row.company
       },
-      show: showCompany,
+      visible: showCompany,
       width: 160,
       showOverflowTooltip: true
     },
@@ -219,7 +220,9 @@
       showOverflowTooltip: true
     },
     {
-      show: !props.disabled,
+      visible: () => {
+        return !detailTabProps.value.disabled
+      },
       fixed: 'right',
       prop: 'operate',
       label: '操作',
@@ -254,8 +257,8 @@
     formModel.value = {decisionMaker: 1, sex: 1}
   }
   const beforeForm = (model: any, type: string) => {
-    if (type === 'add' && props.isComponents) {
-      model.tid = props.tid
+    if (type === 'add' && detailTabProps.value.isComponents) {
+      model.tid = detailTabProps.value.customerId
     }
     return model
   }

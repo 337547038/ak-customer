@@ -129,7 +129,7 @@
     {
       prop: 'selection',
       type: 'selection',
-      show: showCheckbox
+      visible: showCheckbox
     },
     {
       prop: 'userName',

@@ -33,8 +33,12 @@
   }>()
   const columnsFilter = computed(() => {
     return props.columns.filter((item: Columns) => {
+      let visible = item.search?.visible
+      if (typeof item.search?.visible === 'function') {
+        visible = item.search.visible()
+      }
       return (
-          item.search?.visible !== false &&
+          visible !== false &&
           item.search !== false &&
           !['selection', 'index'].includes(item.type) &&
           item.prop

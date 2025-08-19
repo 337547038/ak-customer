@@ -7,9 +7,9 @@
         :api="{ list: 'followList',del:'followDel'}"
         :controlBtn="controlBtn"
         :before="beforeList"
-        :auto-load="!isComponents"
-        :show-search="!disabled"
-        :columnsIconVisible="!disabled"
+        :auto-load="!detailTabProps.isComponents"
+        :show-search="!detailTabProps.disabled"
+        :columnsIconVisible="!detailTabProps.disabled"
         :keyColumns="keyColumns"
         @formFieldChange="searchFormChange"
     >
@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-  import {ref, markRaw, nextTick, computed} from 'vue'
+  import {ref, markRaw, nextTick, computed, inject} from 'vue'
   import customerSelect from '@/components/customerSelect/index.vue'
   import contactSelect from '@/components/contactSelect/index.vue'
   import validate from "@/components/form/validate";
@@ -46,18 +46,13 @@
 
   const props = withDefaults(
       defineProps<{
-        isComponents?: boolean
-        customerId?: number
-        userId?: number
         company?: string
-        disabled?: boolean
         keyColumns?: string
       }>(),
-      {
-        isComponents: false
-      }
+      {}
   )
   const layoutStore = useLayoutStore()
+  const detailTabProps = inject('detailTabsProps', ref({}));
   const controlBtn = [
     {
       key: 'add',
@@ -65,7 +60,7 @@
         addEditEvent(true)
       },
       display: () => {
-        return !props.disabled
+        return !detailTabProps.value.disabled
       }
     }
   ]
@@ -78,14 +73,19 @@
     return getStorage('userInfo', true) || {}
   })
   const formCustomerId = computed(() => {
-    return props.customerId || formModel.value.customerId
+    return detailTabProps.value.customerId || formModel.value.customerId
   })
   const beforeList = (type: string, data: any) => {
     if (type === 'get') {
-      if (props.isComponents) {
+      if (detailTabProps.value.isComponents) {
         // 作为组件调用
-        data.customerId = props.customerId
-        data.userId = props.userId
+        data.customerId = detailTabProps.value.customerId
+        data.userId = detailTabProps.value.userId
+        if (detailTabProps.value.tabsName === 'shareWithMe') {
+          // 查看共享给我/公海/无效的客户时，这里添加个参数
+          data.specialCustomer = detailTabProps.value.customerId
+          data.extend.search = 'comInvalidShare'
+        }
       }
     }
     return data
@@ -102,24 +102,24 @@
     }
   }
   const showCompany = computed(() => {
-    return !props.isComponents
+    return !detailTabProps.value.isComponents
   })
 
   const showUserId = computed(() => {
-    if (props.isComponents) {
+    if (detailTabProps.value.isComponents) {
       // 在列表页引用时，在查看下属会员客户时显示
-      return props.tabsName === 'child'
+      return detailTabProps.value.tabsName === 'child'
     } else {
       return layoutStore.userInfo?.hasChild
     }
   })
   const searchFormModel = ref({}) // 查询表单的值
   const searchUserId = computed(() => {
-    return props.userId || searchFormModel.value?.userId
+    return detailTabProps.value.userId || searchFormModel.value?.userId
   })
   const searchCustomerId = computed(() => {
-    if (props.isComponents) {
-      return props.customerId
+    if (detailTabProps.value.isComponents) {
+      return detailTabProps.value.customerId
     } else {
       return searchFormModel.value.customerId
     }
@@ -139,7 +139,7 @@
     {
       label: '所属人员',
       prop: 'userId',
-      show: false,
+      visible: false,
       search: {
         changeRefresh: true,
         style: {width: '230px'},
@@ -166,7 +166,7 @@
       formatter: (row: any) => {
         return row.company
       },
-      show: showCompany,
+      visible: showCompany,
       showOverflowTooltip: true
     },
     {
@@ -223,7 +223,9 @@
       }
     },
     {
-      show: !props.disabled,
+      visible: () => {
+        return !detailTabProps.value.disabled
+      },
       width: 90,
       prop: 'operate',
       label: '操作',
@@ -249,8 +251,8 @@
   }
 
   const beforeForm = (model: any, type: string) => {
-    if (type === 'add' && props.isComponents) {
-      model.customerId = props.customerId
+    if (type === 'add' && detailTabProps.value.isComponents) {
+      model.customerId = detailTabProps.value.customerId
     }
     return model
   }

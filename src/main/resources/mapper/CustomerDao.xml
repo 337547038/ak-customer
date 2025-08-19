@@ -34,6 +34,60 @@
         from sys_customer
         where id = #{id}
     </select>
+    <sql id="queryListWhere">
+        <bind name="andOr" value="extend.search=='check' ? 'or' : 'and'"/>
+        <if test="query.id != null">
+            and a.id = #{query.id}
+        </if>
+        <if test="query.userId != null">
+            and a.userId = #{query.userId}
+        </if>
+        <!--查看下属-->
+        <if test="extend.search=='child' and extend.userIds!=null">
+            and a.userId in
+            <foreach collection="extend.userIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+
+        <if test="query.company != null and query.company != ''">
+            ${andOr} a.company LIKE CONCAT('%', #{query.company}, '%')
+        </if>
+        <if test="query.brandName != null and query.brandName != ''">
+            ${andOr} a.brandName LIKE CONCAT('%', #{query.brandName}, '%')
+        </if>
+        <if test="query.type != null">
+            and type = #{query.type}
+        </if>
+        <if test="query.area != null and query.area != ''">
+            and a.area = #{query.area}
+        </if>
+        <if test="query.address != null and query.address != ''">
+            and a.address = #{query.address}
+        </if>
+        <if test="query.industry != null">
+            and a.industry = #{query.industry}
+        </if>
+        <if test="query.code != null and query.code != ''">
+            ${andOr} a.code LIKE CONCAT('%', #{query.code}, '%')
+        </if>
+
+        <if test="query.source != null">
+            and a.source = #{query.source}
+        </if>
+        <if test="query.tel != null and query.tel != ''">
+            ${andOr} a.tel LIKE CONCAT('%', #{query.tel}, '%')
+        </if>
+        <if test="query.status != null">
+            and a.status = #{query.status}
+        </if>
+        <if test="extend.search=='myShare'">
+            and a.shareUserId is not null and a.shareUserId != ''
+        </if>
+        <if test="extend.search=='shareWithMe'">
+            and FIND_IN_SET(#{query.shareUserId}, a.shareUserId) > 0 or a.shareUserId="0"
+        </if>
+    </sql>
     <!--查询指定行数据-->
     <select id="queryAllByLimit">
         select
@@ -63,58 +117,7 @@
             ON a.id=b.tid
         </if>
         <where>
-            <bind name="andOr" value="extend.search=='check' ? 'or' : 'and'"/>
-            <if test="query.id != null">
-                and a.id = #{query.id}
-            </if>
-            <if test="query.userId != null">
-                and a.userId = #{query.userId}
-            </if>
-            <!--查看下属-->
-            <if test="extend.search=='child' and extend.userIds!=null">
-                and a.userId in
-                <foreach collection="extend.userIds" item="item" separator="," open="(" close=")">
-                    #{item}
-                </foreach>
-            </if>
-
-            <if test="query.company != null and query.company != ''">
-                ${andOr} a.company LIKE CONCAT('%', #{query.company}, '%')
-            </if>
-            <if test="query.brandName != null and query.brandName != ''">
-                ${andOr} a.brandName LIKE CONCAT('%', #{query.brandName}, '%')
-            </if>
-            <if test="query.type != null">
-                and type = #{query.type}
-            </if>
-            <if test="query.area != null and query.area != ''">
-                and a.area = #{query.area}
-            </if>
-            <if test="query.address != null and query.address != ''">
-                and a.address = #{query.address}
-            </if>
-            <if test="query.industry != null">
-                and a.industry = #{query.industry}
-            </if>
-            <if test="query.code != null and query.code != ''">
-                ${andOr} a.code LIKE CONCAT('%', #{query.code}, '%')
-            </if>
-
-            <if test="query.source != null">
-                and a.source = #{query.source}
-            </if>
-            <if test="query.tel != null and query.tel != ''">
-                ${andOr} a.tel LIKE CONCAT('%', #{query.tel}, '%')
-            </if>
-            <if test="query.status != null">
-                and a.status = #{query.status}
-            </if>
-            <if test="extend.search=='myShare'">
-                and a.shareUserId is not null and a.shareUserId != ''
-            </if>
-            <if test="extend.search=='shareWithMe'">
-                and FIND_IN_SET(#{query.shareUserId}, a.shareUserId) > 0 or a.shareUserId="0"
-            </if>
+            <include refid="queryListWhere"/>
         </where>
         <choose>
             <when test="extend.sort != null and extend.sort!=''">
@@ -140,58 +143,7 @@
             join `sys_user` as c ON a.userId=c.id
         </if>
         <where>
-            <bind name="andOr" value="extend.type=='search' ? 'or' : 'and'"/>
-            <if test="query.id != null">
-                and a.id = #{query.id}
-            </if>
-            <if test="query.userId != null">
-                and a.userId = #{query.userId}
-            </if>
-            <!--查看下属-->
-            <if test="extend.search=='child' and extend.userIds!=null">
-                and a.userId in
-                <foreach collection="extend.userIds" item="item" separator="," open="(" close=")">
-                    #{item}
-                </foreach>
-            </if>
-
-            <if test="query.company != null and query.company != ''">
-                ${andOr} a.company LIKE CONCAT('%', #{query.company}, '%')
-            </if>
-            <if test="query.brandName != null and query.brandName != ''">
-                ${andOr} a.brandName LIKE CONCAT('%', #{query.brandName}, '%')
-            </if>
-            <if test="query.type != null">
-                and type = #{query.type}
-            </if>
-            <if test="query.area != null and query.area != ''">
-                and a.area = #{query.area}
-            </if>
-            <if test="query.address != null and query.address != ''">
-                and a.address = #{query.address}
-            </if>
-            <if test="query.industry != null">
-                and a.industry = #{query.industry}
-            </if>
-            <if test="query.code != null and query.code != ''">
-                ${andOr} a.code LIKE CONCAT('%', #{query.code}, '%')
-            </if>
-
-            <if test="query.source != null">
-                and a.source = #{query.source}
-            </if>
-            <if test="query.tel != null and query.tel != ''">
-                ${andOr} a.tel LIKE CONCAT('%', #{query.tel}, '%')
-            </if>
-            <if test="query.status != null">
-                and a.status = #{query.status}
-            </if>
-            <if test="extend.search=='myShare'">
-                and a.shareUserId is not null and a.shareUserId != ''
-            </if>
-            <if test="extend.search=='shareWithMe'">
-                and FIND_IN_SET(#{query.shareUserId}, a.shareUserId) > 0 or a.shareUserId="0"
-            </if>
+            <include refid="queryListWhere"/>
         </where>
     </select>
 

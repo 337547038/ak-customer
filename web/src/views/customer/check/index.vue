@@ -47,7 +47,7 @@
         placeholder: '请输入客户名称，品牌名称，客户电话，社会信用代码关键字',
         style: {width: '500px'},
       },
-      show: false
+      visible: false
     },
     {
       label: '序号',

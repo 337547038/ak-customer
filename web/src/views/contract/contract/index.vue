@@ -3,10 +3,13 @@
       ref="tableListRef"
       pk="id"
       :columns="columns"
+      :show-search="!detailTabProps.disabled"
       :api="{list:'contractList',del:'contractDel'}"
-      :control-btn="[{key:'add',click:()=>{addClick()}}]"
+      :control-btn="controlBtn"
       @formFieldChange="searchFormChange"
-      :auto-load="!isComponents"
+      :auto-load="!detailTabProps.isComponents"
+      :columnsIconVisible="!detailTabProps.disabled"
+      :keyColumns="keyColumns"
       :before="beforeList">
     <template #code="{row}">
       <el-tag type="danger" v-if="getShowTag(row)">已过期</el-tag>
@@ -41,11 +44,11 @@
       </template>
     </ak-form>
   </el-dialog>
-  <payment-form ref="paymentFormRef" @callback="paymentFormCallback"/>
+  <payment-form ref="paymentFormRef" @callback="getData"/>
 </template>
 
 <script setup lang="ts">
-  import {computed, markRaw, nextTick, ref, watch} from "vue";
+  import {computed, markRaw, nextTick, ref, watch, inject} from "vue";
   import customerSelect from "@/components/customerSelect/index.vue";
   import {useLayoutStore} from "@/store/layout";
   import validate from "@/components/form/validate";
@@ -58,35 +61,45 @@
 
   const props = withDefaults(
       defineProps<{
-        isComponents?: boolean
-        cId?: number
+        keyColumns?: string
       }>(),
       {}
   )
-
+  const detailTabProps = inject('detailTabsProps', ref({}));
   const route = useRoute()
   const layoutStore = useLayoutStore()
   const formDisabled = ref(false)
   const tableListRef = ref()
   const showUserId = computed(() => {
-    if (props.isComponents) {
+    if (detailTabProps.value.isComponents) {
       // 在列表页引用时，在查看下属会员客户时显示
-      return props.tabsName === 'contract'
+      return detailTabProps.value.tabsName === 'child'
     } else {
       return layoutStore.userInfo?.hasChild
     }
   })
   const showCompany = computed(() => {
-    return !props.isComponents
+    return !detailTabProps.value.isComponents
   })
   const paymentFormRef = ref()
   const currentUserId = ref()
   const currentContractUserId = ref() // 当前合同所有人
+  const controlBtn = [
+    {
+      key: 'add', click: () => {
+        addClick()
+      },
+      display: () => {
+        return !detailTabProps.value.disabled
+      }
+    }
+  ]
+
   const columns = ref([
     {
       label: '所属人员',
       prop: 'userId',
-      show: false,
+      visible: false,
       search: {
         changeRefresh: true,
         style: {width: '230px'},
@@ -129,7 +142,7 @@
         visible: showCompany,
         component: markRaw(customerSelect)
       },
-      show: showCompany,
+      visible: showCompany,
     },
     {
       prop: 'money',
@@ -188,6 +201,9 @@
       width: '90px'
     },
     {
+      visible: () => {
+        return !detailTabProps.value.disabled
+      },
       prop: 'operate',
       label: '操作',
       render: 'buttons',
@@ -252,12 +268,18 @@
         params.endDate = params.startEndDate[1]
         delete params.startEndDate
       }
-      if (props.cId) {
-        params.customerId = props.cId
+      if (detailTabProps.value.customerId) {
+        params.customerId = detailTabProps.value.customerId
       }
+      params.userId = detailTabProps.value.userId
       if (route.query.search === 'todo') {
         // 查看需审核的合同
         params.extend.search = 'child'
+      }
+      if (detailTabProps.value.tabsName === 'shareWithMe') {
+        // 查看共享给我的客户时，这里添加个参数
+        params.specialCustomer = detailTabProps.value.customerId
+        params.extend.search = 'comInvalidShare'
       }
     }
     return params
@@ -393,8 +415,8 @@
     formRef.value.resetFields()
   }
   const beforeForm = (model: any, type: string) => {
-    if (type === 'add' && props.isComponents) {
-      model.customerId = props.cId
+    if (type === 'add' && detailTabProps.value.isComponents) {
+      model.customerId = detailTabProps.value.customerId
     }
     return model
   }
@@ -412,10 +434,6 @@
       model.contactId = null
       customerId.value = val
     }
-  }
-
-  const paymentFormCallback = () => {
-    tableListRef.value.getData()
   }
 
   const getShowTag = (row: any) => {

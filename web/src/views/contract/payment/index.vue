@@ -33,7 +33,7 @@
     {
       label: '下属人员',
       prop: 'userId',
-      show: false,
+      visible: false,
       search: {
         changeRefresh: true,
         style: {width: '230px'},

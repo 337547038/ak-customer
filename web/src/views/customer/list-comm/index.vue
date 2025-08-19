@@ -8,7 +8,7 @@
       :before="beforeList"
   >
   </ak-list>
-  <DetailTable ref="detailTableRef" :disabled="true"/>
+  <DetailTable ref="detailTableRef" :disabled="true" tabsType="shareWithMe"/>
 </template>
 
 <script setup lang="ts">

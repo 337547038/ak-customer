@@ -28,27 +28,19 @@
       </el-tab-pane>
       <el-tab-pane label="跟进记录" name="follow" v-if="!isAddForm">
         <Follow
-            :disabled="disabled"
-            :is-components="true"
             ref="followRef"
             keyColumns="customerFollow"
-            :customerId="drawerObj.id"
-            :userId="drawerObj.userId"
             :company="drawerObj.company"/>
       </el-tab-pane>
       <el-tab-pane label="联系人" name="contact" v-if="!isAddForm">
         <Contact
             keyColumns="customerContact"
-            :disabled="disabled||tabsNameIsShare"
-            :isComponents="true"
-            :tid="drawerObj.id"
             :company="drawerObj.company"
             ref="contactRef"/>
       </el-tab-pane>
       <el-tab-pane label="合同" name="contract" v-if="!isAddForm">
         <Contract
-            :isComponents="true"
-            :cId="drawerObj.id"
+            keyColumns="customerContract"
             ref="contractRef"/>
       </el-tab-pane>
       <el-tab-pane label="操作记录" name="operate" v-if="!isAddForm">
@@ -62,7 +54,7 @@
           </el-timeline-item>
         </el-timeline>
       </el-tab-pane>
-      <el-tab-pane label="分享详情" name="share" v-if="formModel.shareUserId">
+      <el-tab-pane label="分享详情" name="share" v-if="formModel?.userId===userId&&formModel.shareUserId">
         <ShareInfo
             :disabled="disabled||tabsNameIsShare"
             ref="shareInfoRef"
@@ -75,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-  import {computed, ref, nextTick} from 'vue'
+  import {computed, ref, nextTick, provide} from 'vue'
   import {getRequest} from "@/api";
   import {dateFormatting} from "@/utils";
   import Contact from "../../contact/index.vue";
@@ -84,16 +76,21 @@
   import Follow from "../../follow/index.vue";
   import ShareInfo from "./shareInfo.vue";
   import Contract from "@/views/contract/contract/index.vue";
+  import {useLayoutStore} from '@/store/layout'
 
   const props = withDefaults(
       defineProps<{
-        disabled?: boolean
+        disabled?: boolean // 公海无效客户引用时为true
         tabsType?: string
       }>(),
       {}
   )
+  const layoutStore = useLayoutStore();
+  const userId = computed(() => {
+    return layoutStore.userInfo?.id
+  })
   const tabsNameIsShare = computed(() => {
-    return props.tabsType === 'share2'
+    return props.tabsType === 'shareWithMe'
   })
   const formModel = ref({})
   const formRef = ref()
@@ -128,6 +125,17 @@
       })
     }
   }
+
+  const detailTabsProps = computed(() => {
+    return {
+      userId: drawerObj.value.userId,
+      customerId: drawerObj.value.id,
+      isComponents: true,
+      tabsName: props.tabsType,
+      disabled: props.disabled || tabsNameIsShare.value,
+    }
+  })
+  provide("detailTabsProps", detailTabsProps)
   //tabs
   const contactRef = ref()
   const contractRef = ref()

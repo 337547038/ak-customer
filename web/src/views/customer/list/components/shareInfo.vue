@@ -2,7 +2,7 @@
   <div>
     <div v-if="userIds==='0'">当前客户已共享给所有人</div>
     <div v-else-if="userIdsArray">
-      <p>当前客户已共享给:</p>
+      <p style="padding-bottom: 15px">当前客户已共享给:</p>
       <el-tag
           v-for="(tag,index) in userIdsArray"
           :key="tag.id"

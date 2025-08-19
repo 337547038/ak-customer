@@ -25,6 +25,39 @@
         where id = #{id}
     </select>
 
+    <sql id="queryListWhere">
+        <if test="extend.userId != null">
+            and b.userId=#{extend.userId}
+        </if>
+        <if test="extend.search == 'child'">
+            and b.userId in
+            <foreach collection="extend.userIds" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="query.id != null">
+            and a.id = #{query.id}
+        </if>
+        <if test="query.customerId != null">
+            and a.customerId = #{query.customerId}
+        </if>
+        <if test="query.contactId != null">
+            and a.contactId = #{query.contactId}
+        </if>
+        <if test="query.contactName != null and query.contactName != ''">
+            and a.contactName = #{query.contactName}
+        </if>
+
+        <if test="query.userName != null and query.userName != ''">
+            and a.userName = #{query.userName}
+        </if>
+        <if test="query.dateTime != null">
+            and a.dateTime = #{query.dateTime}
+        </if>
+        <if test="query.type != null">
+            and a.type = #{query.type}
+        </if>
+    </sql>
     <!--查询指定行数据-->
     <select id="queryAllByLimit">
         select
@@ -32,42 +65,7 @@
         from sys_follow_records as a
         join sys_customer as b on a.customerId = b.id
         <where>
-            <if test="extend.userId != null">
-                and b.userId=#{extend.userId}
-            </if>
-            <if test="extend.search == 'child'">
-                and b.userId in
-                <foreach collection="extend.userIds" item="item" separator="," open="(" close=")">
-                    #{item}
-                </foreach>
-            </if>
-            <if test="query.id != null">
-                and a.id = #{query.id}
-            </if>
-            <if test="query.customerId != null">
-                and a.customerId = #{query.customerId}
-            </if>
-            <if test="query.contactId != null">
-                and a.contactId = #{query.contactId}
-            </if>
-            <if test="query.contactName != null and query.contactName != ''">
-                and a.contactName = #{query.contactName}
-            </if>
-            <!--<if test="query.userId != null">
-                and a.userId = #{query.userId}
-            </if>-->
-            <if test="query.userName != null and query.userName != ''">
-                and a.userName = #{query.userName}
-            </if>
-            <if test="query.dateTime != null">
-                and a.dateTime = #{query.dateTime}
-            </if>
-            <if test="query.type != null">
-                and a.type = #{query.type}
-            </if>
-            <if test="query.remark != null and query.remark != ''">
-                and a.remark = #{query.remark}
-            </if>
+            <include refid="queryListWhere"/>
         </where>
         <choose>
             <when test="extend.sort != null and extend.sort!=''">
@@ -88,42 +86,7 @@
         from sys_follow_records as a
         join sys_customer as b on a.customerId = b.id
         <where>
-            <if test="extend.userId != null">
-                and b.userId=#{extend.userId}
-            </if>
-            <if test="extend.search == 'child'">
-                and b.userId in
-                <foreach collection="extend.userIds" item="item" separator="," open="(" close=")">
-                    #{item}
-                </foreach>
-            </if>
-            <if test="query.id != null">
-                and a.id = #{query.id}
-            </if>
-            <if test="query.customerId != null">
-                and a.customerId = #{query.customerId}
-            </if>
-            <if test="query.contactId != null">
-                and a.contactId = #{query.contactId}
-            </if>
-            <if test="query.contactName != null and query.contactName != ''">
-                and a.contactName = #{query.contactName}
-            </if>
-            <!--<if test="query.userId != null">
-                and a.userId = #{query.userId}
-            </if>-->
-            <if test="query.userName != null and query.userName != ''">
-                and a.userName = #{query.userName}
-            </if>
-            <if test="query.dateTime != null">
-                and a.dateTime = #{query.dateTime}
-            </if>
-            <if test="query.type != null">
-                and a.type = #{query.type}
-            </if>
-            <if test="query.remark != null and query.remark != ''">
-                and a.remark = #{query.remark}
-            </if>
+            <include refid="queryListWhere"/>
         </where>
     </select>
 
