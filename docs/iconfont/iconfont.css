@@ -1,0 +1,111 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 4990179 */
+  src: url('iconfont.woff2?t=1754559734181') format('woff2'),
+       url('iconfont.woff?t=1754559734181') format('woff'),
+       url('iconfont.ttf?t=1754559734181') format('truetype');
+}
+
+.iconfont, [class*="icon"]{
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-area:before {
+  content: "\e62b";
+}
+
+.icon-contract:before {
+  content: "\e625";
+}
+
+.icon-payment:before {
+  content: "\e61b";
+}
+
+.icon-contract2:before {
+  content: "\e657";
+}
+
+.icon-list:before {
+  content: "\e613";
+}
+
+.icon-user2:before {
+  content: "\e686";
+}
+
+.icon-user:before {
+  content: "\e648";
+}
+
+.icon-analysis1:before {
+  content: "\e636";
+}
+
+.icon-contact:before {
+  content: "\e618";
+}
+
+.icon-ranking:before {
+  content: "\eb9d";
+}
+
+.icon-comm-user:before {
+  content: "\e6e3";
+}
+
+.icon-analysis3:before {
+  content: "\e6f7";
+}
+
+.icon-follow-record:before {
+  content: "\e69c";
+}
+
+.icon-check:before {
+  content: "\e660";
+}
+
+.icon-analysis4:before {
+  content: "\e600";
+}
+
+.icon-kehuguanli:before {
+  content: "\e635";
+}
+
+.icon-follows:before {
+  content: "\e68e";
+}
+
+.icon-config:before {
+  content: "\e622";
+}
+
+.icon-role:before {
+  content: "\ea45";
+}
+
+.icon-analysis5:before {
+  content: "\e62e";
+}
+
+.icon-user-num:before {
+  content: "\e64c";
+}
+
+.icon-card:before {
+  content: "\e722";
+}
+
+.icon-source:before {
+  content: "\e601";
+}
+
+.icon-invalid:before {
+  content: "\e612";
+}
+
