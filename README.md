@@ -47,7 +47,7 @@ spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 **前端请使用`pnpm run preview`启动项目，并使用`http://192.168`IP地址访问，使用`localhost`会访问请求本地json模拟数据**
 
-**后端按上面要求配置好数据库，进入`demo`目录运行`ak-customer.jar`即可**
+**后端按上面要求配置好数据库，进入`demo`目录运行`ak-customer-0.0.1-SNAPSHOT.jar`即可**
 
 ```bash
 java -jar ak-customer-0.0.1-SNAPSHOT.jar
