@@ -219,18 +219,16 @@ public class UserController {
     @Parameter(name = "refreshToken", description = "token", required = true)
     @PassToken
     @PostMapping("refreshToken")
-    public ResponseResult<Map<String, Object>> refreshToken(@RequestBody String params) {
-        JSONObject obj = JSONObject.parseObject(params);
-        String token = obj.getString("refreshToken");
-        if (token == null) {
+    public ResponseResult<Map<String, Object>> refreshToken(@RequestBody Map<String, Object> params) {
+
+        if (params.get("refreshToken") == null) {
             throw new CustomException("登录超时，token刷新失败");
         }
-        System.out.println(obj);
+        String token = String.valueOf(params.get("refreshToken"));
         String userId;
         try {
             userId = JWT.decode(token).getAudience().get(0);
         } catch (JWTDecodeException e) {
-            //log.error("token 解码失败");
             throw new CustomException("登录超时，请重新登录.");
         }
         User user = userService.queryById(Integer.valueOf(userId));

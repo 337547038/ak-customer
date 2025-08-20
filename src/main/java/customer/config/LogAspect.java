@@ -1,6 +1,7 @@
 package customer.config;
 
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import customer.service.RoleService;
 import customer.utils.Utils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,8 +20,13 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -95,6 +101,7 @@ public class LogAspect {
             throw e;
         }
         printLog("debug", "{}响应 :{}", uuid, JSON.toJSONString(result));
+        CreatJsonFile(result, params, String.valueOf(request.getRequestURL()));
         return result;
     }
 
@@ -139,6 +146,47 @@ public class LogAspect {
             if (Arrays.stream(permissionCheck.value()).noneMatch(userPermissions::contains)) {
                 printLog("error", "无权限访问：{},会员id：{},请求方法类型：{}", permissionCheck.value(), Utils.getCurrentUserId(), method);
                 throw new CustomException("无权限访问");
+            }
+        }
+    }
+
+
+    /**
+     * 为前端本地调试生成json文件
+     */
+    private static void CreatJsonFile(Object result, Object params, String urlPath) throws IOException {
+        Pattern pattern = Pattern.compile("/api(.*)");
+        Matcher matcher = pattern.matcher(urlPath);
+        if (matcher.find()) {
+            String path = matcher.group(1);
+            JSONObject obj = JSONObject.parse(JSONObject.toJSONString(params));
+            String id = "";
+            if (obj.getString("id") != null) {
+                id = obj.getString("id");
+            }
+            JSONObject body = new JSONObject();
+            JSONObject bodyContent = JSONObject.parse(JSONObject.toJSONString(result));
+
+            body.put("code", 1);
+            if (bodyContent.get("body") != null) {
+                body.put("data", bodyContent.get("body"));
+            } else {
+                body.put("data", bodyContent.get("data"));
+            }
+            String filePath = System.getProperty("user.dir") + "/web/public/mock" + path + id + ".json";
+            File file = new File(filePath);
+            // 检查路径的每个部分，并在需要时创建它
+            if (!file.getParentFile().exists()) {
+                file.getParentFile().mkdirs();
+            }
+            // 如果文件不存在，则创建它
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            // 使用FileWriter将内容写入文件
+            try (FileWriter writer = new FileWriter(file)) {
+                writer.write(String.valueOf(body));
+                System.out.println("内容已成功写入文件: " + filePath);
             }
         }
     }

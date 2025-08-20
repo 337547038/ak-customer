@@ -165,7 +165,6 @@
   import {useLayoutStore} from '@/store/layout'
 
   import IconSearchColumn from './components/iconSearchColumn.vue'
-  import columns from "@/views/customer/list/columns";
 
 
   defineOptions({name: 'AkList'})
@@ -226,13 +225,7 @@
   const loading = ref(false)
   const layoutStore = useLayoutStore()
   const columnsCheck = ref([])
-  const visibleFilters = (val: any) => {
-    if (typeof val === "function") {
-      return val()
-    } else {
-      return val
-    }
-  }
+
   const columnsFilter = computed(() => {
     return props.columns.filter((item: Columns) => {
       let visible = item.visible

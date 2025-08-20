@@ -37,7 +37,7 @@
         <div v-for="(item,index) in labelList" :key="item.value" class="flex-item">
           <ak-field label="标签名称:" v-model="item.label" prop="label"/>
           <ak-field label="标签值:" v-model="item.value" prop="value"/>
-          <el-button @click="delLabelClick(index)" type="text">
+          <el-button @click="delLabelClick(index)" text>
             <el-icon>
               <Delete/>
             </el-icon>

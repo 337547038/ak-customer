@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import jakarta.annotation.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,8 +27,8 @@ public class AnalysisController {
             @Parameter(name = "userId", description = "查询指定用户的客户")
     })
     @PostMapping("customer")
-    public Map<String, Object> analysisCustomers(@RequestBody Map<String, Object> customers) {
-        return analysisService.analysisCustomer(customers);
+    public ResponseEntity<Map<String, Object>> analysisCustomers(@RequestBody Map<String, Object> customers) {
+        return ResponseEntity.ok(analysisService.analysisCustomer(customers));
     }
 
     /**
@@ -37,20 +38,20 @@ public class AnalysisController {
      */
     @Operation(summary = "员工客户数量统计")
     @PostMapping("customerNum")
-    public List<Map<String, Object>> userCustomerNum() {
-        return analysisService.userCustomerNum();
+    public ResponseEntity<List<Map<String, Object>>> userCustomerNum() {
+        return ResponseEntity.ok(analysisService.userCustomerNum());
     }
 
     @Operation(summary = "跟进分析")
     @PostMapping("follow")
-    public List<Map<String, Object>> customerFollow() {
-        return analysisService.customerFollow();
+    public ResponseEntity<List<Map<String, Object>>> customerFollow() {
+        return ResponseEntity.ok(analysisService.customerFollow());
     }
 
     @Operation(summary = "合同排行分析")
     @PostMapping("contract")
-    public List<Map<String, Object>> customerContract() {
-        return analysisService.customerContract();
+    public ResponseEntity<List<Map<String, Object>>> customerContract() {
+        return ResponseEntity.ok(analysisService.customerContract());
     }
 
     /**
@@ -60,7 +61,7 @@ public class AnalysisController {
      */
     @Operation(summary = "首页汇总")
     @PostMapping("summary")
-    public Map<String, Object> summary() {
-        return analysisService.summary();
+    public ResponseEntity<Map<String, Object>> summary() {
+        return ResponseEntity.ok(analysisService.summary());
     }
 }
