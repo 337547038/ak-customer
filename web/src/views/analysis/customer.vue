@@ -26,12 +26,13 @@
     {
       label: '成交率%',
       prop: 'abc',
+      help:'合同有效期内合作客户占总客户量比例',
       search: false,
       formatter: row => {
         if (!row.contractCount) {
           return 0
         } else {
-          return parseFloat((row.contractCount / row.contractCount * 100).toFixed(2))
+          return parseFloat((row.contractCount / row.customerCount * 100).toFixed(2))
         }
       }
     }
