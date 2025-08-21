@@ -16,6 +16,19 @@ https://337547038.github.io/ak-customer/
 
 - 系统管理：用户管理、角色管理、部门管理、登录日志、字典管理
 
+
+## 目录结构说明
+
+```text
+db 数据库文件
+demo 编译生成的jar包文件
+docs 前端编译生成的项目文件，用于部署前端
+src
+ ├─main java开发主文件
+ └─test
+web 前端vue3项目文件
+```
+
 ## 本地快速启动
 
 1、环境要求：
@@ -58,3 +71,14 @@ java -jar ak-customer-0.0.1-SNAPSHOT.jar
 ## 相关视频
 
 ## 项目截图
+
+| ![index.png](mdImg/index.png)                         | ![analysis1.png](mdImg/analysis1.png)               |
+|-------------------------------------------------------|-----------------------------------------------------|
+| ![analysis2.png](mdImg/analysis2.png)                 | ![analysis-area.png](mdImg/analysis-area.png)       |
+| ![analysis-area2.png](mdImg/analysis-area2.png)       | ![analysis-follow.png](mdImg/analysis-follow.png)   |
+| ![contact.png](mdImg/contact.png)                     | ![contact-detail.png](mdImg/contact-detail.png)     |
+| ![contract.png](mdImg/contract.png)                   | ![customer.png](mdImg/customer.png)                 |
+| ![customer-comm.png](mdImg/customer-comm.png)         | ![customer-contact.png](mdImg/customer-contact.png) |
+| ![customer-contract.png](mdImg/customer-contract.png) | ![customer-detail.png](mdImg/customer-detail.png)   |
+| ![customer-follow.png](mdImg/customer-follow.png)     | ![follow.png](mdImg/follow.png)                     |
+| ![ocr.png](mdImg/ocr.png)                             | ![user.png](mdImg/user.png)                         |

@@ -184,7 +184,7 @@
     if (currentBtn.value === 'myShare' || currentBtn.value === 'cancelShare') {
       let userIds = ''
       if (currentBtn.value === 'myShare') {
-        userIds = selectUser === 'all' ? '0' : selectUser.map(item => item.id).join(',')
+        userIds = selectUser === 'all' ? '0' : selectUser?.map(item => item.id).join(',')
       }
       getRequest('customerShare', {ids: ids, userId: userIds, type: currentBtn.value})
           .then(res => {

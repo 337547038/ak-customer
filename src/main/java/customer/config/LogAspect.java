@@ -165,14 +165,18 @@ public class LogAspect {
                 id = obj.getString("id");
             }
             JSONObject body = new JSONObject();
-            JSONObject bodyContent = JSONObject.parse(JSONObject.toJSONString(result));
-
             body.put("code", 1);
-            if (bodyContent.get("body") != null) {
-                body.put("data", bodyContent.get("body"));
-            } else {
-                body.put("data", bodyContent.get("data"));
+            try {
+                JSONObject bodyContent = JSONObject.parse(JSONObject.toJSONString(result));
+                if (bodyContent.get("body") != null) {
+                    body.put("data", bodyContent.get("body"));
+                } else {
+                    body.put("data", bodyContent.get("data"));
+                }
+            } catch (Exception e) {
+                body.put("data", result);
             }
+
             String filePath = System.getProperty("user.dir") + "/web/public/mock" + path + id + ".json";
             File file = new File(filePath);
             // 检查路径的每个部分，并在需要时创建它

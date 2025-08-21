@@ -150,7 +150,7 @@
             userName.value = row.userName
             model.value = row.id
             visible.value = false
-            emits('selectClick', row)
+            emits('selectClick', [row])
           }
         }
       ]

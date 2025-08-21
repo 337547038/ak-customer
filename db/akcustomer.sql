@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主机： 127.0.0.1
--- 生成日期： 2025-08-20 09:58:06
+-- 生成日期： 2025-08-21 05:30:37
 -- 服务器版本： 10.4.27-MariaDB
 -- PHP 版本： 8.2.0
 
@@ -52,10 +52,11 @@ CREATE TABLE `sys_contact` (
 --
 
 INSERT INTO `sys_contact` (`id`, `name`, `sex`, `tel`, `phone`, `weixin`, `qq`, `email`, `position`, `tid`, `creatDate`, `lastTime`, `nextTime`, `decisionMaker`, `address`, `birthday`, `remark`) VALUES
-(12, 'a李总', 1, NULL, '13800138000', NULL, NULL, NULL, NULL, 8, '2025-08-16 13:08:14', '2025-08-16 14:12:02', NULL, 1, NULL, NULL, NULL),
-(13, 'u张总', 1, NULL, '13800138000', NULL, NULL, NULL, NULL, 9, '2025-08-16 14:26:44', '2025-08-16 19:36:59', NULL, 1, NULL, NULL, NULL),
-(14, 'a张三总', 1, NULL, '13800138000', NULL, NULL, NULL, NULL, 8, '2025-08-16 20:34:32', NULL, NULL, 1, NULL, NULL, NULL),
-(15, 'a2客户名称', 1, NULL, '13800138000', NULL, NULL, NULL, NULL, 10, '2025-08-18 19:04:31', '2025-08-18 19:05:05', NULL, 1, NULL, NULL, NULL);
+(12, '李总', 1, NULL, '13800138000', NULL, NULL, NULL, NULL, 8, '2025-08-16 13:08:14', '2025-08-16 14:12:02', NULL, 1, NULL, NULL, NULL),
+(13, '张总', 1, NULL, '13800138000', NULL, NULL, NULL, NULL, 9, '2025-08-16 14:26:44', '2025-08-16 19:36:59', NULL, 1, NULL, NULL, NULL),
+(14, '张三总', 1, NULL, '13800138000', NULL, NULL, NULL, NULL, 8, '2025-08-16 20:34:32', NULL, NULL, 1, NULL, NULL, NULL),
+(15, '王哥', 1, NULL, '13800138000', NULL, NULL, NULL, NULL, 10, '2025-08-18 19:04:31', '2025-08-18 19:05:05', NULL, 1, NULL, NULL, NULL),
+(16, '张姐', 1, NULL, '13800138000', NULL, NULL, NULL, '总经理', 12, '2025-08-21 10:31:22', '2025-08-21 10:33:54', '2025-09-04 00:00:00', 1, NULL, '1990-04-01 00:00:00', NULL);
 
 -- --------------------------------------------------------
 
@@ -145,9 +146,12 @@ CREATE TABLE `sys_customer` (
 --
 
 INSERT INTO `sys_customer` (`id`, `company`, `brandName`, `type`, `area`, `address`, `industry`, `code`, `files`, `source`, `tel`, `web`, `userId`, `creatTime`, `updateTime`, `remark`, `status`, `shareUserId`) VALUES
-(8, 'admin广州科技有限公司', NULL, 1, '44,4401,440106', '珠江新城', 1, NULL, NULL, 1, '020-3659874', 'http://www.baidu.com', 1, '2025-08-14 14:19:47', NULL, NULL, 1, '2'),
+(8, '广州未来发展科技有限公司', NULL, 1, '44,4401,440106', '珠江新城', 1, NULL, NULL, 1, '020-3659874', 'http://www.baidu.com', 1, '2025-08-14 14:19:47', '2025-08-21 09:14:33', NULL, 1, '2'),
 (9, 'user有限公司', NULL, 1, '44,4401,440103', NULL, 1, NULL, NULL, 1, NULL, NULL, NULL, '2025-08-14 20:56:46', NULL, NULL, 2, ''),
-(10, 'a2客户名称', NULL, 1, NULL, NULL, 1, NULL, NULL, 1, NULL, NULL, 1, '2025-08-18 19:03:19', NULL, NULL, 1, NULL);
+(10, '广州蛋扯虾集团有限公司', NULL, 3, '44,4401,440111', NULL, 2, NULL, NULL, 2, NULL, NULL, NULL, '2025-08-18 19:03:19', '2025-08-21 09:17:27', NULL, 2, ''),
+(11, '广州小鱼科技创新有限公司', NULL, 2, '44,4401,440105', NULL, 1, NULL, NULL, 4, NULL, NULL, 1, '2025-08-21 09:18:49', NULL, NULL, 1, NULL),
+(12, '广州摸鱼股份有限公司', NULL, 1, '44,4401,440103', NULL, 2, NULL, NULL, 5, NULL, NULL, 1, '2025-08-21 09:21:16', '2025-08-21 10:37:22', NULL, 1, NULL),
+(13, '深圳小虾科技有限公司', NULL, 4, '44,4403,440305', NULL, 1, NULL, NULL, 6, NULL, NULL, 2, '2025-08-21 11:29:00', NULL, NULL, 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -172,7 +176,11 @@ INSERT INTO `sys_customer_operate_records` (`id`, `tid`, `userId`, `dataTime`, `
 (34, 8, 1, '2025-08-14 14:19:47', '创建了该数据记录', 'admin'),
 (35, 9, 2, '2025-08-14 20:56:46', '创建了该数据记录', 'user'),
 (36, 10, 1, '2025-08-18 19:03:19', '创建了该数据记录', 'admin'),
-(37, 9, 2, '2025-08-18 22:16:36', '将客户转入公海', 'user');
+(37, 9, 2, '2025-08-18 22:16:36', '将客户转入公海', 'user'),
+(38, 11, 1, '2025-08-21 09:18:49', '创建了该数据记录', 'admin'),
+(39, 12, 1, '2025-08-21 09:21:16', '创建了该数据记录', 'admin'),
+(40, 10, 1, '2025-08-21 09:39:44', '将客户转入公海', 'admin'),
+(41, 13, 2, '2025-08-21 11:29:00', '创建了该数据记录', 'user');
 
 -- --------------------------------------------------------
 
@@ -222,11 +230,11 @@ CREATE TABLE `sys_dict` (
 
 INSERT INTO `sys_dict` (`id`, `name`, `type`, `status`, `remark`, `isSys`, `dateTime`, `children`) VALUES
 (1, '状态', 'status', 1, NULL, 1, '2025-07-08 20:18:55', '[{\"label\":\"启用\",\"value\":\"1\",\"field\":\"1\"},{\"label\":\"禁用\",\"value\":\"0\",\"field\":\"0\"}]'),
-(3, '行业分类', 'industryType', 1, NULL, 1, '2025-07-08 21:18:33', '[{\"label\":\"电子影音\",\"value\":\"1\"},{\"label\":\"汽车养护\",\"value\":\"2\"}]'),
-(4, '合作类型', 'cooperationType', 1, NULL, 1, '2025-07-09 12:12:33', '[{\"label\":\"合作客户\",\"value\":\"1\",\"field\":\"1\"},{\"label\":\"意向客户\",\"value\":\"2\",\"field\":\"0\"}]'),
+(3, '行业分类', 'industryType', 1, NULL, 1, '2025-08-21 09:12:48', '[{\"label\":\"分类1\",\"value\":\"1\"},{\"label\":\"分类2\",\"value\":\"2\"}]'),
+(4, '合作类型', 'cooperationType', 1, NULL, 1, '2025-08-21 09:12:20', '[{\"label\":\"潜在客户\",\"value\":\"1\",\"field\":\"1\"},{\"label\":\"意向客户\",\"value\":\"2\",\"field\":\"0\"},{\"label\":\"成交客户\",\"value\":\"3\"},{\"label\":\"忠诚客户\",\"value\":\"4\"},{\"label\":\"流失客户\",\"value\":\"5\"}]'),
 (5, '来源', 'source', 1, NULL, 1, '2025-07-10 18:18:37', '[{\"label\":\"线上渠道\",\"value\":\"1\"},{\"label\":\"线下渠道\",\"value\":\"2\"},{\"label\":\"内部推荐与转介绍\",\"value\":\"3\"},{\"label\":\"行业合作与活动\",\"value\":\"4\"},{\"label\":\"口碑与品牌传播\",\"value\":\"5\"},{\"label\":\"其他特殊渠道\",\"value\":\"6\"}]'),
 (6, '性别', 'sex', 1, NULL, 1, '2025-07-22 18:12:24', '[{\"label\":\"男\",\"value\":\"1\"},{\"label\":\"女\",\"value\":\"0\"},{\"label\":\"未知\",\"value\":\"2\"}]'),
-(7, '跟进方式', 'followType', 1, NULL, 1, '2025-07-24 13:50:57', '[{\"label\":\"电话\",\"value\":\"1\"},{\"label\":\"微信\",\"value\":\"2\"},{\"label\":\"上门拜访\",\"value\":\"3\"}]'),
+(7, '跟进方式', 'followType', 1, NULL, 1, '2025-08-21 09:10:16', '[{\"label\":\"电话\",\"value\":\"1\"},{\"label\":\"微信\",\"value\":\"2\"},{\"label\":\"上门拜访\",\"value\":\"3\"},{\"label\":\"其他\",\"value\":\"4\"}]'),
 (8, '回款账户类型', 'accountType', 1, NULL, 1, '2025-08-09 11:07:10', '[{\"label\":\"现金\",\"value\":\"1\"},{\"label\":\"微信\",\"value\":\"2\"},{\"label\":\"支付宝\",\"value\":\"3\"},{\"label\":\"对公账户\",\"value\":\"4\"},{\"label\":\"其他\",\"value\":\"5\"}]');
 
 -- --------------------------------------------------------
@@ -252,10 +260,11 @@ CREATE TABLE `sys_follow_records` (
 --
 
 INSERT INTO `sys_follow_records` (`id`, `customerId`, `contactId`, `contactName`, `userId`, `userName`, `dateTime`, `type`, `remark`) VALUES
-(13, 8, 12, 'a李总', 1, 'admin', '2025-08-16 14:12:02', 2, '超大规模'),
-(14, 9, 13, 'u张总', 2, 'user', '2025-08-16 14:28:35', 2, '闲聊'),
-(15, 9, 13, 'u张总', 1, 'admin', '2025-08-16 19:36:59', 2, '偶遇，闲聊'),
-(16, 10, 15, 'a2客户名称', 1, 'admin', '2025-08-18 19:05:05', 1, '闲聊');
+(13, 8, 12, '李总', 1, 'admin', '2025-08-16 14:12:02', 2, '超大规模'),
+(14, 9, 13, '张总', 2, 'user', '2025-08-16 14:28:35', 2, '闲聊'),
+(15, 9, 13, '张总', 1, 'admin', '2025-08-16 19:36:59', 2, '偶遇，闲聊'),
+(16, 10, 15, '王哥', 1, 'admin', '2025-08-18 19:05:05', 1, '闲聊'),
+(17, 12, 16, '张姐', 1, 'admin', '2025-08-21 10:33:54', 4, '京城大型交流会上偶遇张驵，相约下次上门拜访');
 
 -- --------------------------------------------------------
 
@@ -278,28 +287,9 @@ CREATE TABLE `sys_login_log` (
 --
 
 INSERT INTO `sys_login_log` (`id`, `userName`, `userId`, `loginIp`, `dateTime`, `remark`, `status`) VALUES
-(122, 'user', 2, '0:0:0:0:0:0:0:1', '2025-08-11 20:37:21', NULL, 1),
-(123, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-08-12 08:18:00', NULL, 1),
-(124, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-08-14 09:34:56', NULL, 1),
-(125, 'user', 2, '0:0:0:0:0:0:0:1', '2025-08-14 20:55:36', NULL, 1),
-(126, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-08-14 21:03:58', NULL, 1),
-(127, 'user', 2, '0:0:0:0:0:0:0:1', '2025-08-16 14:24:33', NULL, 1),
-(128, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-08-16 22:10:09', NULL, 1),
-(129, 'user', 2, '0:0:0:0:0:0:0:1', '2025-08-16 22:11:47', NULL, 1),
-(130, 'user', 2, '0:0:0:0:0:0:0:1', '2025-08-17 12:29:49', NULL, 1),
-(131, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-08-17 12:59:37', NULL, 1),
-(132, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-08-17 21:29:54', NULL, 1),
-(133, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-08-18 11:17:10', NULL, 1),
-(134, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-08-18 14:19:23', NULL, 1),
-(135, 'user', 2, '0:0:0:0:0:0:0:1', '2025-08-18 14:30:42', NULL, 1),
-(136, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-08-19 11:13:01', NULL, 1),
-(137, 'user', 2, '0:0:0:0:0:0:0:1', '2025-08-19 12:56:57', NULL, 1),
-(138, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-08-19 19:54:55', NULL, 1),
-(139, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-08-19 21:50:08', NULL, 1),
-(140, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-08-20 10:02:31', NULL, 1),
-(141, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-08-20 10:44:33', NULL, 1),
-(142, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-08-20 13:14:25', NULL, 1),
-(143, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-08-20 13:19:54', NULL, 1);
+(145, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-08-21 11:24:47', NULL, 1),
+(146, 'user', 2, '0:0:0:0:0:0:0:1', '2025-08-21 11:25:19', NULL, 1),
+(147, 'user', 2, '0:0:0:0:0:0:0:1', '2025-08-21 11:28:12', NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -355,9 +345,9 @@ CREATE TABLE `sys_user` (
 --
 
 INSERT INTO `sys_user` (`id`, `userName`, `password`, `status`, `creatTime`, `updateTime`, `lastLogin`, `loginTimer`, `ip`, `remark`, `departmentId`, `tid`, `phone`, `weixin`, `qq`, `sex`, `roleId`, `bindWX`) VALUES
-(1, 'admin', '12345', 1, '2025-07-09 06:24:03', '2025-07-30 11:07:47', '2025-08-20 13:19:54', 146, '0:0:0:0:0:0:0:1', NULL, 1, NULL, '13800138000', NULL, NULL, 1, '1,2', NULL),
-(2, 'user', '12345', 1, '2025-07-07 06:24:03', '2025-07-30 11:08:27', '2025-08-19 12:56:57', 15, '0:0:0:0:0:0:0:1', NULL, 4, 1, '13800138000', NULL, NULL, 1, '2', NULL),
-(4, 'user2', '123456', 1, '2025-08-10 07:41:05', NULL, NULL, 0, NULL, NULL, NULL, 2, NULL, NULL, NULL, NULL, NULL, NULL);
+(1, 'admin', '12345', 1, '2025-07-09 06:24:03', '2025-07-30 11:07:47', '2025-08-21 11:24:47', 148, '0:0:0:0:0:0:0:1', NULL, 1, NULL, '13800138000', NULL, NULL, 1, '1,2', NULL),
+(2, 'user', '12345', 1, '2025-07-07 06:24:03', '2025-07-30 11:08:27', '2025-08-21 11:28:12', 17, '0:0:0:0:0:0:0:1', NULL, 4, 1, '13800138000', NULL, NULL, 1, '2', NULL),
+(4, 'user2', '123456', 1, '2025-08-10 07:41:05', NULL, NULL, 0, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL);
 
 --
 -- 转储表的索引
@@ -442,7 +432,7 @@ ALTER TABLE `sys_user`
 -- 使用表AUTO_INCREMENT `sys_contact`
 --
 ALTER TABLE `sys_contact`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- 使用表AUTO_INCREMENT `sys_contract`
@@ -460,13 +450,13 @@ ALTER TABLE `sys_contract_payment`
 -- 使用表AUTO_INCREMENT `sys_customer`
 --
 ALTER TABLE `sys_customer`
-  MODIFY `id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- 使用表AUTO_INCREMENT `sys_customer_operate_records`
 --
 ALTER TABLE `sys_customer_operate_records`
-  MODIFY `id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- 使用表AUTO_INCREMENT `sys_department`
@@ -484,13 +474,13 @@ ALTER TABLE `sys_dict`
 -- 使用表AUTO_INCREMENT `sys_follow_records`
 --
 ALTER TABLE `sys_follow_records`
-  MODIFY `id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- 使用表AUTO_INCREMENT `sys_login_log`
 --
 ALTER TABLE `sys_login_log`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=144;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=148;
 
 --
 -- 使用表AUTO_INCREMENT `sys_role`

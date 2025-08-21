@@ -196,6 +196,7 @@
         },
         api: () => {
           return {
+            export:'',
             list: '', // 列表数据api接口
             del: '', // 删除api接口
             edit: '' // 修改保存api,用于列表中的switch切换各种状态时

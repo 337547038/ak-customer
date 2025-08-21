@@ -273,7 +273,7 @@ id, userName, status, creatTime, updateTime, lastLogin, loginTimer, ip, remark, 
         FROM
         sys_user as u
         LEFT JOIN sys_customer c ON u.id = c.userId
-        LEFT JOIN sys_contract con ON c.id = con.customerId and con.status=1
+        LEFT JOIN sys_contract con ON c.id = con.customerId and con.status=1 and CURRENT_DATE BETWEEN con.startDate AND con.endDate
         WHERE u.status=1 and c.status=1 and (u.id=#{userId} or u.id in
         <foreach collection="userIds" item="item" separator="," open="(" close=")">
             #{item}
