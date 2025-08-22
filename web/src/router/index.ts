@@ -150,7 +150,7 @@ router.beforeEach(async (to: any, _from: any, next: any) => {
 })
 
 router.afterEach((to: any) => {
-  document.title = (to.meta?.title || '') + 'xx客户管理系统'
+  document.title = (to.meta?.title || '') + 'AK客户管理系统'
   NProgress.done()
 })
 

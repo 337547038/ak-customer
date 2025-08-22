@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="form">
-      <h3>xx客户管理系统</h3>
+      <h3>AK客户管理系统</h3>
       <ak-form
           label-width="100"
           :data="formData"
