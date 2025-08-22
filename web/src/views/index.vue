@@ -62,7 +62,7 @@
         </h3>
         <div class="item">
           <ul v-if="todo.notFollow?.length">
-            <li v-for="item in tod.notFollow" :key="item.id">{{ item.company }}<span>{{ dateFormatting(item.lastFollowDate) }}</span></li>
+            <li v-for="item in todo.notFollow" :key="item.id">{{ item.company }}<span>{{ dateFormatting(item.lastFollowDate) }}</span></li>
           </ul>
           <p v-else>暂无数据，请继续保持!</p>
         </div>
