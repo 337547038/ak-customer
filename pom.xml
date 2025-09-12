@@ -157,6 +157,9 @@
                 <configuration>
                     <mainClass>customer.CustomerApplication</mainClass>
                     <skip>false</skip>
+                    <layers>
+                        <enabled>true</enabled>
+                    </layers>
                 </configuration>
                 <executions>
                     <execution>

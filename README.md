@@ -63,7 +63,7 @@ spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 **后端按上面要求配置好数据库，进入`demo`目录运行`ak-customer-0.0.1-SNAPSHOT.jar`即可**
 
 ```bash
-java -jar ak-customer-0.0.1-SNAPSHOT.jar
+java -jar ak-ak-customer-0.0.1-SNAPSHOT.jar
 ```
 
 即可正常在本地调试，源码部分目前有偿提供，如有需要可加微信`337547038`
