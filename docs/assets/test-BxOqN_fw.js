@@ -1,0 +1,1 @@
+import{d as s,c as n,h as c,g as a,r as l,o as r,v as _,D as u}from"./index-BRtqQkpX.js";const d=s({__name:"test",setup(i){const t=()=>{u("system/user/child",{})};return(m,e)=>{const o=l("el-button");return r(),n("div",null,[c(o,{onClick:t},{default:a(()=>e[0]||(e[0]=[_("click")])),_:1,__:[0]})])}}});export{d as default};
