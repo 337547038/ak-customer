@@ -6,7 +6,9 @@ export default {
     dictGet: 'system/dict/get',
     logList: 'system/loginLog/list',
     getCaptcha: 'system/captcha/get', // 获取图片验证码
-    userLogin: 'system/user/login', // 获取图片验证码
+    userLogin: 'system/user/login', // 用户登录
+    scanLogin:'system/user/scan', // 扫码登录
+    bindWx:'system/user/bindWx', // 绑定解绑微信
     userList: "system/user/list",
     userDelete: "system/user/delete",
     userEdit: "system/user/edit",

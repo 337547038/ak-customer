@@ -1,6 +1,7 @@
 package customer.service.impl;
 
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import customer.config.CustomException;
 import customer.config.PermissionCheck;
 import customer.entity.LoginLog;
@@ -14,7 +15,10 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,8 +36,11 @@ public class UserServiceImpl implements UserService {
 
     private final LoginLogService loginLogService;
 
-    public UserServiceImpl(LoginLogService loginLogService) {
+    private final RestTemplate restTemplate;
+
+    public UserServiceImpl(LoginLogService loginLogService, RestTemplate restTemplate) {
         this.loginLogService = loginLogService;
+        this.restTemplate = restTemplate;
     }
 
 
@@ -124,7 +131,7 @@ public class UserServiceImpl implements UserService {
     public User login(User user, String ipAddress) {
         List<Map<String, Object>> list = this.userDao.queryAllByLimit(user, new HashMap<>());
         LoginLog log = new LoginLog();
-        log.setUserName(user.getUserName());
+        // log.setUserName(user.getUserName()); // 扫码登录时这里没有值
         log.setLoginIp(ipAddress);
         log.setDateTime(new Date());
         User loginUser = new User();
@@ -138,15 +145,74 @@ public class UserServiceImpl implements UserService {
             updateUser.setIp(ipAddress);
             userDao.updateLogin(updateUser);
             //添加登录日志
+            log.setUserName(loginUser.getUserName());
             log.setUserId(loginUser.getId());
             log.setStatus(1);
         } else {
             log.setUserId(0); // 登录异常没有id
             log.setStatus(0);
-            log.setRemark("密码:" + user.getPassword());
+            if (user.getBindWX() != null) {
+                log.setRemark("当前用户没有绑定微信：" + user.getBindWX());
+            } else {
+                log.setRemark("密码:" + user.getPassword());
+            }
         }
         loginLogService.insert(log);
         return loginUser;
+    }
+
+    // 带查询参数的GET
+    private String getWithParams(String code) {
+        URI uri = UriComponentsBuilder.fromUriString("https://api.weixin.qq.com/sns/oauth2/access_token")
+                .queryParam("appid", "APPID")
+                .queryParam("secret", "secret")
+                .queryParam("code", code)
+                .queryParam("grant_type", "authorization_code")
+                .build()
+                .toUri();
+        return restTemplate.getForObject(uri, String.class);
+    }
+
+    /**
+     * 微信扫码登录
+     *
+     * @param query     code相关参数
+     * @param ipAddress ip
+     * @return result
+     */
+    @Override
+    public User scanLogin(Map<String, Object> query, String ipAddress) {
+        JSONObject result = JSONObject.parseObject(getWithParams(query.get("code").toString()));
+        if (result.get("openid") != null) {
+            User user = new User();
+            user.setBindWX(result.getString("openid"));
+            user.setStatus(1);
+            return login(user, ipAddress);
+        } else {
+            // 获取失败
+            throw new CustomException(result.get("errmsg").toString());
+        }
+    }
+
+    @Override
+    public Boolean bindWX(Map<String, Object> params) {
+        User user = new User();
+        user.setId(Utils.getCurrentUserId());
+        if (params.get("code") != null) {
+            // 绑定
+            JSONObject result = JSONObject.parseObject(getWithParams(params.get("code").toString()));
+            if (result.get("openid") != null) {
+                user.setBindWX(result.getString("openid"));
+                return this.userDao.updateById(user) > 0;
+            } else {
+                // 获取失败
+                throw new CustomException(result.get("errmsg").toString());
+            }
+        } else {
+            // 解除
+            user.setBindWX("null");
+            return this.userDao.updateById(user) > 0;
+        }
     }
 
     @Override
@@ -171,13 +237,14 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 根据id获取当前会员所有上级
+     *
      * @param userId 当前用户id
      * @return 所有上级
      */
     @Override
     @Cacheable(value = "userChild", key = "'fatherList_'+#userId")
     public String queryUserFather(Integer userId) {
-        List<Map<String, Object>> list = this.userDao.queryUserChildFather(userId,false);
+        List<Map<String, Object>> list = this.userDao.queryUserChildFather(userId, false);
         return list.stream()
                 .map(map -> String.valueOf(map.get("userName")))  // 提取 name
                 .filter(Objects::nonNull)    // 过滤 null
@@ -200,13 +267,13 @@ public class UserServiceImpl implements UserService {
     // 整个缓存
     @Cacheable(value = "userChild", key = "#userId")
     public List<Map<String, Object>> queryUserChild(Integer userId) {
-        return this.userDao.queryUserChildFather(userId,true);
+        return this.userDao.queryUserChildFather(userId, true);
     }
 
     @Override
     @Cacheable(value = "userChild", key = "#userId+'String'")
     public List<String> queryUserChild(Integer userId, String type) {
-        List<Map<String, Object>> list = this.userDao.queryUserChildFather(userId,true);
+        List<Map<String, Object>> list = this.userDao.queryUserChildFather(userId, true);
         // 提取所有id并转为List<String>
         return list.stream()
                 .map(map -> String.valueOf(map.get("id"))) // 确保转换为String
@@ -248,6 +315,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 统计当前用户及下属的客户数量及合合
+     *
      * @return list
      */
     @Cacheable(value = "analysis", key = "T(customer.utils.Utils).getCurrentUserId()+'_userCustomer'")
@@ -260,18 +328,20 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 统计员工跟进分析
+     *
      * @return list
      */
     @Cacheable(value = "analysis", key = "T(customer.utils.Utils).getCurrentUserId()+'_follow'")
     @Override
-    public List<Map<String,Object>> queryUserFollow() {
+    public List<Map<String, Object>> queryUserFollow() {
         Integer userId = Utils.getCurrentUserId();
         List<String> list = queryUserChild(userId, "");
-        return this.userDao.queryUserFollow(userId,list);
+        return this.userDao.queryUserFollow(userId, list);
     }
 
     /**
      * 分析统计合同排行
+     *
      * @return list
      */
     @Cacheable(value = "analysis", key = "T(customer.utils.Utils).getCurrentUserId()+'_contract'")
@@ -279,6 +349,6 @@ public class UserServiceImpl implements UserService {
     public List<Map<String, Object>> queryUserContract() {
         Integer userId = Utils.getCurrentUserId();
         List<String> list = queryUserChild(userId, "");
-        return this.userDao.queryUserContract(userId,list);
+        return this.userDao.queryUserContract(userId, list);
     }
 }

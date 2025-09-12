@@ -169,45 +169,48 @@ id, userName, status, creatTime, updateTime, lastLogin, loginTimer, ip, remark, 
         <update id="updateById">
             update sys_user
             <set>
-                    <if test="userName != null and userName != ''">
-                        userName = #{userName},
-                    </if>
-                    <if test="password != null and password != ''">
-                        password = #{password},
-                    </if>
-                    <if test="status != null">
-                        status = #{status},
-                    </if>
-                    <if test="updateTime != null">
-                        updateTime = #{updateTime},
-                    </if>
-                    <if test="remark != null and remark != ''">
-                        remark = #{remark},
-                    </if>
-                    <if test="departmentId != null">
-                        departmentId = #{departmentId},
-                    </if>
-                    <if test="tid != null">
-                        tid = #{tid},
-                    </if>
-                    <if test="phone != null and phone != ''">
-                        phone = #{phone},
-                    </if>
-                    <if test="weixin != null and weixin != ''">
-                        weixin = #{weixin},
-                    </if>
-                    <if test="qq != null">
-                        qq = #{qq},
-                    </if>
-                    <if test="sex != null">
-                        sex = #{sex},
-                    </if>
-                    <if test="roleId != null and roleId != ''">
-                        roleId = #{roleId},
-                    </if>
-                    <if test="bindWX != null and bindWX != ''">
-                        bindWX = #{bindWX},
-                    </if>
+                <if test="userName != null and userName != ''">
+                    userName = #{userName},
+                </if>
+                <if test="password != null and password != ''">
+                    password = #{password},
+                </if>
+                <if test="status != null">
+                    status = #{status},
+                </if>
+                <if test="updateTime != null">
+                    updateTime = #{updateTime},
+                </if>
+                <if test="remark != null and remark != ''">
+                    remark = #{remark},
+                </if>
+                <if test="departmentId != null">
+                    departmentId = #{departmentId},
+                </if>
+                <if test="tid != null">
+                    tid = #{tid},
+                </if>
+                <if test="phone != null and phone != ''">
+                    phone = #{phone},
+                </if>
+                <if test="weixin != null and weixin != ''">
+                    weixin = #{weixin},
+                </if>
+                <if test="qq != null">
+                    qq = #{qq},
+                </if>
+                <if test="sex != null">
+                    sex = #{sex},
+                </if>
+                <if test="roleId != null and roleId != ''">
+                    roleId = #{roleId},
+                </if>
+                <if test="bindWX != 'null' and bindWX != ''">
+                    bindWX = #{bindWX},
+                </if>
+                <if test="bindWX == 'null'">
+                    bindWX = null,
+                </if>
             </set>
             where id = #{id}
         </update>

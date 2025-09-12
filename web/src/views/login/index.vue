@@ -19,8 +19,9 @@
         </el-form-item>
       </ak-form>
       <div class="weixin" style="padding:10px 0">
-        <el-button type="primary" text>微信扫码登录</el-button>
+        <el-button type="primary" text @click="wxLoginClick">微信扫码登录</el-button>
       </div>
+      <wx-login ref="wxLoginRef"/>
     </div>
   </div>
 </template>
@@ -33,11 +34,17 @@
   import {useRouter, useRoute} from 'vue-router'
   import {useLayoutStore} from '@/store/layout'
   import {setStorage, removeStorage} from '@/utils'
+  import WxLogin from '@/components/scan/index.vue'
 
   const router = useRouter()
   const route = useRoute()
 
   const useStore = useLayoutStore()
+
+  const wxLoginRef = ref()
+  const wxLoginClick = () => {
+    wxLoginRef.value.open()
+  }
 
   const loginAfter = (data, success) => {
     if (success) {
@@ -114,8 +121,24 @@
         .catch(() => {
         })
   }
+  const getScanLogin = () => {
+    const code = route.query.code
+    const state = route.query.state
+    if (code && state) {
+      // 扫码登录回调
+      getRequest("scanLogin", {code: code})
+          .then((res) => {
+            loginAfter(res.data, true)
+          })
+          .catch(() => {
+            router.push({path: "/login", query: {redirect: '/system/usercenter'}})
+            getCaptcha()
+          })
+    }
+  }
   onMounted(() => {
     getCaptcha()
+    getScanLogin()
   })
 </script>
 <style scoped lang="scss">
@@ -129,6 +152,8 @@
 }
 
 .form {
+  overflow: hidden;
+  position: relative;
   background: #fff;
   border-radius: 5px;
   padding: 30px 100px 30px 100px;

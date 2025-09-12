@@ -12,11 +12,12 @@
         v-model="formModel">
       <el-form-item label="绑定微信">
         <el-button type="primary" @click="bindWenXin">
-          {{ formModel.bindWX ? '解绑' : '点击绑定'}}
+          {{ formModel.bindWX ? '解绑' : '点击绑定' }}
         </el-button>
       </el-form-item>
     </ak-form>
   </div>
+  <scan-code mode="dialog" ref="scanCodeRef"/>
 </template>
 <route>
 {meta:{permissions:"none"}}
@@ -26,7 +27,11 @@
   import validate from "@/components/form/validate";
   import {useLayoutStore} from '@/store/layout'
   import {ElMessage} from "element-plus";
+  import {getRequest} from "@/api";
+  import scanCode from '@/components/scan/index.vue'
+  import {useRoute} from 'vue-router'
 
+  const route = useRoute()
   const layoutStore = useLayoutStore();
   const dict = layoutStore.getSystemDict()
   const formRef = ref();
@@ -127,12 +132,35 @@
     }
     return data;
   }
-  
+
+  const scanCodeRef = ref()
+  const bindOrUnbind = () => {
+    getRequest("bindWx", params)
+        .then((res) => {
+          ElMessage.success('绑定成功')
+          formRef.value.getData()
+        })
+  }
   const bindWenXin = () => {
-    ElMessage.warning('开发中')
+    if (formModel.value.bindWX) {
+      // 解绑
+      params.unbind = true
+      bindOrUnbind({unbind: true})
+    } else {
+      scanCodeRef.value.open()
+    }
+
+  }
+  const getScanBind = () => {
+    const code = route.query.code
+    const state = route.query.state
+    if (code && state) {
+      bindOrUnbind({code: code})
+    }
   }
   onMounted(() => {
     formRef.value.getData()
+    getScanBind()
   })
 </script>
 

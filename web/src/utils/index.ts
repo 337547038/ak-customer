@@ -28,13 +28,27 @@ export const dateFormatting = (time: any, cFormat?: string) => {
 }
 
 // 动态远程加载script脚本
-export function loadScript(src: string) {
+export function loadScript(src: string, id?: string, remove?: boolean) {
+    if (remove) {
+        const script = document.getElementById(id) ||
+            Array.from(document.scripts).find(s => s.src === id);
+
+        if (script) {
+            // 移除所有事件监听器（简单方式：克隆并替换）
+            const parent = script.parentNode;
+            if (parent) {
+                parent.removeChild(script);
+            }
+        }
+        return
+    }
     return new Promise((resolve, reject) => {
         const script = document.createElement('script')
         script.type = 'text/javascript'
         script.onload = resolve
         script.onerror = reject
         script.src = src
+        script.id = id
         document.head.appendChild(script)
     })
 }

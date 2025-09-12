@@ -53,6 +53,11 @@ public interface UserService {
 
     User login(User user, String ipAddress);
 
+
+    User scanLogin(Map<String, Object> query, String ipAddress);
+
+    Boolean bindWX(Map<String, Object> params);
+
     List<Map<String, Object>> queryByIds(String ids);
 
     boolean tokenVerify(Integer userId);

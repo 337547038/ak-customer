@@ -183,6 +183,19 @@ public class UserController {
         return ResponseEntity.ok(this.userService.deleteById(idList));
     }
 
+    private Map<String,Object> getLoginComm(User user){
+        Map<String, Object> map = new HashMap<>();
+        map.put("token", getToken(user, Utils.EXPIRE_TIME));
+        map.put("refreshToken", getToken(user, Utils.EXPIRE_TIME * 2));
+        map.put("expire_time", Utils.EXPIRE_TIME);
+        map.put("id", user.getId());
+        map.put("userName", user.getUserName());
+        map.put("roleId", user.getRoleId());
+        boolean hasChild = this.userService.hasChild();
+        map.put("hasChild", hasChild);
+        return map;
+    }
+
     @Operation(summary = "根据用户名和密码登录")
     @Parameter(name = "userName", description = "登录用户名", required = true)
     @Parameter(name = "password", description = "登录密码", required = true)
@@ -203,16 +216,30 @@ public class UserController {
         if (loginUser == null) {
             return ResponseResult.fail("用户名或密码错误");
         }
-        Map<String, Object> map = new HashMap<>();
-        map.put("token", getToken(loginUser, Utils.EXPIRE_TIME));
-        map.put("refreshToken", getToken(loginUser, Utils.EXPIRE_TIME * 2));
-        map.put("expire_time", Utils.EXPIRE_TIME);
-        map.put("id", loginUser.getId());
-        map.put("userName", loginUser.getUserName());
-        map.put("roleId", loginUser.getRoleId());
-        boolean hasChild = this.userService.hasChild();
-        map.put("hasChild", hasChild);
-        return ResponseResult.success(map, "登录成功");
+
+        return ResponseResult.success(getLoginComm(loginUser), "登录成功");
+    }
+
+    @Operation(summary = "微信扫码登录")
+    @Parameter(name = "code", description = "code", required = true)
+    @PassToken
+    @PostMapping("scan")
+    public ResponseResult<Map<String, Object>> login(@RequestBody Map<String, Object> query, HttpServletRequest request) {
+        if (query.get("code") == null) {
+            throw new CustomException("code不能为空");
+        } else {
+            String ipAddress = request.getRemoteAddr();
+            User loginUser = this.userService.scanLogin(query, ipAddress);
+            if (loginUser == null) {
+                return ResponseResult.fail("请到用户中心绑定");
+            }
+            return ResponseResult.success(getLoginComm(loginUser), "登录成功");
+        }
+    }
+    @Operation(summary = "绑定微信")
+    @Parameter(name = "unbind", description = "true时解除绑定")
+    public ResponseEntity<Boolean> bindWX(@RequestBody Map<String, Object> params) {
+        return ResponseEntity.ok(this.userService.bindWX(params));
     }
 
     @Operation(summary = "使用refreshToken换取新token")
