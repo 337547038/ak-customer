@@ -75,7 +75,7 @@
   const getMapJson = (map?: string, city?: boolean) => {
     const path = map ? map : 'china'
     registerName.value = path
-    getRequest(`/echarts/map/${path}.json`)
+    getRequest(`echarts/map/${path}.json`)
         .then(() => {
           // 全局拦截了只有code＝1才进这里
         })

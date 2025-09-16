@@ -17,7 +17,8 @@ if (host.indexOf('localhost') !== -1 || host.indexOf('github') !== -1) {
 export const getRequest = (apiKey: string, data?: any, options = {}) => {
     let url = allApi[apiKey] || apiKey
     // 不是以/和http开头的，添加全局前缀
-    if (!(url.startsWith('/') || url.startsWith('http'))) {
+    // 还有个特殊的地图.json，以echarts开头
+    if (!(url.startsWith('/') || url.startsWith('http') || url.startsWith('echarts'))) {
         url = apiPrefix + url
     }
     if (localhost) {
