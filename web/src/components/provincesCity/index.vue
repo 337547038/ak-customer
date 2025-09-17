@@ -1,5 +1,10 @@
 <template>
-  <el-cascader :props="props" :options="options" v-model="model" placeholder="请选择区域"/>
+  <el-cascader
+    v-model="model"
+    :props="props"
+    :options="options"
+    placeholder="请选择区域"
+  />
 </template>
 <script setup lang="ts">
   import type {CascaderProps} from 'element-plus'
@@ -8,7 +13,7 @@
   import CityJson from '@/assets/json/cities.json'
   import AreaJson from '@/assets/json/areas.json'
 
-  const model = defineModel()
+  const model = defineModel<any>()
 
   const options = ref<CascaderProps['options']>(ProvincesJson)
 

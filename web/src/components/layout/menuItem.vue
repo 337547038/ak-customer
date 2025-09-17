@@ -1,14 +1,24 @@
 <template>
-  <template v-for="(item, index) in data" :key="index">
-    <el-sub-menu v-if="item.children && subMenuPermission(item.children)" :index="item.path || item.menuIndex">
+  <template
+    v-for="(item, index) in data"
+    :key="index"
+  >
+    <el-sub-menu
+      v-if="item.children && subMenuPermission(item.children)"
+      :index="item.path || item.menuIndex"
+    >
       <template #title>
-        <ak-icon :name="item.icon"/>
+        <ak-icon :name="item.icon" />
         <span>{{ item.title }}</span>
       </template>
-      <menu-item :data="item.children"/>
+      <menu-item :data="item.children" />
     </el-sub-menu>
-    <el-menu-item v-else-if="item.type!=='btn'" :index="item.path || item.menuIndex" v-permission="item.path">
-      <ak-icon :name="item.icon"/>
+    <el-menu-item
+      v-else-if="item.type!=='btn'"
+      v-permission="item.path"
+      :index="item.path || item.menuIndex"
+    >
+      <ak-icon :name="item.icon" />
       <span>{{ item.title }}</span>
     </el-menu-item>
   </template>
@@ -19,7 +29,7 @@
 
   withDefaults(
       defineProps<{
-        data: string[]
+        data?: string[]
       }>(),
       {
         data: () => {

@@ -1,19 +1,19 @@
 <template>
   <el-tooltip
-      effect="dark"
-      :content="btn.tooltip"
-      placement="top"
-      :disabled="getTooltipDisabled(btn)"
+    effect="dark"
+    :content="btn.tooltip"
+    placement="top"
+    :disabled="getTooltipDisabled(btn)"
   >
     <el-button
-        :type="btn.type"
-        :class="[btn.class]"
-        v-bind="btn.attr"
-        v-show="getDisplay(btn)"
-        :disabled="getDisabled(btn)"
-        @click="btnClick"
+      v-show="getDisplay(btn)"
+      :type="btn.type"
+      :class="[btn.class]"
+      v-bind="btn.attr"
+      :disabled="getDisabled(btn)"
+      @click="btnClick"
     >
-      <Icon :name="btn.icon"/>
+      <Icon :name="btn.icon" />
       <span v-if="btn.label">{{ btn.label }}</span>
     </el-button>
   </el-tooltip>
@@ -28,7 +28,9 @@ const props = withDefaults(
       row: any
       position?: string
     }>(),
-    {}
+    {
+      position:''
+    }
 )
 const emits = defineEmits<{
   (e: 'click', key: string): void

@@ -1,28 +1,43 @@
 <template>
-  <el-icon @click="toolClick('collapse')" class="collapse-icon">
+  <el-icon
+    class="collapse-icon"
+    @click="toolClick('collapse')"
+  >
     <Fold v-if="!collapse" />
     <Expand v-else />
   </el-icon>
-  <el-breadcrumb separator="/" class="breadcrumb">
-    <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+  <el-breadcrumb
+    separator="/"
+    class="breadcrumb"
+  >
+    <el-breadcrumb-item :to="{ path: '/' }">
+      首页
+    </el-breadcrumb-item>
     <el-breadcrumb-item
       v-for="(item, index) in breadcrumb"
       :key="index"
       :to="{ path: item.path }"
-      >{{ item.label }}</el-breadcrumb-item
     >
+      {{ item.label }}
+    </el-breadcrumb-item>
   </el-breadcrumb>
   <div class="comm-header-tool">
-    <el-icon @click="toolClick('refresh')" title="刷新页面"
-      ><RefreshRight
-    /></el-icon>
-    <el-icon title="全屏"
-      ><FullScreen @click="toolClick('fullScreen')"
-    /></el-icon>
+    <el-icon
+      title="刷新页面"
+      @click="toolClick('refresh')"
+    >
+      <RefreshRight />
+    </el-icon>
+    <el-icon title="全屏">
+      <FullScreen @click="toolClick('fullScreen')" />
+    </el-icon>
   </div>
   <div class="header-right">
     <el-dropdown>
-      <div class="header-avatar" style="cursor: pointer">
+      <div
+        class="header-avatar"
+        style="cursor: pointer"
+      >
         <el-avatar
           class="avatar"
           size="small"
@@ -36,15 +51,24 @@
       </div>
       <template #dropdown>
         <el-menu class="avatar-menu">
-          <el-menu-item index="user" @click="userClick">
+          <el-menu-item
+            index="user"
+            @click="userClick"
+          >
             <el-icon><User /></el-icon>
             <span class="title">个人中心</span>
           </el-menu-item>
-          <el-menu-item index="setting" @click="userClick">
+          <el-menu-item
+            index="setting"
+            @click="userClick"
+          >
             <el-icon><Setting /></el-icon>
             <span class="title">设置</span>
           </el-menu-item>
-          <el-menu-item @click="logout" index="logout">
+          <el-menu-item
+            index="logout"
+            @click="logout"
+          >
             <el-icon><CircleClose /></el-icon>
             <span class="title">退出登录</span>
           </el-menu-item>
@@ -55,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, ref } from 'vue'
+  import { computed } from 'vue'
   import { useLayoutStore } from '@/store/layout'
   import {useRouter} from 'vue-router'
   const router = useRouter()
@@ -76,10 +100,10 @@
   const userInfo = computed(()=>{
     return store.userInfo
   })
-  const user = ref({
+/*  const user = ref({
     name: 'userName',
     avatar: ''
-  })
+  })*/
   const toolClick = (type: string) => {
     emits('click', type)
   }

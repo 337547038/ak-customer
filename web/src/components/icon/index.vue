@@ -1,6 +1,13 @@
 <template>
-  <el-icon v-if="isElIcon"><component :is="name" /></el-icon>
-  <i :class="[name]" v-else v-show="name" class="icon"></i>
+  <el-icon v-if="isElIcon">
+    <component :is="name" />
+  </el-icon>
+  <i
+    v-else
+    v-show="name"
+    :class="[name]"
+    class="icon"
+  />
 </template>
 <script setup lang="ts">
   import { computed } from 'vue'

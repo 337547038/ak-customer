@@ -1,17 +1,18 @@
 <template>
   <el-select
-      v-model="value"
-      placeholder="请输入客户名称"
-      filterable
-      remote
-      :remote-method="remoteMethod"
-      :loading="loading"
-      @change="change">
+    v-model="value"
+    placeholder="请输入客户名称"
+    filterable
+    remote
+    :remote-method="remoteMethod"
+    :loading="loading"
+    @change="change"
+  >
     <el-option
-        v-for="item in options"
-        :key="item.id"
-        :label="item.company"
-        :value="item.id"
+      v-for="item in options"
+      :key="item.id"
+      :label="item.company"
+      :value="item.id"
     />
   </el-select>
 </template>
@@ -26,7 +27,10 @@
         modelValue?: number
         userId?: number|null // 查询指定会员下的客户
       }>(),
-      {}
+      {
+        modelValue:null,
+        userId:null
+      }
   )
   const emits = defineEmits<{
     (e: 'update:modelValue', value: any): void

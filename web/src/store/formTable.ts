@@ -19,6 +19,7 @@ export const useFormTable = defineStore('formTable', {
       try {
         return this.columnsCheck[path] || []
       } catch (e) {
+          console.log(e)
         return []
       }
     }

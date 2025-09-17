@@ -1,16 +1,25 @@
 <template>
   <el-form :inline="true">
-    <el-form-item label="选择下属用户" v-if="hasChild">
+    <el-form-item
+      v-if="hasChild"
+      label="选择下属用户"
+    >
       <el-select
-          clearable
-          @change="change"
-          v-model="userId"
-          placeholder="请选择下属用户"
-          style="min-width: 180px">
-        <el-option v-for="item in options" :value="item.id" :key="item.id" :label="item.userName"/>
+        v-model="userId"
+        clearable
+        placeholder="请选择下属用户"
+        style="min-width: 180px"
+        @change="change"
+      >
+        <el-option
+          v-for="item in options"
+          :key="item.id"
+          :value="item.id"
+          :label="item.userName"
+        />
       </el-select>
     </el-form-item>
-    <slot></slot>
+    <slot />
   </el-form>
 </template>
 
@@ -31,7 +40,7 @@
   const userId = ref()
   const options = ref([])
   const getChildUser = () => {
-    if (!hasChild) {
+    if (!hasChild.value) {
       return
     }
     getRequest("userChildList", {})

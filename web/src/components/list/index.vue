@@ -1,146 +1,158 @@
 <template>
-  <div class="table-list-container" ref="containerEl" v-loading="loading">
+  <div
+    ref="containerEl"
+    v-loading="loading"
+    class="table-list-container"
+  >
     <Transition name="autoHeight">
       <search-form
-          v-if="showSearch"
-          v-show="toggleFormSearch"
-          :columns="columns"
-          @onsubmit="searchClick"
-          ref="searchFormEl"
-          @fieldChange="formFieldChange"
+        v-if="showSearch"
+        v-show="toggleFormSearch"
+        ref="searchFormEl"
+        :columns="columns"
+        @onsubmit="searchClick"
+        @field-change="formFieldChange"
       />
     </Transition>
-    <slot></slot>
+    <slot />
     <div class="control-btn">
       <div class="control-btn-group">
         <operate-button
-            v-if="props.controlBtn?.length"
-            position="top"
-            class="group"
-            :row="selectRows"
-            :buttons="mergeDefaultBtn(props.controlBtn, 'top')"
-            @click="btnClick"
+          v-if="props.controlBtn?.length"
+          position="top"
+          class="group"
+          :row="selectRows"
+          :buttons="mergeDefaultBtn(props.controlBtn, 'top')"
+          @click="btnClick"
         />
-        <slot name="btnAppend"></slot>
+        <slot name="btnAppend" />
       </div>
       <icon-search-column
-          v-if="columnsIconVisible||searchIconVisible"
-          @searchToggleClick="toggleFormSearch = !toggleFormSearch"
-          :columns="columns"
-          :showSearch="showSearch"
-          :searchIconVisible="searchIconVisible"
-          :columnsIconVisible="columnsIconVisible"
-          :keyColumns="keyColumns"
-          v-model="columnsCheck"
+        v-if="columnsIconVisible||searchIconVisible"
+        v-model="columnsCheck"
+        :columns="columns"
+        :show-search="showSearch"
+        :search-icon-visible="searchIconVisible"
+        :columns-icon-visible="columnsIconVisible"
+        :key-columns="keyColumns"
+        @search-toggle-click="toggleFormSearch = !toggleFormSearch"
       />
     </div>
-    <slot name="tablePrepend"></slot>
+    <slot name="tablePrepend" />
     <el-table
-        v-bind="tableProp"
-        :data="tableData"
-        class="table-list"
-        ref="table"
-        @selection-change="tableSelect"
-        :empty-text="tableProp?.emptyText||'暂无数据'"
+      v-bind="tableProp"
+      ref="table"
+      :data="tableData"
+      class="table-list"
+      :empty-text="tableProp?.emptyText||'暂无数据'"
+      @selection-change="tableSelect"
     >
-      <template v-for="item in columnsFilter" :key="item.prop || item.label">
+      <template
+        v-for="item in columnsFilter"
+        :key="item.prop || item.label"
+      >
         <!-- 将一些多余的绑定信息去掉-->
         <el-table-column
-            v-bind="item"
+          v-bind="item"
         >
-          <template #header="scope" v-if="item.help">
+          <template
+            v-if="item.help"
+            #header="scope"
+          >
             {{ scope.column.label }}
             <el-tooltip placement="top">
               <template #content>
-                <span v-html="item.help"></span>
+                <span v-html="item.help" />
               </template>
               <el-icon>
-                <InfoFilled/>
+                <InfoFilled />
               </el-icon>
             </el-tooltip>
           </template>
           <template #default="scope">
             <slot
-                v-if="item.prop && $slots[item.prop]"
-                :name="item.prop"
-                :index="scope.$index"
-                :prop="item.prop"
-                :row="scope.row"
-                :value="scope.row[item.prop]"
-            ></slot>
+              v-if="item.prop && $slots[item.prop]"
+              :name="item.prop"
+              :index="scope.$index"
+              :prop="item.prop"
+              :row="scope.row"
+              :value="scope.row[item.prop]"
+            />
             <el-switch
-                v-if="item.prop && item.render === 'switch'"
-                v-bind="item.attr"
-                :loading="switchLoading"
-                :before-change="
+              v-if="item.prop && item.render === 'switch'"
+              v-bind="item.attr"
+              v-model="scope.row[item.prop]"
+              :loading="switchLoading"
+              :before-change="
                 switchBeforeChange.bind(this, scope.row[item.prop])
               "
-                @change="switchChange($event, item, scope.row)"
-                v-model="scope.row[item.prop]"
+              @change="switchChange($event, item, scope.row)"
             />
             <el-image
-                v-if="item.prop && item.render === 'image'"
-                v-bind="item.attr"
-                :style="{
+              v-if="item.prop && item.render === 'image'"
+              v-bind="item.attr"
+              :style="{
                 width: item.attr?.width || '100px',
                 height: item.attr?.height || '100px'
               }"
-                :preview-teleported="true"
-                :z-index="99"
-                :preview-src-list="getImgSrc(scope.row[item.prop], 'preview')"
-                :src="getImgSrc(scope.row[item.prop])"
+              :preview-teleported="true"
+              :z-index="99"
+              :preview-src-list="getImgSrc(scope.row[item.prop], 'preview')"
+              :src="getImgSrc(scope.row[item.prop])"
             />
             <el-tag
-                v-if="item.prop && item.render === 'tag' && scope.row[item.prop]!==undefined"
-                v-bind="item.attr"
-                :type="getTagType(scope.row[item.prop], item.custom)"
-            >{{ getTagVal(scope.row[item.prop], item.replaceValue) }}
+              v-if="item.prop && item.render === 'tag' && scope.row[item.prop]!==undefined"
+              v-bind="item.attr"
+              :type="getTagType(scope.row[item.prop], item.custom)"
+            >
+              {{ getTagVal(scope.row[item.prop], item.replaceValue) }}
             </el-tag>
             <el-text
-                v-if="item.prop && item.render === 'text'"
-                v-bind="item.attr"
-                :type="getTagType(scope.row[item.prop], item.custom)"
-            >{{
+              v-if="item.prop && item.render === 'text'"
+              v-bind="item.attr"
+              :type="getTagType(scope.row[item.prop], item.custom)"
+            >
+              {{
                 getTagVal(scope.row[item.prop], item.replaceValue)
               }}
             </el-text>
             <el-link
-                v-if="item.prop && item.render === 'link'"
-                v-bind="item.attr"
-            >{{ scope.row[item.prop] }}
-            </el-link
+              v-if="item.prop && item.render === 'link'"
+              v-bind="item.attr"
             >
+              {{ scope.row[item.prop] }}
+            </el-link>
             <span
-                v-if="
+              v-if="
                 item.prop &&
-                item.render &&
-                ['datetime', 'date'].includes(item.render)
+                  item.render &&
+                  ['datetime', 'date'].includes(item.render)
               "
             >
               {{ getDateFormat(item, scope.row[item.prop]) }}
             </span>
             <OperateButton
-                v-if="item.render === 'buttons' && item.buttons?.length"
-                class="btn-group"
-                :row="scope.row"
-                :buttons="mergeDefaultBtn(item.buttons)"
-                @click="tableBtnClick(scope.row, $event)"
+              v-if="item.render === 'buttons' && item.buttons?.length"
+              class="btn-group"
+              :row="scope.row"
+              :buttons="mergeDefaultBtn(item.buttons)"
+              @click="tableBtnClick(scope.row, $event)"
             />
           </template>
         </el-table-column>
       </template>
     </el-table>
-    <slot name="tableAppend"></slot>
+    <slot name="tableAppend" />
     <div class="pagination">
       <el-pagination
-          v-if="props.pagination"
-          v-show="total > pageSize"
-          v-model:current-page="current"
-          :page-size="pageSize"
-          layout="total, prev, pager, next"
-          :total="total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+        v-if="props.pagination"
+        v-show="total > pageSize"
+        v-model:current-page="current"
+        :page-size="pageSize"
+        layout="total, prev, pager, next"
+        :total="total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
       />
     </div>
   </div>
@@ -171,10 +183,10 @@
   const props = withDefaults(
       defineProps<{
         tableProp?: any
-        columns: Columns[]
+        columns?: Columns[]
         autoLoad?: boolean
         params?: { [key: string]: any }
-        api: Api
+        api?: Api
         pagination?: { pageSize: number; current: number } | boolean
         before?: (type: EventType, params: any) => boolean
         after?: (type: EventType, res: any, isSuccess?: boolean) => any
@@ -187,6 +199,11 @@
         keyColumns?: string
       }>(),
       {
+        tableProp:null,
+        before:null,
+        after:null,
+        controlBtn:null,
+        keyColumns:'',
         columns: () => {
           return []
         },
@@ -442,7 +459,7 @@
     if (btn.key === 'del' && props.pk) {
       getDel([row[props.pk]])
     } else {
-      //　console.log(row, btn.key)
+      //console.log(row, btn.key)
       // todo 编辑或查看时请数据拉回来，或者是对外暴露拉取数据的方法
     }
   }
@@ -454,11 +471,11 @@
       getDel(ids)
     } else if (btn.key === 'export' && selectRows.value.length) {
       downloadExport(selectRows.value)
-    } else if (btn.key === "add") {
+    } /*else if (btn.key === "add") {
 
     } else {
       // todo 编辑或查看时请数据拉回来，或者是对外暴露拉取数据的方法
-    }
+    }*/
   }
 
   //处理操作按钮结束
@@ -580,8 +597,7 @@
             const filename: string
                 = decodeURI(
                     headers['content-disposition'].split(';')[1].split('=')[1]
-                )
-                || `${url.substr(1).replace(/\//g, '_')}_${new Date().getTime()}.xls`
+            )
             const downloadUrl: string = window.URL.createObjectURL(
                 new Blob([data], {type: data.type})
             )
@@ -594,7 +610,7 @@
             document.body.removeChild(link)
           })
           .catch((err) => {
-            ElMessage.error(res.message)
+            ElMessage.error(err.message)
           })
     } else {
       ElMessage.error('请设置api.export导出地址')

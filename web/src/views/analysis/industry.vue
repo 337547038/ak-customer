@@ -1,7 +1,7 @@
 <template>
   <!--客户级别-->
   <div>
-    <BarChart pageType="industry"/>
+    <BarChart page-type="industry" />
   </div>
 </template>
 

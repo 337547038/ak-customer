@@ -1,31 +1,36 @@
 <template>
   <div>
     <ak-list
-        ref="tableListEl"
-        pk="id"
-        :columns="columns"
-        :api="{ list: 'contactList',del:'contactDel'}"
-        :controlBtn="controlBtn"
-        :before="beforeList"
-        :show-search="!detailTabProps.disabled"
-        :columnsIconVisible="!detailTabProps.disabled"
-        :auto-load="!detailTabProps.isComponents"
-        :keyColumns="keyColumns"
+      ref="tableListEl"
+      pk="id"
+      :columns="columns"
+      :api="{ list: 'contactList',del:'contactDel'}"
+      :control-btn="controlBtn"
+      :before="beforeList"
+      :show-search="!detailTabProps.disabled"
+      :columns-icon-visible="!detailTabProps.disabled"
+      :auto-load="!detailTabProps.isComponents"
+      :key-columns="keyColumns"
+    />
+    <el-dialog
+      v-model="visible"
+      width="800"
+      :title="title"
+      class="form-dialog"
+      :before-close="formCancelClick"
     >
-    </ak-list>
-    <el-dialog v-model="visible" width="800" :title="title" class="form-dialog" :before-close="formCancelClick">
       <ak-form
-          pk="id"
-          ref="formRef"
-          :data="formData"
-          label-width="100"
-          class="flex-form flex-form-2"
-          :api="{ detail: 'contactGet',add:'contactSave', edit:'contactEdit' }"
-          @cancel="formCancelClick"
-          :after="afterForm"
-          :before="beforeForm"
-          v-model="formModel">
-      </ak-form>
+        ref="formRef"
+        v-model="formModel"
+        pk="id"
+        :data="formData"
+        label-width="100"
+        class="flex-form flex-form-2"
+        :api="{ detail: 'contactGet',add:'contactSave', edit:'contactEdit' }"
+        :after="afterForm"
+        :before="beforeForm"
+        @cancel="formCancelClick"
+      />
     </el-dialog>
   </div>
 </template>
@@ -41,7 +46,10 @@
         company?: string
         keyColumns?: string
       }>(),
-      {}
+      {
+        company:'',
+        keyColumns:''
+      }
   )
   const detailTabProps = inject('detailTabsProps', ref({}));
   const layoutStore = useLayoutStore()
@@ -266,8 +274,8 @@
     if (['add', 'update'].includes(type)) {
       formCancelClick()
       getData()
-    } else if (type === 'detail') {
-    }
+    }/* else if (type === 'detail') {
+    }*/
     return result
   }
   const formData = ref([

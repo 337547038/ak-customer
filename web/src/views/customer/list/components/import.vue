@@ -1,21 +1,36 @@
 <template>
-  <el-dialog width="500" v-model="visible" title="导入客户" :before-close="cancelClick">
+  <el-dialog
+    v-model="visible"
+    width="500"
+    title="导入客户"
+    :before-close="cancelClick"
+  >
     <el-form v-loading="loading">
       <el-form-item label="请选择xlsx文件">
         <el-upload
-            accept=".xlsx"
-            :auto-upload="false"
-            ref="uploadRef"
-            v-model:file-list="fileList"
-            :http-request="httpRequest">
+          ref="uploadRef"
+          v-model:file-list="fileList"
+          accept=".xlsx"
+          :auto-upload="false"
+          :http-request="httpRequest"
+        >
           <template #trigger>
-            <el-button type="primary">选择文件</el-button>
+            <el-button type="primary">
+              选择文件
+            </el-button>
           </template>
         </el-upload>
       </el-form-item>
       <el-form-item class="form-item-flex">
-        <el-button type="primary" @click="submitUpload">确定</el-button>
-        <el-button @click="cancelClick">取消</el-button>
+        <el-button
+          type="primary"
+          @click="submitUpload"
+        >
+          确定
+        </el-button>
+        <el-button @click="cancelClick">
+          取消
+        </el-button>
       </el-form-item>
       <el-form-item class="form-item-flex">
         <a href="/template.xlsx">下载导入模板</a>

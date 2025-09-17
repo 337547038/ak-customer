@@ -1,17 +1,22 @@
 <template>
   <ak-list
-      ref="tableListRef"
-      :columns="columns"
-      pk="id"
-      :before="beforeList"
-      :api="{list:'contractPaymentList',del:'contractPaymentDel'}"
-      :control-btn="[
-          {
-            key:'add',
-            click:()=>{addEditClick(false)}
-          }
-      ]"></ak-list>
-  <payment-form ref="paymentFormRef" @callback="formCallback" :user-id="currentUserId"/>
+    ref="tableListRef"
+    :columns="columns"
+    pk="id"
+    :before="beforeList"
+    :api="{list:'contractPaymentList',del:'contractPaymentDel'}"
+    :control-btn="[
+      {
+        key:'add',
+        click:()=>{addEditClick(false)}
+      }
+    ]"
+  />
+  <payment-form
+    ref="paymentFormRef"
+    :user-id="currentUserId"
+    @callback="formCallback"
+  />
 </template>
 
 <script setup lang="ts">

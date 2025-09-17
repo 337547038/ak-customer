@@ -1,29 +1,31 @@
 <template>
   <div class="other">
     <el-tooltip
-        effect="dark"
-        content="展开 / 收起筛选"
-        placement="top"
-        v-if="showSearch&&searchIconVisible">
+      v-if="showSearch&&searchIconVisible"
+      effect="dark"
+      content="展开 / 收起筛选"
+      placement="top"
+    >
       <el-button
-          circle
-          icon="Search"
-          size="small"
-          @click="searchToggleClick"
+        circle
+        icon="Search"
+        size="small"
+        @click="searchToggleClick"
       />
     </el-tooltip>
     <column-display
-        :keyColumns="keyColumns"
-        :columns="columns"
-        @change="change"
-        v-if="columnsIconVisible"/>
+      v-if="columnsIconVisible"
+      :key-columns="keyColumns"
+      :columns="columns"
+      @change="change"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
   import ColumnDisplay from "./columnDisplay.vue";
 
-  const props = withDefaults(
+   withDefaults(
       defineProps<{
         showSearch: boolean
         columnsIconVisible: boolean
@@ -31,7 +33,9 @@
         columns: Array<string>
         keyColumns?: string
       }>(),
-      {}
+      {
+        keyColumns:''
+      }
   )
 
   const emits = defineEmits<{

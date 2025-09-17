@@ -1,9 +1,10 @@
 <template>
   <ak-list
-      :columnsIconVisible="false"
-      :show-search="false"
-      :columns="columns"
-      :api="{list:'analysisCustomerNum'}"/>
+    :columns-icon-visible="false"
+    :show-search="false"
+    :columns="columns"
+    :api="{list:'analysisCustomerNum'}"
+  />
 </template>
 
 <script setup lang="ts">

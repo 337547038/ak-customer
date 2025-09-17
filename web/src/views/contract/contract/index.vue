@@ -1,50 +1,68 @@
 <template>
   <ak-list
-      ref="tableListRef"
-      pk="id"
-      :columns="columns"
-      :show-search="!detailTabProps.disabled"
-      :api="{list:'contractList',del:'contractDel'}"
-      :control-btn="controlBtn"
-      @formFieldChange="searchFormChange"
-      :auto-load="!detailTabProps.isComponents"
-      :columnsIconVisible="!detailTabProps.disabled"
-      :keyColumns="keyColumns"
-      :before="beforeList">
+    ref="tableListRef"
+    pk="id"
+    :columns="columns"
+    :show-search="!detailTabProps.disabled"
+    :api="{list:'contractList',del:'contractDel'}"
+    :control-btn="controlBtn"
+    :auto-load="!detailTabProps.isComponents"
+    :columns-icon-visible="!detailTabProps.disabled"
+    :key-columns="keyColumns"
+    :before="beforeList"
+    @form-field-change="searchFormChange"
+  >
     <template #code="{row}">
-      <el-tag type="danger" v-if="getShowTag(row)">已过期</el-tag>
+      <el-tag
+        v-if="getShowTag(row)"
+        type="danger"
+      >
+        已过期
+      </el-tag>
       {{ row.name }}
     </template>
   </ak-list>
   <el-dialog
-      v-model="visible"
-      width="800" :title="title"
-      class="form-dialog"
-      :before-close="formCancelClick">
-    <el-alert title="审核通过，不能修改数据" type="success" v-if="formDisabled"/>
+    v-model="visible"
+    width="800"
+    :title="title"
+    class="form-dialog"
+    :before-close="formCancelClick"
+  >
+    <el-alert
+      v-if="formDisabled"
+      title="审核通过，不能修改数据"
+      type="success"
+    />
     <ak-form
-        :disabeld="formDisabled"
-        pk="id"
-        ref="formRef"
-        :data="formData"
-        label-width="110"
-        class="flex-form flex-form-2"
-        :api="{ detail: 'contractGet',add:'contractSave',edit:'contractEdit' }"
-        @cancel="formCancelClick"
-        :after="afterForm"
-        :before="beforeForm"
-        @change="formFiledChange"
-        v-model="formModel">
+      ref="formRef"
+      v-model="formModel"
+      :disabeld="formDisabled"
+      pk="id"
+      :data="formData"
+      label-width="110"
+      class="flex-form flex-form-2"
+      :api="{ detail: 'contractGet',add:'contractSave',edit:'contractEdit' }"
+      :after="afterForm"
+      :before="beforeForm"
+      @cancel="formCancelClick"
+      @change="formFiledChange"
+    >
       <template #files="{rows}">
         <uploadFiles
-            :rules="rows.formItem.rules"
-            :prop="rows.prop"
-            :label="rows.label"
-            v-model="formModel.files" v-if="visible"/>
+          v-if="visible"
+          v-model="formModel.files"
+          :rules="rows.formItem.rules"
+          :prop="rows.prop"
+          :label="rows.label"
+        />
       </template>
     </ak-form>
   </el-dialog>
-  <payment-form ref="paymentFormRef" @callback="getData"/>
+  <payment-form
+    ref="paymentFormRef"
+    @callback="getData"
+  />
 </template>
 
 <script setup lang="ts">
@@ -59,11 +77,13 @@
   import PaymentForm from "../components/paymentForm.vue";
   import {useRoute, onBeforeRouteLeave} from "vue-router";
 
-  const props = withDefaults(
+   withDefaults(
       defineProps<{
         keyColumns?: string
       }>(),
-      {}
+      {
+        keyColumns:''
+      }
   )
   const detailTabProps = inject('detailTabsProps', ref({}));
   const route = useRoute()
@@ -297,7 +317,7 @@
       isCheck.value = !!check
       nextTick(() => {
         // 没有选择所属人员时，即查看自己时，2已确认状态不能修改
-        //　选择了人员时，即查看下属的，可以修改
+        //选择了人员时，即查看下属的，可以修改
         if (!currentUserId.value) {
           formDisabled.value = row.status === 2 // 不能修改
         }
@@ -424,8 +444,8 @@
     if (['add', 'update'].includes(type)) {
       formCancelClick()
       tableListRef.value.getData()
-    } else if (type === 'detail') {
-    }
+    }/* else if (type === 'detail') {
+    }*/
     return result
   }
   const formFiledChange = (prop: string, val: any, model: any) => {

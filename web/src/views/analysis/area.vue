@@ -1,10 +1,23 @@
 <template>
-  <div style="position: relative" v-loading="loading">
-    <userSelect @change="userChange"></userSelect>
+  <div
+    v-loading="loading"
+    style="position: relative"
+  >
+    <userSelect @change="userChange" />
     <div class="back-btn">
-      <el-button type="primary" text v-show="!isChinaMap" @click="backClick">返回中国地图</el-button>
+      <el-button
+        v-show="!isChinaMap"
+        type="primary"
+        text
+        @click="backClick"
+      >
+        返回中国地图
+      </el-button>
     </div>
-    <myEcharts ref="myEchartsRef" @click="mapClick"/>
+    <myEcharts
+      ref="myEchartsRef"
+      @click="mapClick"
+    />
   </div>
 </template>
 
@@ -14,7 +27,7 @@
 
   import * as echarts from 'echarts';
 
-  import {ref, onMounted, computed} from 'vue'
+  import {ref, onMounted} from 'vue'
   import {getRequest} from "@/api";
 
   import {getCityBySingleCode} from "@/utils/getCityByCode";
@@ -133,7 +146,7 @@
     if (params.componentType === 'series' && params.seriesType === 'map') {
       const provinceName = chineseToCode(params.name)
       if (provinceName) {
-        //　匹配不到拼音时，表示点击了省份，则不继续下钻
+        //匹配不到拼音时，表示点击了省份，则不继续下钻
         isChinaMap.value = false
         currentCityCode.value = params.data?.code
         getMapJson(provinceName, true)

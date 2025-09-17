@@ -1,19 +1,23 @@
 <template>
   <el-form-item style="width: 100%">
     <el-upload
-        v-model:file-list="fileList"
-        :http-request="httpRequest"
-        list-type="picture-card"
-        :on-preview="handlePictureCardPreview"
-        :on-remove="handleRemove"
+      v-model:file-list="fileList"
+      :http-request="httpRequest"
+      list-type="picture-card"
+      :on-preview="handlePictureCardPreview"
+      :on-remove="handleRemove"
     >
       <el-icon>
-        <Plus/>
+        <Plus />
       </el-icon>
     </el-upload>
 
     <el-dialog v-model="dialogVisible">
-      <img w-full :src="dialogImageUrl" alt="Preview Image"/>
+      <img
+        w-full
+        :src="dialogImageUrl"
+        alt="Preview Image"
+      >
     </el-dialog>
   </el-form-item>
 </template>

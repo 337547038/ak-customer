@@ -1,23 +1,30 @@
 <template>
   <div>
-    <template v-for="(btn, index) in buttons" :key="index">
+    <template
+      v-for="(btn, index) in buttons"
+      :key="index"
+    >
       <el-popconfirm
-        v-bind="btn.popConfirm"
         v-if="btn.render === 'confirm'"
+        v-bind="btn.popConfirm"
         @confirm="btnClick(btn)"
       >
         <template #reference>
           <div>
-            <table-button :btn="btn" :row="row" :position="position" />
+            <table-button
+              :btn="btn"
+              :row="row"
+              :position="position"
+            />
           </div>
         </template>
       </el-popconfirm>
       <table-button
+        v-else
         :btn="btn"
         :row="row"
-        @click="btnClick(btn)"
         :position="position"
-        v-else
+        @click="btnClick(btn)"
       />
     </template>
   </div>
@@ -28,14 +35,15 @@
 
   const props = withDefaults(
     defineProps<{
-      row: any // 表格右侧是当前行数据，表格上面按钮时为勾选中的行
+      row?: any // 表格右侧是当前行数据，表格上面按钮时为勾选中的行
       buttons: Button[]
       position?: string //位置
     }>(),
     {
       row: () => {
         return {}
-      }
+      },
+      position:''
     }
   )
   const emits = defineEmits<{

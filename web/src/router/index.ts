@@ -1,10 +1,8 @@
 import {
   createRouter,
-  createWebHistory,
   RouteRecordRaw,
   createWebHashHistory
 } from 'vue-router'
-// @ts-ignore
 import routesPage from '~pages'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'

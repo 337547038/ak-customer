@@ -1,17 +1,18 @@
 <template>
   <el-select
-      v-model="value"
-      filterable
-      remote
-      :remote-method="remoteMethod"
-      :loading="loading"
-      @blur="blur"
-      @change="change">
+    v-model="value"
+    filterable
+    remote
+    :remote-method="remoteMethod"
+    :loading="loading"
+    @blur="blur"
+    @change="change"
+  >
     <el-option
-        v-for="item in options"
-        :key="item.id"
-        :label="item.name"
-        :value="item.id"
+      v-for="item in options"
+      :key="item.id"
+      :label="item.name"
+      :value="item.id"
     />
   </el-select>
 </template>
@@ -28,7 +29,11 @@
         customerId?: number // 客户id
         userId?: number // 查询指定下属会员
       }>(),
-      {}
+      {
+        modelValue:undefined,
+        customerId:null,
+        userId:null,
+      }
   )
   const emits = defineEmits<{
     (e: 'update:modelValue', value: any): void
@@ -65,7 +70,7 @@
       options.value = []
     }
   }
-  const change = (val: any) => {
+  const change = () => {
     emits('update:modelValue', value.value)
   }
   const blur = () => {

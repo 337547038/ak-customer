@@ -1,32 +1,37 @@
 <template>
   <ak-list
-      ref="tableListEl"
-      pk="id"
-      :columns="columns"
-      :api="{ list: 'userList', del:'userDelete'}"
-      :controlBtn="[
-          {
-            key:'add',
-            click:()=>{
-              addEditEvent(false)
-            }
-          },
-          {key:'del'}]"
+    ref="tableListEl"
+    pk="id"
+    :columns="columns"
+    :api="{ list: 'userList', del:'userDelete'}"
+    :control-btn="[
+      {
+        key:'add',
+        click:()=>{
+          addEditEvent(false)
+        }
+      },
+      {key:'del'}]"
+  />
+  <el-dialog
+    v-model="visible"
+    width="800"
+    :title="dialogTitle"
+    class="form-dialog"
+    :before-close="cancelClick"
   >
-  </ak-list>
-  <el-dialog v-model="visible" width="800" :title="dialogTitle" class="form-dialog" :before-close="cancelClick">
     <ak-form
-        class="flex-form flex-form-2"
-        pk="id"
-        ref="formEl"
-        label-width="120"
-        @cancel="cancelClick"
-        :after="afterForm"
-        :before="beforeSubmit"
-        :data="formData"
-        :api="{ add: 'userSave', edit: 'userEdit', detail:'userGet' }"
-        v-model="formModel">
-    </ak-form>
+      ref="formEl"
+      v-model="formModel"
+      class="flex-form flex-form-2"
+      pk="id"
+      label-width="120"
+      :after="afterForm"
+      :before="beforeSubmit"
+      :data="formData"
+      :api="{ add: 'userSave', edit: 'userEdit', detail:'userGet' }"
+      @cancel="cancelClick"
+    />
   </el-dialog>
 </template>
 

@@ -1,48 +1,74 @@
 <template>
   <div>
-    <div style="display: flex;align-items: center" v-if="showInput">
+    <div
+      v-if="showInput"
+      style="display: flex;align-items: center"
+    >
       <el-input
-          v-model="userName"
-          readonly
-          @click="open()"
-          :placeholder="placeholder"
-          :clearable="true"/>
-      <el-button text type="primary" @click="clearUserId">清空</el-button>
+        v-model="userName"
+        readonly
+        :placeholder="placeholder"
+        :clearable="true"
+        @click="open()"
+      />
+      <el-button
+        text
+        type="primary"
+        @click="clearUserId"
+      >
+        清空
+      </el-button>
     </div>
     <el-dialog
-        v-model="visible"
-        title="用户选择"
-        :append-to-body="true"
-        width="800px"
+      v-model="visible"
+      title="用户选择"
+      :append-to-body="true"
+      width="800px"
     >
       <div class="expand-user-dialog">
         <div class="sidebar-tree">
           <el-tree
-              ref="treeEl"
-              node-key="id"
-              :props="{ label: 'name', value: 'id', children:'children',isLeaf:'hasChildren'}"
-              highlight-current
-              @node-click="handleNodeClick"
-              :load="loadNode"
-              lazy
+            ref="treeEl"
+            node-key="id"
+            :props="{ label: 'name', value: 'id', children:'children',isLeaf:'hasChildren'}"
+            highlight-current
+            :load="loadNode"
+            lazy
+            @node-click="handleNodeClick"
           />
         </div>
         <div class="table-list">
           <ak-list
-              ref="tableListEl"
-              pk="id"
-              :searchIconVisible="false"
-              :columnsIconVisible="false"
-              :before="before"
-              :columns="columns"
-              @selection-change="selectionChange"
-              :api="{ list: 'userList'}"
+            ref="tableListEl"
+            pk="id"
+            :search-icon-visible="false"
+            :columns-icon-visible="false"
+            :before="before"
+            :columns="columns"
+            :api="{ list: 'userList'}"
+            @selection-change="selectionChange"
+          />
+          <div
+            v-if="multiple"
+            style="display: flex;justify-content: center"
           >
-          </ak-list>
-          <div v-if="multiple" style="display: flex;justify-content: center">
-            <el-button type="danger" @click="confirmClick('all')" v-if="selectAll">选择全部</el-button>
-            <el-button type="primary" @click="confirmClick" :disabled="!tableSelectRows.length">确定</el-button>
-            <el-button @click="cancelClick">取消</el-button>
+            <el-button
+              v-if="selectAll"
+              type="danger"
+              @click="confirmClick('all')"
+            >
+              选择全部
+            </el-button>
+            <el-button
+              type="primary"
+              :disabled="!tableSelectRows.length"
+              @click="confirmClick"
+            >
+              确定
+            </el-button>
+            <el-button @click="cancelClick">
+              取消
+            </el-button>
           </div>
         </div>
       </div>
@@ -64,6 +90,8 @@
         selectAll?: boolean
       }>(),
       {
+        placeholder:'',
+        modelValue:'',
         showInput: true,
         multiple: false,
         selectAll: true
@@ -72,11 +100,11 @@
   const emits = defineEmits<{
     (e: 'selectClick', val: any): void
   }>()
-  const model = defineModel()
+  const model = defineModel<any>()
   const userName = ref('')
   const visible = ref(false)
 
-  const open = (data?: any) => {
+  const open = () => {
     visible.value = true
 
   }
@@ -102,7 +130,7 @@
     deptId.value = row.id
     tableListEl.value.getData()
   }
-  const loadNode = (node, resolve, reject) => {
+  const loadNode = (node, resolve) => {
     getRequest('deptList', {tid: node.data.id || 0}).then((res) => {
       const data = res.data.list
       data.forEach(item => {

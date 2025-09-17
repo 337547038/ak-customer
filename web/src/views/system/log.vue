@@ -1,11 +1,10 @@
 <template>
   <ak-list
-      :showSearch="false"
-      ref="tableListEl"
-      :columns="columns"
-      :api="{ list: 'logList'}"
-  >
-  </ak-list>
+    ref="tableListEl"
+    :show-search="false"
+    :columns="columns"
+    :api="{ list: 'logList'}"
+  />
 </template>
 <script setup lang="ts">
 import {ref} from 'vue'

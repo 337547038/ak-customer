@@ -1,15 +1,16 @@
 <template>
   <div>
     <ak-list
-        :columnsIconVisible="false"
-        :api="{list:'analysisContract'}"
-        :columns="columns"
-        :show-search="false"></ak-list>
+      :columns-icon-visible="false"
+      :api="{list:'analysisContract'}"
+      :columns="columns"
+      :show-search="false"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-  import {ref} from 'vue'
+  //import {ref} from 'vue'
 
   const columns = [
     {

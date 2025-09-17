@@ -1,5 +1,9 @@
 <template>
-  <div ref="chartRef" :style="{ width }" class="echarts-box"></div>
+  <div
+    ref="chartRef"
+    :style="{ width }"
+    class="echarts-box"
+  />
 </template>
 
 <script setup lang="ts">

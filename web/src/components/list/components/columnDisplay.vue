@@ -1,25 +1,34 @@
 <template>
   <el-popover
-      :width="80"
-      placement="bottom-end"
-      trigger="click"
-      @hide="popoverHideClick"
-      @show="popoverShowClick"
+    :width="80"
+    placement="bottom-end"
+    trigger="click"
+    @hide="popoverHideClick"
+    @show="popoverShowClick"
   >
     <template #default>
       <el-checkbox-group v-model="columnsCheck">
         <el-checkbox
-            v-for="item in columnsFilter"
-            :key="item.prop || item.type"
-            :value="item.prop || item.type"
-        >{{ item.label || item.type }}
+          v-for="item in columnsFilter"
+          :key="item.prop || item.type"
+          :value="item.prop || item.type"
+        >
+          {{ item.label || item.type }}
         </el-checkbox>
       </el-checkbox-group>
     </template>
     <template #reference>
       <div>
-        <el-tooltip effect="dark" content="设置列显示隐藏" placement="top">
-          <el-button circle icon="SetUp" size="small"/>
+        <el-tooltip
+          effect="dark"
+          content="设置列显示隐藏"
+          placement="top"
+        >
+          <el-button
+            circle
+            icon="SetUp"
+            size="small"
+          />
         </el-tooltip>
       </div>
     </template>
@@ -33,7 +42,7 @@
 
   const props = withDefaults(
       defineProps<{
-        columns: Columns[]
+        columns?: Columns[]
         keyColumns?: string
       }>(),
       {

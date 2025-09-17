@@ -1,37 +1,62 @@
 <template>
-  <el-form ref="formEl" :model="model" :rules="rules" v-loading="loading">
+  <el-form
+    ref="formEl"
+    v-loading="loading"
+    :model="model"
+    :rules="rules"
+  >
     <template v-if="dataFilter?.length">
-      <template v-for="(item, index) in dataFilter" :key="item.prop||index">
+      <template
+        v-for="(item, index) in dataFilter"
+        :key="item.prop||index"
+      >
         <el-text
-            v-if="item.render === 'title'"
-            class="form-title1"
-            size="large"
-            v-bind="item"
-        ><span v-html="item.title"></span
-        ></el-text>
-        <slot :name="item.prop" :rows="item" v-else-if="item.render==='scope'&&item.prop"/>
+          v-if="item.render === 'title'"
+          class="form-title1"
+          size="large"
+          v-bind="item"
+        >
+          <span v-html="item.title" />
+        </el-text>
+        <slot
+          v-else-if="item.render==='scope'&&item.prop"
+          :name="item.prop"
+          :rows="item"
+        />
         <field
-            v-else
-            v-bind="item.attr"
-            :prop="item.prop"
-            :label="item.label"
-            :tooltip="item.tooltip"
-            :formItem="item.formItem"
-            :options="item.options"
-            :ajax="item.ajax"
-            :render="item.render"
-            :component="item.component"
-            v-model="model[item.prop]"
-            @change="changeField(item.prop, $event)"
+          v-else
+          v-bind="item.attr"
+          v-model="model[item.prop]"
+          :prop="item.prop"
+          :label="item.label"
+          :tooltip="item.tooltip"
+          :form-item="item.formItem"
+          :options="item.options"
+          :ajax="item.ajax"
+          :render="item.render"
+          :component="item.component"
+          @change="changeField(item.prop, $event)"
         />
       </template>
     </template>
-    <slot></slot>
-    <el-form-item v-if="btnText" class="submit-btn-group">
-      <el-button type="primary" @click="onSubmit" v-if="btnText[0]"
-      >{{ btnText[0] }}
+    <slot />
+    <el-form-item
+      v-if="btnText"
+      class="submit-btn-group"
+    >
+      <el-button
+        v-if="btnText[0]"
+        type="primary"
+        @click="onSubmit"
+      >
+        {{ btnText[0] }}
       </el-button>
-      <el-button v-if="btnText[1]" @click="resetFields(true)">{{ btnText[1] }}</el-button>
+      <el-button
+        v-if="btnText[1]"
+        @click="resetFields(true)"
+      >
+        {{ btnText[1] }}
+      </el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -73,6 +98,11 @@
           return []
         },
         btnText: () => ['确定', '取消'],
+        before:null,
+        after:null,
+        params:()=>{return {}},
+        rules:()=>{return []},
+        pk:'',
         api: () => {
           return {
             add: '', // 列表数据api接口
@@ -187,7 +217,7 @@
     if (type) { // 内部取消按钮时
       emits('cancel')
     }
-    //　外部调用时不需emits
+    //外部调用时不需emits
   }
   // 设置初始值
   const setValue = (obj: any) => {

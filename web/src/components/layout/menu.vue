@@ -1,20 +1,20 @@
 <template>
   <el-menu
-      :unique-opened="true"
-      :collapse="collapse"
-      active-text-color="#ffd04b"
-      background-color="rgb(48 65 86)"
-      text-color="#fff"
-      @select="select"
-      :default-openeds="['customer']"
+    :unique-opened="true"
+    :collapse="collapse"
+    active-text-color="#ffd04b"
+    background-color="rgb(48 65 86)"
+    text-color="#fff"
+    :default-openeds="['customer']"
+    @select="select"
   >
-    <MenuItem :data="menuList"/>
+    <MenuItem :data="menuList" />
   </el-menu>
 </template>
 
 <script setup lang="ts">
   import MenuItem from './menuItem.vue'
-  import {ref, onMounted, watch} from 'vue'
+  import {onMounted, watch} from 'vue'
   import {useRouter, useRoute} from 'vue-router'
   import {useLayoutStore} from '@/store/layout'
   import menuList from '@/components/layout/menuList'
@@ -24,7 +24,7 @@
   const store = useLayoutStore()
   // store.commit('changeBreadcrumb', [{ label: '表单页面' }])
 
-  const activeIndex = ref('3')
+//  const activeIndex = ref('3')
 
   withDefaults(
       defineProps<{
@@ -32,9 +32,9 @@
       }>(),
       {}
   )
-  const emits = defineEmits<{
+/*  const emits = defineEmits<{
     (e: 'getMenuList', val: any): void
-  }>()
+  }>()*/
   const select = (index: string) => {
     router.push({path: index})
   }

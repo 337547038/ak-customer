@@ -1,18 +1,33 @@
 <template>
-  <el-form :inline="true" class="search-form" :model="searchForm" ref="formEl">
-    <template v-for="(item, index) in columnsFilter" :key="item.prop||item.type">
+  <el-form
+    ref="formEl"
+    :inline="true"
+    class="search-form"
+    :model="searchForm"
+  >
+    <template
+      v-for="item in columnsFilter"
+      :key="item.prop||item.type"
+    >
       <field
-          v-bind="item.search"
-          :render="item.search?.render"
-          :prop="item.prop"
-          :label="item.label"
-          v-model="searchForm[item.prop]"
-          @change="changeField(item, $event)"
+        v-bind="item.search"
+        v-model="searchForm[item.prop]"
+        :render="item.search?.render"
+        :prop="item.prop"
+        :label="item.label"
+        @change="changeField(item, $event)"
       />
     </template>
     <el-form-item>
-      <el-button @click="clearClick">清空</el-button>
-      <el-button type="primary" @click="searchClick">查询</el-button>
+      <el-button @click="clearClick">
+        清空
+      </el-button>
+      <el-button
+        type="primary"
+        @click="searchClick"
+      >
+        查询
+      </el-button>
     </el-form-item>
   </el-form>
 </template>

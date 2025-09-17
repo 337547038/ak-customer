@@ -1,71 +1,83 @@
 <template>
-  <el-form-item v-bind="formItem" :prop="prop" :label="label">
-    <template #label v-if="tooltip">
+  <el-form-item
+    v-bind="formItem"
+    :prop="prop"
+    :label="label"
+  >
+    <template
+      v-if="tooltip"
+      #label
+    >
       {{ label }}
       <el-tooltip
-          effect="dark"
-          :content="tooltip"
-          placement="top-start"
+        effect="dark"
+        :content="tooltip"
+        placement="top-start"
       >
         <el-icon size="18">
-          <InfoFilled/>
+          <InfoFilled />
         </el-icon>
       </el-tooltip>
     </template>
     <el-checkbox-group
-        v-bind="$attrs"
-        options=""
-        v-model="model"
-        @change="change"
-        v-if="render === 'checkbox' && optionsArray?.length"
+      v-if="render === 'checkbox' && optionsArray?.length"
+      v-bind="$attrs"
+      v-model="model"
+      options=""
+      @change="change"
     >
       <el-checkbox
-          v-for="(item, index) in optionsArray"
-          :key="index"
-          :value="item.value"
-      >{{ item.label }}
-      </el-checkbox
+        v-for="(item, index) in optionsArray"
+        :key="index"
+        :value="item.value"
       >
+        {{ item.label }}
+      </el-checkbox>
     </el-checkbox-group>
     <el-radio-group
-        v-bind="$attrs"
-        v-model="model"
-        options=""
-        @change="change"
-        v-else-if="render === 'radio' && optionsArray?.length"
+      v-else-if="render === 'radio' && optionsArray?.length"
+      v-bind="$attrs"
+      v-model="model"
+      options=""
+      @change="change"
     >
       <el-radio
-          v-for="(item, index) in optionsArray"
-          :key="index"
-          :value="item.value"
-      >{{ item.label }}
-      </el-radio
+        v-for="(item, index) in optionsArray"
+        :key="index"
+        :value="item.value"
       >
+        {{ item.label }}
+      </el-radio>
     </el-radio-group>
     <el-select
-        v-bind="$attrs"
-        options=""
-        v-model="model"
-        @change="change"
-        :placeholder="$attrs.placeholder || '请选择' + label"
-        v-else-if="render === 'select' && optionsArray?.length"
-        style="min-width: 120px"
+      v-else-if="render === 'select' && optionsArray?.length"
+      v-bind="$attrs"
+      v-model="model"
+      options=""
+      :placeholder="$attrs.placeholder || '请选择' + label"
+      style="min-width: 120px"
+      @change="change"
     >
       <el-option
-          v-for="(item, index) in optionsArray"
-          :key="index"
-          :label="item.label"
-          :value="item.value"
+        v-for="(item, index) in optionsArray"
+        :key="index"
+        :label="item.label"
+        :value="item.value"
       />
     </el-select>
-    <el-text v-else-if="render==='text'" v-bind="$attrs">{{ model }}</el-text>
+    <el-text
+      v-else-if="render==='text'"
+      v-bind="$attrs"
+    >
+      {{ model }}
+    </el-text>
     <component
-        v-bind="$attrs"
-        :placeholder="$attrs.placeholder || '请输入' + label"
-        :is="currentComponent"
-        v-model="model"
-        @change="change"
-        v-else
+      v-bind="$attrs"
+      :is="currentComponent"
+      v-else
+      v-model="model"
+      :placeholder="$attrs.placeholder || '请输入' + label"
+      @change="change"
     />
   </el-form-item>
 </template>
@@ -111,6 +123,13 @@
         ajax?: AjaxObj
       }>(),
       {
+        prop:'',
+        label:'',
+        component:null,
+        tooltip:'',
+        options:()=>{
+          return []
+        },
         formItem: () => {
           return {}
         },
@@ -122,14 +141,14 @@
   )
 
   const layoutStore = useLayoutStore()
-  const model = defineModel()
+  const model = defineModel<any>()
   const emits = defineEmits<{
     (e: 'change', value: any): void
   }>()
 
   const ajaxOptions = ref([])
 
-  //　将object转array
+  //将object转array
   const formatObj = (obj: { [key: string]: any }) => {
     if (obj && Object.keys(obj).length) {
       const temp = []

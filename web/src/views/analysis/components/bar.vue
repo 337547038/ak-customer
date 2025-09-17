@@ -1,15 +1,15 @@
 <template>
   <!--客户级别-->
   <div>
-    <userSelect @change="userChange"></userSelect>
+    <userSelect @change="userChange" />
   </div>
-  <myEcharts :option="option"/>
+  <myEcharts :option="option" />
 </template>
 
 <script setup lang="ts">
   import myEcharts from '@/components/echarts/index.vue'
   import userSelect from './childUser.vue'
-  import {ref, onMounted, computed} from 'vue'
+  import {ref, onMounted} from 'vue'
   import {getRequest} from "@/api";
   import {useLayoutStore} from '@/store/layout'
 

@@ -1,23 +1,35 @@
 <template>
   <el-container class="common-layout">
     <el-aside
+      v-if="!fullScreen"
       :width="isCollapse ? '64px' : '220px'"
       class="common-sidebar"
-      v-if="!fullScreen"
     >
-      <div class="logo"
-        ><img src="@/assets/logo.png" />
-        <span v-show="!isCollapse">客户管理系统</span></div
-      >
-      <Menu :collapse="isCollapse" @get-menu-list="getMenuList" />
+      <div class="logo">
+        <img src="@/assets/logo.png">
+        <span v-show="!isCollapse">客户管理系统</span>
+      </div>
+      <Menu
+        :collapse="isCollapse"
+        @get-menu-list="getMenuList"
+      />
     </el-aside>
     <el-container class="common-container">
-      <el-header class="common-header" v-if="!fullScreen">
-        <CommonHeader @click="headClick" :collapse="isCollapse" />
+      <el-header
+        v-if="!fullScreen"
+        class="common-header"
+      >
+        <CommonHeader
+          :collapse="isCollapse"
+          @click="headClick"
+        />
       </el-header>
-<!--      <TagViews :navList="navList" v-if="!fullScreen" />-->
+      <!--      <TagViews :navList="navList" v-if="!fullScreen" />-->
       <el-main class="common-main">
-        <router-view v-slot="{ Component }" v-if="reloadFlag">
+        <router-view
+          v-if="reloadFlag"
+          v-slot="{ Component }"
+        >
           <keep-alive :include="keepAliveInclude">
             <component :is="Component" />
           </keep-alive>
@@ -25,12 +37,13 @@
       </el-main>
     </el-container>
     <el-icon
-      class="quit-full"
-      @click="headClick('fullScreen')"
-      title="退出全屏"
       v-if="fullScreen"
-      ><Close
-    /></el-icon>
+      class="quit-full"
+      title="退出全屏"
+      @click="headClick('fullScreen')"
+    >
+      <Close />
+    </el-icon>
   </el-container>
 </template>
 

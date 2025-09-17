@@ -3,25 +3,41 @@
     <div class="form">
       <h3>AK客户管理系统</h3>
       <ak-form
-          label-width="100"
-          :data="formData"
-          :api="{ add: 'userLogin' }"
-          :after="loginAfter"
-          v-model="formModel">
-        <el-form-item label="验证码" class="item-code">
-          <el-input v-model="formModel.code" placeholder="输入验证码"></el-input>
+        v-model="formModel"
+        label-width="100"
+        :data="formData"
+        :api="{ add: 'userLogin' }"
+        :after="loginAfter"
+      >
+        <el-form-item
+          label="验证码"
+          class="item-code"
+        >
+          <el-input
+            v-model="formModel.code"
+            placeholder="输入验证码"
+          />
           <img
-              :src="src"
-              class="img"
-              alt=""
-              @click="getCaptcha"
+            :src="src"
+            class="img"
+            alt=""
+            @click="getCaptcha"
           >
         </el-form-item>
       </ak-form>
-      <div class="weixin" style="padding:10px 0">
-        <el-button type="primary" text @click="wxLoginClick">微信扫码登录</el-button>
+      <div
+        class="weixin"
+        style="padding:10px 0"
+      >
+        <el-button
+          type="primary"
+          text
+          @click="wxLoginClick"
+        >
+          微信扫码登录
+        </el-button>
       </div>
-      <wx-login ref="wxLoginRef"/>
+      <wx-login ref="wxLoginRef" />
     </div>
   </div>
 </template>

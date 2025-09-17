@@ -7,8 +7,8 @@ export default {
     customerImport: "customer/import",
     customerScanCard:'customer/scanCard',
     customerRecords: "customer/records/list",
-    customerMove: 'customer/moveByIds',//　移交客户给指定用户
-    customerShare: 'customer/share',//　将客户分享给用户
+    customerMove: 'customer/moveByIds',//移交客户给指定用户
+    customerShare: 'customer/share',//将客户分享给用户
     contactSave: "customer/contact/save",
     contactList: "customer/contact/list",
     contactGet: "customer/contact/get",

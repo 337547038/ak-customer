@@ -1,19 +1,32 @@
 <template>
   <div>
-    <div v-if="userIds==='0'">当前客户已共享给所有人</div>
+    <div v-if="userIds==='0'">
+      当前客户已共享给所有人
+    </div>
     <div v-else-if="userIdsArray">
-      <p style="padding-bottom: 15px">当前客户已共享给:</p>
+      <p style="padding-bottom: 15px">
+        当前客户已共享给:
+      </p>
       <el-tag
-          v-for="(tag,index) in userIdsArray"
-          :key="tag.id"
-          :closable="!disabled"
-          style="margin-right: 5px"
-          @close="closeTag(tag,index)">
+        v-for="(tag,index) in userIdsArray"
+        :key="tag.id"
+        :closable="!disabled"
+        style="margin-right: 5px"
+        @close="closeTag(tag,index)"
+      >
         {{ tag.userName }}
       </el-tag>
     </div>
-    <div style="padding-top: 15px;" v-if="!disabled">
-      <el-button type="danger" @click="updateShare('','cancelShare')">取消分享</el-button>
+    <div
+      v-if="!disabled"
+      style="padding-top: 15px;"
+    >
+      <el-button
+        type="danger"
+        @click="updateShare('','cancelShare')"
+      >
+        取消分享
+      </el-button>
     </div>
   </div>
 </template>
@@ -52,9 +65,9 @@
     updateShare(userIds, 'share')
   }
 
-  const updateShare = (userIds: stirng, type: string) => {
+  const updateShare = (userIds: string, type: string) => {
     getRequest('customerShare', {ids: props.customerId, userId: userIds, type: type})
-        .then(res => {
+        .then(() => {
           ElMessage.success("操作成功")
           emits('update:userIds', userIds)
           if (userIds === '') {

@@ -1,0 +1,1 @@
+import{d as s,c as o,h as c,g as n,r,o as l,s as p,B as u,E as _}from"./index-BqO2u9IT.js";const h=s({__name:"cache",setup(m){const t=()=>{u("clearCache",{}).then(()=>{_.success("清除成功")}).catch(()=>{})};return(d,e)=>{const a=r("el-button");return l(),o("div",null,[c(a,{type:"primary",onClick:t},{default:n(()=>[...e[0]||(e[0]=[p(" 清空缓存 ",-1)])]),_:1})])}}});export{h as default};
