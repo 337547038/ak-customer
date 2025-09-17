@@ -1,14 +1,17 @@
 <template>
   <ak-list
-      ref="tableListEl"
-      pk="id"
-      :columns="columns"
-      :api="{ list: 'customerList',del:'customerDel'}"
-      :controlBtn="controlBtn"
-      :before="beforeList"
-  >
-  </ak-list>
-  <DetailTable ref="detailTableRef" :disabled="true" tabsType="shareWithMe"/>
+    ref="tableListEl"
+    pk="id"
+    :columns="columns"
+    :api="{ list: 'customerList',del:'customerDel'}"
+    :control-btn="controlBtn"
+    :before="beforeList"
+  />
+  <DetailTable
+    ref="detailTableRef"
+    :disabled="true"
+    tabs-type="shareWithMe"
+  />
 </template>
 
 <script setup lang="ts">

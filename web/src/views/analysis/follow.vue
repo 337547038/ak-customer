@@ -1,9 +1,10 @@
 <template>
   <ak-list
-      :columnsIconVisible="false"
-      :show-search="false"
-      :columns="columns"
-      :api="{list:'analysisFollow'}"/>
+    :columns-icon-visible="false"
+    :show-search="false"
+    :columns="columns"
+    :api="{list:'analysisFollow'}"
+  />
 </template>
 
 <script setup lang="ts">

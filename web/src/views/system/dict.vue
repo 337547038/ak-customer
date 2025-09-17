@@ -1,52 +1,77 @@
 <template>
   <div>
     <ak-list
-        ref="tableListEl"
-        pk="id"
-        :columns="columns"
-        :api="{ list: 'dictList', del:'dictDelete'}"
-        :before="beforeEvent"
-        :after="afterEvent"
-        :controlBtn="controlBtn"
+      ref="tableListEl"
+      pk="id"
+      :columns="columns"
+      :api="{ list: 'dictList', del:'dictDelete'}"
+      :before="beforeEvent"
+      :after="afterEvent"
+      :control-btn="controlBtn"
+    />
+    <el-dialog
+      v-model="visible"
+      width="500"
+      :title="dictDialogTitle"
+      class="form-dialog"
     >
-    </ak-list>
-    <el-dialog v-model="visible" width="500" :title="dictDialogTitle" class="form-dialog">
       <ak-form
-          label-width="100px"
-          pk="id"
-          ref="formEl"
-          @cancel="cancelClick"
-          :after="afterSubmit"
-          :data="formData"
-          :api="{ add: 'dictSave', edit: 'dictEdit', detail:'dictGet' }"
-          v-model="formModel">
-      </ak-form>
+        ref="formEl"
+        v-model="formModel"
+        label-width="100px"
+        pk="id"
+        :after="afterSubmit"
+        :data="formData"
+        :api="{ add: 'dictSave', edit: 'dictEdit', detail:'dictGet' }"
+        @cancel="cancelClick"
+      />
     </el-dialog>
-    <el-dialog v-model="setVisible" width="500" title="设置字典数据">
+    <el-dialog
+      v-model="setVisible"
+      width="500"
+      title="设置字典数据"
+    >
       <ak-form
-          pk="id"
-          @cancel="cancelSetClick"
-          :before="setFormBefore"
-          :after='setFormAfter'
-          :data="formEditData"
-          :api="{ edit: 'dictEdit' }"
-          v-model="formEditModel">
+        v-model="formEditModel"
+        pk="id"
+        :before="setFormBefore"
+        :after="setFormAfter"
+        :data="formEditData"
+        :api="{ edit: 'dictEdit' }"
+        @cancel="cancelSetClick"
+      >
         <el-form-item label="字典名称:">
           <div>{{ formEditModel.name }}</div>
         </el-form-item>
-        <div v-for="(item,index) in labelList" :key="item.value" class="flex-item">
-          <ak-field label="标签名称:" v-model="item.label" prop="label"/>
-          <ak-field label="标签值:" v-model="item.value" prop="value"/>
-          <el-button @click="delLabelClick(index)" text>
+        <div
+          v-for="(item,index) in labelList"
+          :key="item.value"
+          class="flex-item"
+        >
+          <ak-field
+            v-model="item.label"
+            label="标签名称:"
+            prop="label"
+          />
+          <ak-field
+            v-model="item.value"
+            label="标签值:"
+            prop="value"
+          />
+          <el-button
+            text
+            @click="delLabelClick(index)"
+          >
             <el-icon>
-              <Delete/>
+              <Delete />
             </el-icon>
           </el-button>
         </div>
-        <el-button @click="addLabelClick">添加一行</el-button>
+        <el-button @click="addLabelClick">
+          添加一行
+        </el-button>
       </ak-form>
     </el-dialog>
-
   </div>
 </template>
 <script setup lang="ts">
@@ -165,7 +190,7 @@
   const beforeEvent = (type: string, params: any) => {
     return params
   }
-  const afterEvent = (type: string, res: any) => {
+  const afterEvent = () => {
   }
 
   // 表单相关

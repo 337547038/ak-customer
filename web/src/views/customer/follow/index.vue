@@ -1,37 +1,47 @@
 <template>
   <div>
     <ak-list
-        ref="tableListEl"
-        pk="id"
-        :columns="columns"
-        :api="{ list: 'followList',del:'followDel'}"
-        :controlBtn="controlBtn"
-        :before="beforeList"
-        :auto-load="!detailTabProps.isComponents"
-        :show-search="!detailTabProps.disabled"
-        :columnsIconVisible="!detailTabProps.disabled"
-        :keyColumns="keyColumns"
-        @formFieldChange="searchFormChange"
+      ref="tableListEl"
+      pk="id"
+      :columns="columns"
+      :api="{ list: 'followList',del:'followDel'}"
+      :control-btn="controlBtn"
+      :before="beforeList"
+      :auto-load="!detailTabProps.isComponents"
+      :show-search="!detailTabProps.disabled"
+      :columns-icon-visible="!detailTabProps.disabled"
+      :key-columns="keyColumns"
+      @form-field-change="searchFormChange"
     >
       <template #expand="{row}">
-        <div style="padding: 0 20px;margin-bottom: 8px;">跟进时间：{{ dateFormatting(row.dateTime) }}</div>
-        <div style="padding: 0 20px">跟进内容：{{ row.remark }}</div>
+        <div style="padding: 0 20px;margin-bottom: 8px;">
+          跟进时间：{{ dateFormatting(row.dateTime) }}
+        </div>
+        <div style="padding: 0 20px">
+          跟进内容：{{ row.remark }}
+        </div>
       </template>
     </ak-list>
-    <el-dialog v-model="visible" width="800" :title="title" class="form-dialog" :before-close="formCancelClick">
+    <el-dialog
+      v-model="visible"
+      width="800"
+      :title="title"
+      class="form-dialog"
+      :before-close="formCancelClick"
+    >
       <ak-form
-          pk="id"
-          ref="formRef"
-          :data="formData"
-          label-width="100"
-          class="flex-form flex-form-2"
-          :api="{ detail: 'followGet',add:'followSave' }"
-          @cancel="formCancelClick"
-          :after="afterForm"
-          :before="beforeForm"
-          @change="formFiledChange"
-          v-model="formModel">
-      </ak-form>
+        ref="formRef"
+        v-model="formModel"
+        pk="id"
+        :data="formData"
+        label-width="100"
+        class="flex-form flex-form-2"
+        :api="{ detail: 'followGet',add:'followSave' }"
+        :after="afterForm"
+        :before="beforeForm"
+        @cancel="formCancelClick"
+        @change="formFiledChange"
+      />
     </el-dialog>
   </div>
 </template>
@@ -41,7 +51,7 @@
   import customerSelect from '@/components/customerSelect/index.vue'
   import contactSelect from '@/components/contactSelect/index.vue'
   import validate from "@/components/form/validate";
-  import {dateFormatting, getStorage} from "@/utils";
+  import {dateFormatting} from "@/utils";
   import {useLayoutStore} from "@/store/layout";
 
   const props = withDefaults(
@@ -49,7 +59,10 @@
         company?: string
         keyColumns?: string
       }>(),
-      {}
+      {
+        company:'',
+        keyColumns:''
+      }
   )
   const layoutStore = useLayoutStore()
   const detailTabProps = inject('detailTabsProps', ref({}));
@@ -69,9 +82,9 @@
   const title = ref('新增联系人')
   const formRef = ref()
   const formModel = ref({})
-  const userInfo = computed(() => {
+  /*const userInfo = computed(() => {
     return getStorage('userInfo', true) || {}
-  })
+  })*/
   const formCustomerId = computed(() => {
     return detailTabProps.value.customerId || formModel.value.customerId
   })
@@ -260,8 +273,8 @@
     if (['add', 'update'].includes(type)) {
       formCancelClick()
       getData()
-    } else if (type === 'detail') {
-    }
+    } /*else if (type === 'detail') {
+    }*/
     return result
   }
 

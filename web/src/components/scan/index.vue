@@ -1,29 +1,50 @@
 <template>
-  <el-dialog v-if="mode==='dialog'" v-model="visible" width="300" title="使用微信扫一扫绑定">
+  <el-dialog
+    v-if="mode==='dialog'"
+    v-model="visible"
+    width="300"
+    title="使用微信扫一扫绑定"
+  >
     <div class="login-container">
       <iframe
+        :src="wechatSrc"
+        frameborder="0"
+        scrolling="no"
+        style="margin:0 auto;display: block"
+        width="210"
+        height="280"
+      />
+    </div>
+  </el-dialog>
+  <transition
+    v-else
+    name="slide-up"
+  >
+    <div
+      v-show="visible"
+      class="scan-login"
+    >
+      <div class="login-container">
+        <iframe
           :src="wechatSrc"
           frameborder="0"
           scrolling="no"
           style="margin:0 auto;display: block"
-          width=210
-          height=280></iframe>
-    </div>
-  </el-dialog>
-  <transition name="slide-up" v-else>
-    <div v-show="visible" class="scan-login">
-      <div class="login-container">
-        <iframe
-            :src="wechatSrc"
-            frameborder="0"
-            scrolling="no"
-            style="margin:0 auto;display: block"
-            width=210
-            height=280></iframe>
-        <p class="tips">使用微信扫一扫登录</p>
+          width="210"
+          height="280"
+        />
+        <p class="tips">
+          使用微信扫一扫登录
+        </p>
       </div>
       <div class="account">
-        <el-button type="primary" text @click="accountLogin">使用账号密码登录</el-button>
+        <el-button
+          type="primary"
+          text
+          @click="accountLogin"
+        >
+          使用账号密码登录
+        </el-button>
       </div>
     </div>
   </transition>

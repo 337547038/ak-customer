@@ -1,66 +1,100 @@
 <template>
   <el-drawer
-      v-model="visible" size="88%"
-      :title="title"
-      :before-close="cancelClick">
-    <el-tabs v-model="activeName" @tab-change="handleClick">
-      <el-tab-pane label="客户详情" name="detail">
+    v-model="visible"
+    size="88%"
+    :title="title"
+    :before-close="cancelClick"
+  >
+    <el-tabs
+      v-model="activeName"
+      @tab-change="handleClick"
+    >
+      <el-tab-pane
+        label="客户详情"
+        name="detail"
+      >
         <ak-form
-            ref="formRef"
-            pk="id"
-            label-width="100"
-            class="flex-form flex-form-2"
-            @cancel="cancelClick"
-            :after="afterSubmit"
-            :data="formDataFilter"
-            :before="formBefore"
-            :disabled="disabled||tabsNameIsShare"
-            :api="{ detail: 'customerDetail',add:'customerSave', edit:'customerEdit' }"
-            v-model="formModel">
+          ref="formRef"
+          v-model="formModel"
+          pk="id"
+          label-width="100"
+          class="flex-form flex-form-2"
+          :after="afterSubmit"
+          :data="formDataFilter"
+          :before="formBefore"
+          :disabled="disabled||tabsNameIsShare"
+          :api="{ detail: 'customerDetail',add:'customerSave', edit:'customerEdit' }"
+          @cancel="cancelClick"
+        >
           <template #files="{rows}">
             <uploadFiles
-                :prop="rows.prop"
-                :label="rows.label"
-                v-model="formModel.files"
-                v-if="visible"/>
+              v-if="visible"
+              v-model="formModel.files"
+              :prop="rows.prop"
+              :label="rows.label"
+            />
           </template>
         </ak-form>
       </el-tab-pane>
-      <el-tab-pane label="跟进记录" name="follow" v-if="!isAddForm">
+      <el-tab-pane
+        v-if="!isAddForm"
+        label="跟进记录"
+        name="follow"
+      >
         <Follow
-            ref="followRef"
-            keyColumns="customerFollow"
-            :company="drawerObj.company"/>
+          ref="followRef"
+          key-columns="customerFollow"
+          :company="drawerObj.company"
+        />
       </el-tab-pane>
-      <el-tab-pane label="联系人" name="contact" v-if="!isAddForm">
+      <el-tab-pane
+        v-if="!isAddForm"
+        label="联系人"
+        name="contact"
+      >
         <Contact
-            keyColumns="customerContact"
-            :company="drawerObj.company"
-            ref="contactRef"/>
+          ref="contactRef"
+          key-columns="customerContact"
+          :company="drawerObj.company"
+        />
       </el-tab-pane>
-      <el-tab-pane label="合同" name="contract" v-if="!isAddForm">
+      <el-tab-pane
+        v-if="!isAddForm"
+        label="合同"
+        name="contract"
+      >
         <Contract
-            keyColumns="customerContract"
-            ref="contractRef"/>
+          ref="contractRef"
+          key-columns="customerContract"
+        />
       </el-tab-pane>
-      <el-tab-pane label="操作记录" name="operate" v-if="!isAddForm">
+      <el-tab-pane
+        v-if="!isAddForm"
+        label="操作记录"
+        name="operate"
+      >
         <el-timeline>
           <el-timeline-item
-              v-for="(activity, index) in operateList"
-              :key="index"
-              :timestamp="activity.userName+activity.content"
+            v-for="(activity, index) in operateList"
+            :key="index"
+            :timestamp="activity.userName+activity.content"
           >
             {{ dateFormatting(activity.dataTime) }}
           </el-timeline-item>
         </el-timeline>
       </el-tab-pane>
-      <el-tab-pane label="分享详情" name="share" v-if="formModel?.userId===userId&&formModel.shareUserId">
+      <el-tab-pane
+        v-if="formModel?.userId===userId&&formModel.shareUserId"
+        label="分享详情"
+        name="share"
+      >
         <ShareInfo
-            :disabled="disabled||tabsNameIsShare"
-            ref="shareInfoRef"
-            v-model:userIds="formModel.shareUserId"
-            :customer-id="drawerObj.id"
-            @change="shareChange"/>
+          ref="shareInfoRef"
+          v-model:user-ids="formModel.shareUserId"
+          :disabled="disabled||tabsNameIsShare"
+          :customer-id="drawerObj.id"
+          @change="shareChange"
+        />
       </el-tab-pane>
     </el-tabs>
   </el-drawer>
@@ -83,7 +117,9 @@
         disabled?: boolean // 公海无效客户引用时为true
         tabsType?: string
       }>(),
-      {}
+      {
+        tabsType:''
+      }
   )
   const layoutStore = useLayoutStore();
   const userId = computed(() => {
@@ -167,8 +203,8 @@
         data.area = data.area.join(',')
       }
     }
-    if (type === 'detail') {
-    }
+    /*if (type === 'detail') {
+    }*/
     return data
   }
   const afterSubmit = (result: any, success: boolean, type: string) => {
@@ -176,7 +212,7 @@
       cancelClick()
     } else if (type === 'detail') {
       // 按展示格式处理数据
-      //　从列表里取两个时间到详情里
+      //从列表里取两个时间到详情里
       result.lastTime = dateFormatting(drawerObj.value.lastTime)
       result.nextTime = dateFormatting(drawerObj.value.nextTime)
       if (result.area) {
@@ -204,9 +240,9 @@
           })
     }
   }
-  //　联系人
+  //联系人
 
-  //　跟进记录
+  //跟进记录
 
   // 取消所有分享时
   const shareChange = () => {

@@ -1,39 +1,45 @@
 <template>
   <ak-list
-      ref="tableListEl"
-      pk="id"
-      :columns="columns"
-      :api="{ list: 'roleList', del:'roleDelete'}"
-      :controlBtn="[
-          {
-            key:'add',
-            click:()=>{
-              addEditEvent({})
-            }
-          },
-          {key:'del'}]"
+    ref="tableListEl"
+    pk="id"
+    :columns="columns"
+    :api="{ list: 'roleList', del:'roleDelete'}"
+    :control-btn="[
+      {
+        key:'add',
+        click:()=>{
+          addEditEvent({})
+        }
+      },
+      {key:'del'}]"
+  />
+  <el-dialog
+    v-model="visible"
+    width="500"
+    :title="dictDialogTitle"
+    class="form-dialog"
   >
-  </ak-list>
-  <el-dialog v-model="visible" width="500" :title="dictDialogTitle" class="form-dialog">
     <ak-form
-        label-width="100px"
-        pk="id"
-        ref="formEl"
-        @cancel="cancelClick"
-        :before="beforeSubmit"
-        :after="afterSubmit"
-        :data="formData"
-        :api="{ add: 'roleSave', edit: 'roleEdit', detail:'roleGet' }"
-        v-model="formModel">
+      ref="formEl"
+      v-model="formModel"
+      label-width="100px"
+      pk="id"
+      :before="beforeSubmit"
+      :after="afterSubmit"
+      :data="formData"
+      :api="{ add: 'roleSave', edit: 'roleEdit', detail:'roleGet' }"
+      @cancel="cancelClick"
+    >
       <template #idList>
         <el-form-item label="角色权限">
           <el-tree
-              ref="treeRef"
-              node-key="path"
-              :props="{label:'title',value:'path'}"
-              :data="treeData"
-              show-checkbox
-              @check-change="handleCheckChange"></el-tree>
+            ref="treeRef"
+            node-key="path"
+            :props="{label:'title',value:'path'}"
+            :data="treeData"
+            show-checkbox
+            @check-change="handleCheckChange"
+          />
         </el-form-item>
       </template>
     </ak-form>
@@ -112,7 +118,7 @@
   const cancelClick = () => {
     visible.value = false
   }
-  const beforeSubmit = (data: any, type: string) => {
+  const beforeSubmit = (data: any) => {
     return data
   }
   const afterSubmit = () => {

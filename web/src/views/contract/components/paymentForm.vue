@@ -1,23 +1,29 @@
 <template>
   <el-dialog
-      v-model="visible"
-      width="800" :title="title"
-      class="form-dialog"
-      destroy-on-close
-      :before-close="formCancelClick">
-    <el-alert title="审核通过，不能修改数据" type="success" v-if="formDisabled"/>
+    v-model="visible"
+    width="800"
+    :title="title"
+    class="form-dialog"
+    destroy-on-close
+    :before-close="formCancelClick"
+  >
+    <el-alert
+      v-if="formDisabled"
+      title="审核通过，不能修改数据"
+      type="success"
+    />
     <ak-form
-        :disabled="formDisabled"
-        pk="id"
-        ref="formRef"
-        :data="formData"
-        label-width="110"
-        class="flex-form flex-form-2"
-        :after="formAfter"
-        :api="{ detail: 'contractPaymentGet',add:'contractPaymentSave',edit:'contractPaymentEdit' }"
-        @cancel="formCancelClick"
-        v-model="formModel">
-    </ak-form>
+      ref="formRef"
+      v-model="formModel"
+      :disabled="formDisabled"
+      pk="id"
+      :data="formData"
+      label-width="110"
+      class="flex-form flex-form-2"
+      :after="formAfter"
+      :api="{ detail: 'contractPaymentGet',add:'contractPaymentSave',edit:'contractPaymentEdit' }"
+      @cancel="formCancelClick"
+    />
   </el-dialog>
 </template>
 
@@ -29,7 +35,9 @@
       defineProps<{
         userId?: number|undefined // 查看下属时
       }>(),
-      {}
+      {
+        userId:undefined
+      }
   )
 
   const emits = defineEmits<{

@@ -3,11 +3,16 @@
     <div class="img-item">
       <div class="img-box">
         <el-progress
-            :percentage="file.percentage || 0"
-            :status="getProgressStatus(file)"
-        ></el-progress>
-        <img :src="file.url" alt="">
-        <div class="file-name">{{ file.name }}</div>
+          :percentage="file.percentage || 0"
+          :status="getProgressStatus(file)"
+        />
+        <img
+          :src="file.url"
+          alt=""
+        >
+        <div class="file-name">
+          {{ file.name }}
+        </div>
       </div>
       <div class="ocr-content">
         <p>识别结果：</p>
@@ -16,22 +21,38 @@
       <div class="ocr-text">
         <p>提取结果</p>
         <ak-form
-            :btn-text="false"
-            :rules="rules"
-            label-width="90"
-            ref="formRef"
-            :after="afterSubmit"
-            :api="{add:'customerScanCard'}"
-            v-model="file.model"
-            :data="formData"/>
+          ref="formRef"
+          :model-value="file.model"
+          :btn-text="false"
+          :rules="rules"
+          label-width="90"
+          :after="afterSubmit"
+          :api="{add:'customerScanCard'}"
+          :data="formData"
+        />
       </div>
       <div class="btn">
-        <el-icon v-if="success" size="26px" color="green">
-          <CircleCheck/>
+        <el-icon
+          v-if="success"
+          size="26px"
+          color="green"
+        >
+          <CircleCheck />
         </el-icon>
         <template v-else>
-        <el-button type="danger" @click="emits('delClick')">移除</el-button>
-        <el-button type="primary" @click="submitClick" :loading="loading">一键入库</el-button>
+          <el-button
+            type="danger"
+            @click="emits('delClick')"
+          >
+            移除
+          </el-button>
+          <el-button
+            type="primary"
+            :loading="loading"
+            @click="submitClick"
+          >
+            一键入库
+          </el-button>
         </template>
       </div>
     </div>
@@ -45,9 +66,11 @@
 
   const props = withDefaults(
       defineProps<{
-        file: any
+        file?: any
       }>(),
-      {}
+      {
+        file:()=>{return {}}
+      }
   )
   const emits = defineEmits<{
     (e: 'delClick'): void
@@ -66,7 +89,6 @@
   })
   const success = ref(false)
   const loading = ref<boolean>(false)
-  const formModel = defineModel()
   const formRef = ref()
   const getProgressStatus = (file) => {
     if (file.status === 'success') return 'success';
@@ -95,7 +117,7 @@
           success.value = true
           ElMessage.success(data)
         })
-        .catch((res) => {
+        .catch(() => {
           loading.value = false
         })
   }

@@ -1,6 +1,11 @@
 <template>
   <div>
-    <el-button type="primary" @click="clearCache">清空缓存</el-button>
+    <el-button
+      type="primary"
+      @click="clearCache"
+    >
+      清空缓存
+    </el-button>
   </div>
 </template>
 

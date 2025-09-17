@@ -1,29 +1,48 @@
 <template>
-  <el-tabs v-model="activeName" class="demo-tabs" @tab-change="handleClick">
-    <el-tab-pane label="我的客户" name="default"></el-tab-pane>
-    <el-tab-pane label="下属客户" name="child" v-if="hasChild"></el-tab-pane>
-    <el-tab-pane label="共享客户" name="shareWithMe"></el-tab-pane>
-    <el-tab-pane label="我共享的" name="myShare"></el-tab-pane>
+  <el-tabs
+    v-model="activeName"
+    class="demo-tabs"
+    @tab-change="handleClick"
+  >
+    <el-tab-pane
+      label="我的客户"
+      name="default"
+    />
+    <el-tab-pane
+      v-if="hasChild"
+      label="下属客户"
+      name="child"
+    />
+    <el-tab-pane
+      label="共享客户"
+      name="shareWithMe"
+    />
+    <el-tab-pane
+      label="我共享的"
+      name="myShare"
+    />
   </el-tabs>
   <ak-list
-      ref="tableListEl"
-      pk="id"
-      :columns="columnsFilter"
-      :api="{ list: 'customerList',export:'customerExport'}"
-      :controlBtn="controlBtn"
-      :before="beforeList"
-      @eventClick="tableBtnEvent"
-  >
-  </ak-list>
+    ref="tableListEl"
+    pk="id"
+    :columns="columnsFilter"
+    :api="{ list: 'customerList',export:'customerExport'}"
+    :control-btn="controlBtn"
+    :before="beforeList"
+    @event-click="tableBtnEvent"
+  />
 
-  <DetailTable ref="detailTableRef" :tabsType="activeName"/>
-  <importDialog ref="importDialogRef"/>
+  <DetailTable
+    ref="detailTableRef"
+    :tabs-type="activeName"
+  />
+  <importDialog ref="importDialogRef" />
   <UserDialog
-      ref="userDialogRef"
-      :showInput="false"
-      :multiple="userMultiple"
-      @selectClick="userSelectClick"/>
-
+    ref="userDialogRef"
+    :show-input="false"
+    :multiple="userMultiple"
+    @select-click="userSelectClick"
+  />
 </template>
 <script setup lang="ts">
   import {ref, computed} from 'vue'
@@ -40,13 +59,13 @@
 
   const userDialogRef = ref()
   const userMultiple = ref(false)
-  //　tabs
+  //tabs
   const activeName = ref('default')
 
   const hasChild = computed(() => {
     return layoutStore.userInfo?.hasChild
   })
-  const handleClick = (name: string) => {
+  const handleClick = () => {
     getData()
   }
 
@@ -187,7 +206,7 @@
         userIds = selectUser === 'all' ? '0' : selectUser?.map(item => item.id).join(',')
       }
       getRequest('customerShare', {ids: ids, userId: userIds, type: currentBtn.value})
-          .then(res => {
+          .then(() => {
             ElMessage.success("操作成功")
             // 取消选中的
             tableListEl.value.table?.clearSelection()
@@ -197,7 +216,7 @@
           })
     } else {
       getRequest('customerMove', {ids: ids, userId: selectUser.id, type: currentBtn.value})
-          .then(res => {
+          .then(() => {
             ElMessage.success("操作成功")
             getData()
           })

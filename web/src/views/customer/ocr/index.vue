@@ -2,15 +2,19 @@
   <div v-loading="loading">
     <div style="display: flex">
       <el-upload
-          ref="uploadRef"
-          :show-file-list="false"
-          v-model:file-list="fileList"
-          accept="image/png, image/jpeg, image/jpg"
-          :http-request="httpRequest"
-          multiple
+        ref="uploadRef"
+        v-model:file-list="fileList"
+        :show-file-list="false"
+        accept="image/png, image/jpeg, image/jpg"
+        :http-request="httpRequest"
+        multiple
       >
-
-        <el-button type="primary" icon="upload-filled">选择名片</el-button>
+        <el-button
+          type="primary"
+          icon="upload-filled"
+        >
+          选择名片
+        </el-button>
         <!--    <el-icon class="el-icon--upload">
                 <upload-filled/>
               </el-icon>
@@ -23,10 +27,21 @@
           </div>
         </template>
       </el-upload>
-      <el-button type="danger" @click="clearClick">清空</el-button>
+      <el-button
+        type="danger"
+        @click="clearClick"
+      >
+        清空
+      </el-button>
     </div>
-    <template v-for="(file, index) in fileList" :key="index">
-      <Card :file="file" @delClick="delClick(index)"/>
+    <template
+      v-for="(file, index) in fileList"
+      :key="index"
+    >
+      <Card
+        :file="file"
+        @del-click="delClick(index)"
+      />
     </template>
   </div>
 </template>

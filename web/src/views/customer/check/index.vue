@@ -1,28 +1,31 @@
 <template>
   <ak-list
-      ref="tableListEl"
-      pk="id"
-      :autoLoad="false"
-      :columns="columns"
-      :columnsIconVisible="false"
-      :searchIconVisible="false"
-      :api="{ list: 'customerCheck'}"
+    ref="tableListEl"
+    pk="id"
+    :auto-load="false"
+    :columns="columns"
+    :columns-icon-visible="false"
+    :search-icon-visible="false"
+    :api="{ list: 'customerCheck'}"
+  />
+  <el-drawer
+    v-model="visible"
+    size="75%"
+    title="详情"
   >
-  </ak-list>
-  <el-drawer v-model="visible" size="75%" title="详情">
     <ak-form
-        :disabled="true"
-        label-width="100"
-        class="flex-form flex-form-2"
-        ref="formDetailEl"
-        :btnText="false"
-        @cancel="cancelClick"
-        :after="afterSubmit"
-        :data="formData"
-        :hideFiled="['nextTime','lastTime','address','tel','code']"
-        :api="{ detail: 'customerDetail'}"
-        v-model="formModel">
-    </ak-form>
+      ref="formDetailEl"
+      v-model="formModel"
+      :disabled="true"
+      label-width="100"
+      class="flex-form flex-form-2"
+      :btn-text="false"
+      :after="afterSubmit"
+      :data="formData"
+      :hide-filed="['nextTime','lastTime','address','tel','code']"
+      :api="{ detail: 'customerDetail'}"
+      @cancel="cancelClick"
+    />
   </el-drawer>
 </template>
 <script setup lang="ts">

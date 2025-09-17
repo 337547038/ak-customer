@@ -1,27 +1,31 @@
 <template>
   <ak-list
-      ref="tableListEl"
-      pk="id"
-      :columns="columns"
-      :api="{ list: 'deptList', del:'deptDel'}"
-      :controlBtn="[{key:'add',click:()=>{openAddEditDialog(true)}}]"
-      :before="beforeGetList"
-      :tableProp="{rowKey:'id',load:lazyLoad,lazy:true,
-  treeProps:{ children: 'children', hasChildren: 'hasChildren' }}"
+    ref="tableListEl"
+    pk="id"
+    :columns="columns"
+    :api="{ list: 'deptList', del:'deptDel'}"
+    :control-btn="[{key:'add',click:()=>{openAddEditDialog(true)}}]"
+    :before="beforeGetList"
+    :table-prop="{rowKey:'id',load:lazyLoad,lazy:true,
+                  treeProps:{ children: 'children', hasChildren: 'hasChildren' }}"
+  />
+  <el-dialog
+    v-model="visible"
+    width="500"
+    :title="dictDialogTitle"
+    class="form-dialog"
   >
-  </ak-list>
-  <el-dialog v-model="visible" width="500" :title="dictDialogTitle" class="form-dialog">
     <ak-form
-        label-width="100px"
-        pk="id"
-        ref="formEl"
-        @cancel="cancelClick"
-        :before="beforeSubmit"
-        :after="afterSubmit"
-        :data="formData"
-        :api="{ add: 'deptSave', edit: 'deptEdit', detail:'deptGet' }"
-        v-model="formModel">
-    </ak-form>
+      ref="formEl"
+      v-model="formModel"
+      label-width="100px"
+      pk="id"
+      :before="beforeSubmit"
+      :after="afterSubmit"
+      :data="formData"
+      :api="{ add: 'deptSave', edit: 'deptEdit', detail:'deptGet' }"
+      @cancel="cancelClick"
+    />
   </el-dialog>
 </template>
 

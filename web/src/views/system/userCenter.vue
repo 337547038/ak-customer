@@ -1,23 +1,30 @@
 <template>
   <div class="user-center">
     <ak-form
-        ref="formRef"
-        class="flex-form flex-form-2"
-        pk="id"
-        label-width="120"
-        :data="formData"
-        label-suffix="："
-        :after="after"
-        :api="{edit: 'userEdit', detail:'userInfo' }"
-        v-model="formModel">
+      ref="formRef"
+      v-model="formModel"
+      class="flex-form flex-form-2"
+      pk="id"
+      label-width="120"
+      :data="formData"
+      label-suffix="："
+      :after="after"
+      :api="{edit: 'userEdit', detail:'userInfo' }"
+    >
       <el-form-item label="绑定微信">
-        <el-button type="primary" @click="bindWenXin">
+        <el-button
+          type="primary"
+          @click="bindWenXin"
+        >
           {{ formModel.bindWX ? '解绑' : '点击绑定' }}
         </el-button>
       </el-form-item>
     </ak-form>
   </div>
-  <scan-code mode="dialog" ref="scanCodeRef"/>
+  <scan-code
+    ref="scanCodeRef"
+    mode="dialog"
+  />
 </template>
 <route>
 {meta:{permissions:"none"}}
@@ -134,9 +141,9 @@
   }
 
   const scanCodeRef = ref()
-  const bindOrUnbind = () => {
-    getRequest("bindWx", params)
-        .then((res) => {
+  const bindOrUnbind = (param:any) => {
+    getRequest("bindWx", param)
+        .then(() => {
           ElMessage.success('绑定成功')
           formRef.value.getData()
         })
@@ -144,7 +151,6 @@
   const bindWenXin = () => {
     if (formModel.value.bindWX) {
       // 解绑
-      params.unbind = true
       bindOrUnbind({unbind: true})
     } else {
       scanCodeRef.value.open()
