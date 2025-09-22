@@ -37,6 +37,7 @@ id, userName, status, creatTime, updateTime, lastLogin, loginTimer, ip, remark, 
         <select id="queryAllByLimit">
             select
             u.id, userName, u.status, creatTime, updateTime, lastLogin, loginTimer, ip, u.remark, departmentId,d.name as departmentName, u.tid, phone, weixin, qq, sex, roleId,bindWX
+            <if test="query.password != null">,password</if>
             from sys_user as u left join sys_department as d on departmentId=d.id
             <where>
                     <if test="query.id != null">
@@ -45,6 +46,9 @@ id, userName, status, creatTime, updateTime, lastLogin, loginTimer, ip, remark, 
                     <if test="query.userName != null and query.userName != ''">
                         and userName = #{query.userName}
                     </if>
+                    <!--<if test="query.password != null and query.password != ''">
+                       and password = #{query.password}
+                    </if>-->
                     <if test="query.status != null">
                         and u.status = #{query.status}
                     </if>
@@ -106,55 +110,54 @@ id, userName, status, creatTime, updateTime, lastLogin, loginTimer, ip, remark, 
             select count(1)
             from sys_user
             <where>
-                    <if test="id != null">
-                        and id = #{id}
-                    </if>
-                    <if test="userName != null and userName != ''">
-                        and userName = #{userName}
-                    </if>
-
-                    <if test="status != null">
-                        and status = #{status}
-                    </if>
-                    <if test="creatTime != null">
-                        and creatTime = #{creatTime}
-                    </if>
-                    <if test="updateTime != null">
-                        and updateTime = #{updateTime}
-                    </if>
-                    <if test="lastLogin != null">
-                        and lastLogin = #{lastLogin}
-                    </if>
-                    <if test="loginTimer != null">
-                        and loginTimer = #{loginTimer}
-                    </if>
-                    <if test="ip != null and ip != ''">
-                        and ip = #{ip}
-                    </if>
-                    <if test="remark != null and remark != ''">
-                        and remark = #{remark}
-                    </if>
-                    <if test="departmentId != null">
-                        and departmentId = #{departmentId}
-                    </if>
-                    <if test="tid != null">
-                        and tid = #{tid}
-                    </if>
-                    <if test="phone != null and phone != ''">
-                        and phone = #{phone}
-                    </if>
-                    <if test="weixin != null and weixin != ''">
-                        and weixin = #{weixin}
-                    </if>
-                    <if test="qq != null">
-                        and qq = #{qq}
-                    </if>
-                    <if test="sex != null">
-                        and sex = #{sex}
-                    </if>
-                    <if test="roleId != null and roleId != ''">
-                        and roleId = #{roleId}
-                    </if>
+                <if test="id != null">
+                    and id = #{id}
+                </if>
+                <if test="userName != null and userName != ''">
+                    and userName = #{userName}
+                </if>
+                <if test="status != null">
+                    and status = #{status}
+                </if>
+                <if test="creatTime != null">
+                    and creatTime = #{creatTime}
+                </if>
+                <if test="updateTime != null">
+                    and updateTime = #{updateTime}
+                </if>
+                <if test="lastLogin != null">
+                    and lastLogin = #{lastLogin}
+                </if>
+                <if test="loginTimer != null">
+                    and loginTimer = #{loginTimer}
+                </if>
+                <if test="ip != null and ip != ''">
+                    and ip = #{ip}
+                </if>
+                <if test="remark != null and remark != ''">
+                    and remark = #{remark}
+                </if>
+                <if test="departmentId != null">
+                    and departmentId = #{departmentId}
+                </if>
+                <if test="tid != null">
+                    and tid = #{tid}
+                </if>
+                <if test="phone != null and phone != ''">
+                    and phone = #{phone}
+                </if>
+                <if test="weixin != null and weixin != ''">
+                    and weixin = #{weixin}
+                </if>
+                <if test="qq != null">
+                    and qq = #{qq}
+                </if>
+                <if test="sex != null">
+                    and sex = #{sex}
+                </if>
+                <if test="roleId != null and roleId != ''">
+                    and roleId = #{roleId}
+                </if>
             </where>
         </select>
 
@@ -223,6 +226,7 @@ id, userName, status, creatTime, updateTime, lastLogin, loginTimer, ip, remark, 
             #{item}
         </foreach>
         </delete>
+
 
     <!--更新登录信息-->
     <update id="updateLogin">

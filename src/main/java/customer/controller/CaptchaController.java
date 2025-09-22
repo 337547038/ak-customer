@@ -2,7 +2,6 @@ package customer.controller;
 
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.LineCaptcha;
-import com.alibaba.fastjson2.JSONObject;
 import customer.config.PassToken;
 import customer.utils.Utils;
 import io.swagger.v3.oas.annotations.Operation;

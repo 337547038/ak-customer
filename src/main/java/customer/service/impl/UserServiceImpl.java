@@ -12,6 +12,7 @@ import customer.dao.UserDao;
 import customer.service.UserService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
@@ -38,9 +39,12 @@ public class UserServiceImpl implements UserService {
 
     private final RestTemplate restTemplate;
 
-    public UserServiceImpl(LoginLogService loginLogService, RestTemplate restTemplate) {
+    private final PasswordEncoder passwordEncoder;
+
+    public UserServiceImpl(LoginLogService loginLogService, RestTemplate restTemplate, PasswordEncoder passwordEncoder) {
         this.loginLogService = loginLogService;
         this.restTemplate = restTemplate;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -86,6 +90,7 @@ public class UserServiceImpl implements UserService {
     public User insert(User user) {
         User hasUser = new User();
         hasUser.setUserName(user.getUserName());
+        user.setPassword(passwordEncoder.encode(user.getPassword())); // 加密保存
         long total = this.userDao.count(hasUser);
         if (total > 0) {
             // 存在相同key
@@ -106,6 +111,10 @@ public class UserServiceImpl implements UserService {
     @CacheEvict(value = "tokenVerify", key = "#user.id")
     @Override
     public Integer updateById(User user) {
+        if (user.getPassword() != null) {
+            //相同的密码每次encode可能结果都不一样
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
         return this.userDao.updateById(user);
     }
 
@@ -138,22 +147,35 @@ public class UserServiceImpl implements UserService {
         if (!list.isEmpty()) {
             //更新登录信息
             loginUser = JSON.parseObject(JSON.toJSONString(list.get(0)), User.class);//json字符串转java对象
-            User updateUser = new User();
-            updateUser.setId(loginUser.getId());
-            updateUser.setLastLogin(new Date());
-            updateUser.setLoginTimer(loginUser.getLoginTimer() + 1);
-            updateUser.setIp(ipAddress);
-            userDao.updateLogin(updateUser);
-            //添加登录日志
-            log.setUserName(loginUser.getUserName());
-            log.setUserId(loginUser.getId());
-            log.setStatus(1);
+            if (passwordEncoder.matches(user.getPassword(), loginUser.getPassword())) {
+                User updateUser = new User();
+                updateUser.setId(loginUser.getId());
+                updateUser.setLastLogin(new Date());
+                updateUser.setLoginTimer(loginUser.getLoginTimer() + 1);
+                updateUser.setIp(ipAddress);
+                userDao.updateLogin(updateUser);
+                //添加登录日志
+                log.setUserName(loginUser.getUserName());
+                log.setUserId(loginUser.getId());
+                log.setStatus(1);
+            } else {
+                // 密码错误
+                log.setUserId(0);
+                log.setStatus(0);
+                log.setUserName(loginUser.getUserName());
+                log.setUserId(loginUser.getId());
+                log.setRemark("密码:" + user.getPassword());
+                loginLogService.insert(log);
+                return new User();
+            }
         } else {
             log.setUserId(0); // 登录异常没有id
             log.setStatus(0);
             if (user.getBindWX() != null) {
                 log.setRemark("当前用户没有绑定微信：" + user.getBindWX());
+                log.setUserName("微信用户");
             } else {
+                log.setUserName(user.getUserName());
                 log.setRemark("密码:" + user.getPassword());
             }
         }
