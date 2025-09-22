@@ -2,6 +2,19 @@
 
 AK客户关系管理系统是一款以客户为中心，专门为企业销售团队量身定制的工具，其核心目标是帮助企业实现客户信息集中化、业务流程自动化、数据分析智能化，从而提升客户满意度、增强客户忠诚度，最终驱动业务增长。
 
+项目前后端分离，主要使用技术及插件：
+
+```text
+后端：
+
+Java、SpringBoot、Maven、Mysql、Caffeine、Mybatis、Swagger、Log4j2、Fastjson2、Jwt、Crypto
+
+前端：
+
+Vue、Axios、Echarts、Element-Plus、Pinia、Vue-router、Vite
+```
+
+
 ## 演示地址
 
 https://337547038.github.io/ak-customer/
@@ -67,6 +80,9 @@ java -jar ak-customer-0.0.1-SNAPSHOT.jar
 ```
 
 **即可正常在本地调试，源码部分目前有偿提供，如有需要可加微信`337547038`**
+
+## Swagger接口文档
+http://localhost:8081/api/swagger-ui/index.html
 
 ## 相关视频
 
