@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主机： 127.0.0.1
--- 生成日期： 2025-08-21 05:30:37
+-- 生成日期： 2025-09-22 09:23:34
 -- 服务器版本： 10.4.27-MariaDB
 -- PHP 版本： 8.2.0
 
@@ -289,7 +289,24 @@ CREATE TABLE `sys_login_log` (
 INSERT INTO `sys_login_log` (`id`, `userName`, `userId`, `loginIp`, `dateTime`, `remark`, `status`) VALUES
 (145, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-08-21 11:24:47', NULL, 1),
 (146, 'user', 2, '0:0:0:0:0:0:0:1', '2025-08-21 11:25:19', NULL, 1),
-(147, 'user', 2, '0:0:0:0:0:0:0:1', '2025-08-21 11:28:12', NULL, 1);
+(147, 'user', 2, '0:0:0:0:0:0:0:1', '2025-08-21 11:28:12', NULL, 1),
+(148, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-08-22 16:24:32', NULL, 1),
+(149, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-09-12 11:26:55', NULL, 1),
+(150, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-09-12 12:26:28', NULL, 1),
+(151, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-09-12 12:40:27', NULL, 1),
+(152, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-09-18 14:46:01', NULL, 1),
+(153, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-09-19 12:01:23', NULL, 1),
+(154, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-09-19 12:04:31', NULL, 1),
+(155, 'admin', 0, '0:0:0:0:0:0:0:1', '2025-09-19 12:45:47', '密码:1234', 0),
+(156, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-09-19 17:37:58', '密码:123456', 0),
+(157, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-09-19 17:42:02', NULL, 1),
+(158, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-09-19 17:42:22', '密码:12345', 0),
+(159, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-09-19 20:17:46', '密码:12345', 0),
+(160, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-09-19 20:17:58', '密码:12345', 0),
+(161, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-09-19 20:18:45', NULL, 1),
+(162, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-09-20 20:13:40', NULL, 1),
+(163, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-09-21 11:32:03', NULL, 1),
+(164, 'admin', 1, '0:0:0:0:0:0:0:1', '2025-09-21 11:33:07', NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -322,7 +339,7 @@ INSERT INTO `sys_role` (`id`, `name`, `status`, `remark`, `content`) VALUES
 CREATE TABLE `sys_user` (
   `id` int(10) NOT NULL,
   `userName` varchar(50) NOT NULL,
-  `password` varchar(50) NOT NULL,
+  `password` varchar(65) NOT NULL,
   `status` int(2) NOT NULL COMMENT '0禁用1正常',
   `creatTime` datetime NOT NULL COMMENT '创建时间',
   `updateTime` datetime DEFAULT NULL COMMENT '信息修改时间',
@@ -345,9 +362,9 @@ CREATE TABLE `sys_user` (
 --
 
 INSERT INTO `sys_user` (`id`, `userName`, `password`, `status`, `creatTime`, `updateTime`, `lastLogin`, `loginTimer`, `ip`, `remark`, `departmentId`, `tid`, `phone`, `weixin`, `qq`, `sex`, `roleId`, `bindWX`) VALUES
-(1, 'admin', '12345', 1, '2025-07-09 06:24:03', '2025-07-30 11:07:47', '2025-08-21 11:24:47', 148, '0:0:0:0:0:0:0:1', NULL, 1, NULL, '13800138000', NULL, NULL, 1, '1,2', NULL),
-(2, 'user', '12345', 1, '2025-07-07 06:24:03', '2025-07-30 11:08:27', '2025-08-21 11:28:12', 17, '0:0:0:0:0:0:0:1', NULL, 4, 1, '13800138000', NULL, NULL, 1, '2', NULL),
-(4, 'user2', '123456', 1, '2025-08-10 07:41:05', NULL, NULL, 0, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL);
+(1, 'admin', '$2a$10$pyzEpYb3HcgkKC4t3yZM0.YRb7hiI3QUYxcFffN4cRAQHqcmqeWLm', 1, '2025-07-09 06:24:03', '2025-07-30 11:07:47', '2025-09-21 11:33:07', 160, '0:0:0:0:0:0:0:1', NULL, 1, NULL, '13800138000', NULL, NULL, 1, '1,2', NULL),
+(2, 'user', '$2a$10$ksP/JbPV0Gf0xAGztY7uG.mNj/11wtHFj6ojq.77S1tKo4P4hQxV6', 1, '2025-07-07 06:24:03', '2025-07-30 11:08:27', '2025-08-21 11:28:12', 17, '0:0:0:0:0:0:0:1', NULL, 4, 1, '13800138000', NULL, NULL, 1, '2', NULL),
+(4, 'user2', '$2a$10$ksP/JbPV0Gf0xAGztY7uG.mNj/11wtHFj6ojq.77S1tKo4P4hQxV6', 1, '2025-08-10 07:41:05', NULL, NULL, 0, NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL);
 
 --
 -- 转储表的索引
@@ -480,7 +497,7 @@ ALTER TABLE `sys_follow_records`
 -- 使用表AUTO_INCREMENT `sys_login_log`
 --
 ALTER TABLE `sys_login_log`
-  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=148;
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=165;
 
 --
 -- 使用表AUTO_INCREMENT `sys_role`

@@ -213,7 +213,7 @@ public class UserController {
         // 获取IP地址
         String ipAddress = request.getRemoteAddr();
         User loginUser = this.userService.login(user, ipAddress);
-        if (loginUser == null) {
+        if (loginUser.getId() == null) {
             return ResponseResult.fail("用户名或密码错误");
         }
 

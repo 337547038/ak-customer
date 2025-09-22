@@ -20,7 +20,7 @@
           <img
             :src="src"
             class="img"
-            alt=""
+            alt="获取验证码"
             @click="getCaptcha"
           >
         </el-form-item>
@@ -92,7 +92,7 @@
           })
     })
   }
-  const formModel = ref({userName: 'admin', password: '12345'})
+  const formModel = ref({userName: 'admin', password: '123456'})
   const formData = ref([
     {
       prop: 'userName',

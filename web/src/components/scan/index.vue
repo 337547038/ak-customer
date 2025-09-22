@@ -72,7 +72,7 @@
   }
   const wechatSrc = ref('')
   const getQrcodeImg = () => {
-    const appid = 'wxbdc5610cc59c1631'
+    const appid = 'wx28c54e66df42d7d1'
     const urlPath = props.mode === 'dialog' ? '/system/userCenter' : '/login'
     const redirect_uri = encodeURIComponent(`https://xxxx.com/#/${urlPath}`)
     // const redirect_uri = 'https%3A%2F%2Fpassport.yhd.com%2Fwechat%2Fcallback.do'
