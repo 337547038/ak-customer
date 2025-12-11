@@ -42,7 +42,7 @@
   const layoutStore = useLayoutStore();
   const dict = layoutStore.getSystemDict()
   const formRef = ref();
-  const formModel = ref({})
+  const formModel = ref<any>({})
   const formData = ref([
     {
       prop: 'userName',
@@ -173,6 +173,6 @@
 <style scoped lang="scss">
 .user-center {
   background: #fff;
-  padding: 50px
+  padding: 50PX
 }
 </style>

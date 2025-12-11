@@ -41,7 +41,7 @@
     </template>
     <slot />
     <el-form-item
-      v-if="btnText"
+      v-if="btnText&&typeof btnText==='object'"
       class="submit-btn-group"
     >
       <el-button
@@ -85,8 +85,8 @@
         //formProps?: any // el表单组件props参数
         btnText?: string[] | boolean // 按钮文案
         api?: { add: string, edit: string, detail: string }
-        before?: (params: any, type: string) => boolean
-        after?: (res: any, isSuccess?: boolean, type: string) => any
+        before?: ((params: any, type: string) => boolean)|null
+        after?: ((res: any, isSuccess?: boolean, type?: string) => any)|null
         params?: any // 附件参数
         rules?: any
         pk?: string | number // 主键，当提交的数据里包含了主键时，则提交修改接口
@@ -137,9 +137,9 @@
 
   const loading = ref(false)
 
-  const dataFilter = computed(() => {
+  const dataFilter:any = computed(() => {
     // return props.data.filter(item => item.visible !== false && !props.hideFiled.includes(item.prop))
-    return props.data.filter(item => {
+    return props.data.filter((item:any) => {
       let visible = item.visible
       if (typeof item.visible === 'function') {
         visible = item.visible()

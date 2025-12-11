@@ -44,7 +44,7 @@ id, tid, name, status, remark, userId
                         and tid = #{query.tid}
                     </if>
                     <if test="query.name != null and query.name != ''">
-                        and name = #{query.name}
+                        and name LIKE CONCAT('%', #{query.name}, '%')
                     </if>
                     <if test="query.status != null">
                         and status = #{query.status}
@@ -81,7 +81,7 @@ id, tid, name, status, remark, userId
                         and tid = #{tid}
                     </if>
                     <if test="name != null and name != ''">
-                        and name = #{name}
+                        and name LIKE CONCAT('%', #{name}, '%')
                     </if>
                     <if test="status != null">
                         and status = #{status}

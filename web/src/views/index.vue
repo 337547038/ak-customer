@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <div
+    v-if="!isMobile()"
+    class="pc-container"
+  >
     <div class="item-box">
       <h3>待办事项</h3>
       <div class="flex">
@@ -128,6 +131,115 @@
       </div>
     </div>
   </div>
+  <div
+    v-else
+  >
+    <van-cell-group class="w-container">
+      <h3>待办事项</h3>
+      <div class="flex">
+        <div
+          v-if="hasChild"
+          class="item"
+        >
+          <i
+            class="icon-contract2"
+            style="color: #ee614e"
+          />
+          <div
+            class="text"
+            @click="toPage('contract')"
+          >
+            <p class="num">
+              {{ todo.contract || 0 }}
+            </p>
+            <p>待审批合同</p>
+          </div>
+        </div>
+        <div
+          v-if="hasChild"
+          class="item"
+        >
+          <i
+            class="icon-payment"
+            style="color:#f6bc33;"
+          />
+          <div
+            class="text"
+            @click="toPage('payment')"
+          >
+            <p class="num">
+              {{ todo.payment || 0 }}
+            </p>
+            <p>待审批回款</p>
+          </div>
+        </div>
+        <div class="item">
+          <i
+            class="icon-follow-record"
+            style="color:#cd94ff;"
+          />
+          <div class="text">
+            <p class="num">
+              {{ todo.follow?.length || 0 }}
+            </p>
+            <p>待跟进客户</p>
+          </div>
+        </div>
+      </div>
+    </van-cell-group>
+    <van-cell-group class="w-container">
+      <h3>
+        待跟进客户
+      </h3>
+      <template v-if="todo.follow?.length">
+        <van-cell
+          v-for="item in todo.follow"
+          :key="item.id"
+          :title="item.company"
+          :value="dateFormatting(item.nextTime)"
+        />
+      </template>
+      <van-empty
+        v-else
+        image-size="80"
+        description="暂无数据"
+      />
+    </van-cell-group>
+    <van-cell-group class="w-container">
+      <h3>
+        超30天无跟进记录的客户
+      </h3>
+      <template v-if="todo.notFollow?.length">
+        <van-cell
+          v-for="item in todo.notFollow"
+          :key="item.id"
+          :title="item.company"
+          :value="dateFormatting(item.lastFollowDate)"
+        />
+      </template>
+      <van-empty
+        v-else
+        image-size="80"
+        description="暂无数据"
+      />
+    </van-cell-group>
+    <van-cell-group class="w-container">
+      <h3>客户生日提醒</h3>
+      <template v-if="todo.birthday?.length">
+        <van-cell
+          v-for="item in todo.birthday"
+          :key="item.id"
+          :title="item.company"
+          :value="dateFormatting(item.birthday, '{m}-{d}')"
+        />
+      </template>
+      <van-empty
+        v-else
+        image-size="80"
+        description="暂无数据"
+      />
+    </van-cell-group>
+  </div>
 </template>
 <route>
 {meta:{permissions:"none"}}
@@ -140,14 +252,29 @@
   import {getRequest} from "@/api";
   import {dateFormatting} from "@/utils";
   import {useRouter} from "vue-router";
+  import {isMobile} from "@/utils";
+
+  interface Todo {
+    contract: number,
+    payment: number,
+    follow: { [key: string]: any }[],
+    birthday: { [key: string]: any }[],
+    notFollow: { [key: string]: any }[]
+  }
 
   const router = useRouter();
 
-  const layerStore = useLayoutStore()
+  const layoutStore = useLayoutStore()
   const hasChild = computed(() => {
-    return layerStore.userInfo?.hasChild
+    return layoutStore.userInfo?.hasChild
   })
-  const todo = ref({})
+  const todo = ref<Todo>({
+    contract: 0,
+    payment: 0,
+    follow: [],
+    birthday: [],
+    notFollow: []
+  })
   const getData = () => {
     getRequest("analysisSummary", {})
         .then(res => {
@@ -164,6 +291,11 @@
     }
   }
 
+  // wap
+  layoutStore.setNavBarTitle("AK客户管理系统")
+  layoutStore.setLeftArrow(false)
+  layoutStore.setRightSearchArrow(false)
+
   onMounted(() => {
     getData()
   })
@@ -171,68 +303,101 @@
 
 </script>
 <style scoped lang="scss">
-.border-box {
-  border: 1px solid #eee;
-  border-radius: 4px;
-  background: #fff;
-  width: 32%;
-  margin-right: 10px;
+.pc-container {
+  .border-box {
+    border: 1PX solid #eee;
+    border-radius: 4PX;
+    background: #fff;
+    width: 32%;
+    margin-right: 10PX;
 
-  h3 {
-    border-bottom: 1px solid #eee;
-    padding: 15px 20px;
-  }
+    h3 {
+      border-bottom: 1PX solid #eee;
+      padding: 15PX 20PX;
+    }
 
-  .item {
-    padding: 20px;
+    .item {
+      padding: 20PX;
 
-    li {
-      height: 30px;
-      line-height: 30px;
-      display: flex;
-      justify-content: space-around;
+      li {
+        height: 30PX;
+        line-height: 30PX;
+        display: flex;
+        justify-content: space-around;
 
-      span {
-        flex: 2;
-        text-align: right
+        span {
+          flex: 2;
+          text-align: right
+        }
       }
     }
   }
-}
 
-.item-box {
+  .item-box {
 
-  margin-bottom: 15px;
+    margin-bottom: 15PX;
 
-  h3 {
-    font-size: 16px;
-    font-weight: normal;
-    padding: 5px 10px;
+    h3 {
+      font-size: 16PX;
+      font-weight: normal;
+      padding: 5PX 10PX;
+    }
+
+    .item {
+      background: #fff;
+      border-radius: 5PX;
+      width: 350PX;
+      height: 180PX;
+      margin-right: 15PX;
+      display: flex;
+      align-items: center;
+
+      i {
+        display: block;
+        font-size: 80PX;
+        margin: 0 20PX;
+      }
+
+      .num {
+        font-size: 36PX;
+      }
+    }
   }
 
-  .item {
-    background: #fff;
-    border-radius: 5px;
-    width: 350px;
-    height: 180px;
-    margin-right: 15px;
+  .flex {
     display: flex;
-    align-items: center;
+  }
+}
+
+.w-container {
+  h3 {
+    font-weight: 700;
+    font-size: 24px
+  }
+
+  .flex {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 0;
+    font-size: 24px;
+
+    .item {
+      display: flex;
+      align-items: center;
+    }
 
     i {
-      display: block;
-      font-size: 80px;
-      margin: 0 20px;
+      font-size: 68px;
+      margin-right: 10px
+    }
+
+    .text {
+      text-align: center
     }
 
     .num {
-      font-size: 36px;
+      font-size: 36px
     }
   }
-}
-
-.flex {
-  display: flex;
-
 }
 </style>

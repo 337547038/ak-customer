@@ -30,5 +30,5 @@
   })
 </script>
 <style scoped>
-.icon{font-size: 18px;margin-right: 5px;}
+.icon{font-size: 18PX;margin-right: 5PX;}
 </style>

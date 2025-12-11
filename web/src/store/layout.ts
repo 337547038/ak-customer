@@ -22,12 +22,36 @@ export const useLayoutStore = defineStore('layout', {
         return {
             breadcrumb: [],
             tabs: tabs,
-            userInfo: getStorage('userInfo', true) || {}
+            userInfo: getStorage('userInfo', true) || {},
+            navBarTitle: '',
+            leftArrow: true,
+            rightSearchArrow: false,
+            rightAddArrow: false,
+            showTabBar:true,
+            backTop:true,
         }
     },
     // 也可以定义为
     // state: () => ({ count: 0 })
     actions: {
+        setNavBarTitle(title: string) {
+            this.navBarTitle = title
+        },
+        setLeftArrow(show: boolean) {
+            this.leftArrow = show
+        },
+        setRightSearchArrow(show: boolean) {
+            this.rightSearchArrow = show
+        },
+        setRightAddArrow(show: boolean) {
+            this.rightAddArrow = show
+        },
+        setShowTabBar(show: boolean) {
+            this.showTabBar = show
+        },
+        setBackTop(show: boolean) {
+            this.backTop = show
+        },
         changeBreadcrumb(data: any) {
             this.breadcrumb = data
         },

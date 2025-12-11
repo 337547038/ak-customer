@@ -1,21 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="customer.dao.ContractPaymentDao">
+    <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="customer.dao.ContractPaymentDao">
 
-    <resultMap type="customer.entity.ContractPayment" id="ContractPaymentMap">
-        <result property="id" column="id" jdbcType="INTEGER"/>
-        <result property="code" column="code" jdbcType="VARCHAR"/>
-        <result property="contractId" column="contractId" jdbcType="INTEGER"/>
-        <result property="money" column="money" jdbcType="VARCHAR"/>
-        <result property="datetime" column="datetime" jdbcType="TIMESTAMP"/>
-        <result property="remark" column="remark" jdbcType="VARCHAR"/>
-        <result property="creatDate" column="creatDate" jdbcType="TIMESTAMP"/>
-        <result property="account" column="account" jdbcType="INTEGER"/>
-        <result property="status" column="status" jdbcType="INTEGER"/>
-    </resultMap>
+        <resultMap type="customer.entity.ContractPayment" id="ContractPaymentMap">
+                <result property="id" column="id" jdbcType="INTEGER"/>
+                <result property="code" column="code" jdbcType="VARCHAR"/>
+                <result property="contractId" column="contractId" jdbcType="INTEGER"/>
+                <result property="money" column="money" jdbcType="VARCHAR"/>
+                <result property="datetime" column="datetime" jdbcType="TIMESTAMP"/>
+                <result property="remark" column="remark" jdbcType="VARCHAR"/>
+                <result property="creatDate" column="creatDate" jdbcType="TIMESTAMP"/>
+                <result property="account" column="account" jdbcType="INTEGER"/>
+                <result property="status" column="status" jdbcType="INTEGER"/>
+                <result property="files" column="files" jdbcType="VARCHAR"/>
+        </resultMap>
 
     <sql id="commColumnsItem">
-        id, code, contractId, money, datetime, remark, creatDate, account, status
+id, code, contractId, money, datetime, remark, creatDate, account, status, files
     </sql>
     <!--查询单个-->
     <select id="queryById" resultMap="ContractPaymentMap">
@@ -69,6 +70,9 @@
             </if>
             <if test="query.status != null">
                 and p.status = #{query.status}
+            </if>
+            <if test="query.files != null and query.files != ''">
+                and files = #{query.files}
             </if>
         </where>
         <choose>
@@ -131,8 +135,8 @@
 
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into sys_contract_payment(code, contractId, money, datetime, remark, creatDate, account, status)
-        values (#{code}, #{contractId}, #{money}, #{datetime}, #{remark}, #{creatDate}, #{account}, #{status})
+        insert into sys_contract_payment(code, contractId, money, datetime, remark, creatDate, account, status,files)
+        values (#{code}, #{contractId}, #{money}, #{datetime}, #{remark}, #{creatDate}, #{account}, #{status},#{files})
     </insert>
 
     <!--通过主键修改数据-->
@@ -162,6 +166,9 @@
             </if>
             <if test="status != null">
                 status = #{status},
+            </if>
+            <if test="files != null and files != ''">
+                files = #{files},
             </if>
         </set>
         where id = #{id}

@@ -8,7 +8,8 @@
 
 <script setup lang="ts">
   import * as echarts from 'echarts';
-  import {ref, watch, onMounted, onBeforeUnmount, nextTick} from 'vue';
+  import {ref, watch, onMounted, onBeforeUnmount, nextTick, computed} from 'vue';
+  import {isMobile} from "@/utils";
 
   const props = withDefaults(
       defineProps<{
@@ -26,7 +27,7 @@
     (e: 'click', value: any): void
   }>()
   const chartRef = ref()
-  let chartInstance = null
+  let chartInstance:any = null
   const initChart = () => {
     chartInstance = echarts.init(chartRef.value);
     setOption(props.option)
@@ -64,10 +65,14 @@
   }
 
   defineExpose({setOption})
+
+  const height = computed(() => {
+    return isMobile() ? '250px' : '150px'
+  })
 </script>
 
 <style scoped lang="scss">
 .echarts-box {
-  height: calc(100vh - 150px) !important;
+  height: calc(100vh - v-bind(height)) !important;
 }
 </style>

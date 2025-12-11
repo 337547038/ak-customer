@@ -30,12 +30,12 @@ export interface Button {
     disabled?: (row: { [key: string]: any }) => boolean
     // 自定义el-button属性
     attr?: ButtonProps
-    key?: 'add' | 'edit' | 'del' | 'detail' //内容三个特殊值常用的按钮key。其它自定义按钮无需key
+    key?: 'add' | 'edit' | 'del' | 'detail'|'export' //内容三个特殊值常用的按钮key。其它自定义按钮无需key
 }
 
 export interface Columns extends Partial<TableColumnCtx<any>> {
     help?: string
-    render?: 'switch' | 'image' | 'tag' | 'url' | 'datetime' | 'date' | 'buttons'
+    render?: 'switch' | 'image' | 'tag' | 'url' | 'datetime' | 'date' | 'buttons'|'link'|'text'
     attr?: any //附加属性，当`render=switch、image、tag、button`组件的属性。
     replaceValue?: { [key: string | number]: string } //仅当`render=tag`时,{ '1': '启用', '0': '禁用' }
     custom?: { [key: string | number]: string } //仅当`render=tag`时,{ '1': 'success', '0': 'danger' }
@@ -44,6 +44,9 @@ export interface Columns extends Partial<TableColumnCtx<any>> {
     buttons?: Button[]
     prop?: string
     search?: any //所有属性将绑定在当前组件
+    show?:boolean
+    type?:string
+    visible?:boolean
 }
 
-export type EventType = 'switchChange' | 'getData' | 'del' | 'search'
+export type EventType = 'switchChange' | 'getData' | 'del' | 'search'|'export'

@@ -1,0 +1,50 @@
+.w-body {
+ // font-family: Arial, "Microsoft YaHei", serif;
+  font-size: 14px;
+  background: #eff2f5;
+}
+.layout-container{font-size: 28px}
+.w-container {
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 12px;
+  margin: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.nav-list {
+  margin: 0 20px;
+  padding-top: 20px;
+
+  .nav-group {
+    margin-bottom: 30px;
+
+    h3 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      font-weight: 400;
+      display: block;
+      width: 100%;
+
+      i {
+        font-size: 32px
+      }
+    }
+  }
+
+  .nav-list-item {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .nav-list-item {
+    margin-left: 10px;
+    border-bottom: 1px solid #ebedf0
+  }
+
+  .van-cell {
+    width: 33.3%;
+    padding-left: 0 !important;
+  }
+}
+.van-swipe-cell__right{display: flex}

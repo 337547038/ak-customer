@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="!isMobile()">
     <ak-list
       ref="tableListEl"
       pk="id"
@@ -73,11 +73,14 @@
       </ak-form>
     </el-dialog>
   </div>
+  <wap v-else />
 </template>
 <script setup lang="ts">
   import {ref, nextTick} from 'vue'
   import {Delete} from "@element-plus/icons-vue";
   import {useLayoutStore} from '@/store/layout'
+  import Wap from "./dict/wap.vue";
+  import {isMobile} from "@/utils";
 
   const layoutStore = useLayoutStore()
 
@@ -99,7 +102,7 @@
       }
     },
     {
-      key: 'edit', click: (row) => {
+      key: 'edit', click: (row:any) => {
         if (row?.length > 0) {
           editEvent(row[0])
         }
@@ -149,7 +152,7 @@
         {
           key: 'edit',
           label: '编辑',
-          click: (row) => {
+          click: (row:any) => {
             editEvent(row)
           }
           /*display: (row) => {
@@ -161,7 +164,7 @@
         },
         {
           label: '设置',
-          click: (row) => {
+          click: (row:any) => {
             setVisible.value = true
             formEditModel.value.id = row.id
             formEditModel.value.name = row.name
@@ -176,10 +179,10 @@
           key: 'del',
           tooltip: 'del',
           popConfirm: {confirmButtonType: 'danger'},
-          display: (row) => {
+          display: (row:any) => {
             return row.isSys === 0
           },
-          disabled: (row) => {
+          disabled: (row:any) => {
             return row.isSys === 1
           }
         }
@@ -243,8 +246,8 @@
     }
   ])
   const formEditData = ref([])
-  const formEditModel = ref({})
-  const labelList = ref([])
+  const formEditModel = ref<any>({})
+  const labelList = ref<any>([])
   const setVisible = ref(false)
   const addLabelClick = () => {
     labelList.value.push({label: '', value: ''})
@@ -280,6 +283,6 @@
 }
 
 .flex-item > div {
-  margin-right: 10px;
+  margin-right: 10PX;
 }
 </style>

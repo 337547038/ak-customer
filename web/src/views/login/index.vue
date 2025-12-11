@@ -1,5 +1,8 @@
 <template>
-  <div class="container">
+  <div
+    v-if="!isMobile()"
+    class="container"
+  >
     <div class="form">
       <h3>AK客户管理系统</h3>
       <ak-form
@@ -40,6 +43,69 @@
       <wx-login ref="wxLoginRef" />
     </div>
   </div>
+  <div
+    v-else
+    class="login-page"
+  >
+    <div class="box">
+      <van-form @submit="onSubmit">
+        <div class="h1">
+          AK客户管理系统
+        </div>
+        <van-cell-group
+          inset
+        >
+          <van-field
+            v-model="wForm.userName"
+            name="username"
+            label="用户名"
+            placeholder="用户名"
+            :rules="[{ required: true, message: '请填写用户名' }]"
+          />
+          <van-field
+            v-model="wForm.password"
+            type="password"
+            name="password"
+            label="密码"
+            placeholder="密码"
+            :rules="[{ required: true, message: '请填写密码' }]"
+          />
+          <van-field
+            v-model="wForm.code"
+            name="password"
+            label="验证码"
+            placeholder="验证码"
+            :rules="[{ required: true, message: '请填写验证码' }]"
+          >
+            <template #button>
+              <img
+                :src="src"
+                class="img"
+                alt="获取验证码"
+                @click="getCaptcha"
+              >
+            </template>
+          </van-field>
+        </van-cell-group>
+        <div style="margin: 16px;">
+          <van-button
+            round
+            block
+            type="primary"
+            native-type="submit"
+          >
+            登录
+          </van-button>
+        </div>
+        <div
+          class="login-type"
+          @click="loginTypeChange"
+        >
+          使用微信登录
+        </div>
+      </van-form>
+    </div>
+  </div>
 </template>
 <route>
 { meta:{title:'登录',layout:'hidden',permissions:false} }
@@ -49,8 +115,9 @@
   import {getRequest} from "@/api"
   import {useRouter, useRoute} from 'vue-router'
   import {useLayoutStore} from '@/store/layout'
-  import {setStorage, removeStorage} from '@/utils'
+  import {setStorage, removeStorage, isMobile} from '@/utils'
   import WxLogin from '@/components/scan/index.vue'
+  import wapLogin from "@/utils/wWx"
 
   const router = useRouter()
   const route = useRoute()
@@ -62,7 +129,7 @@
     wxLoginRef.value.open()
   }
 
-  const loginAfter = (data, success) => {
+  const loginAfter = (data:any, success?:boolean) => {
     if (success) {
       removeStorage('resources', true)
       // 统一方法保存token
@@ -133,6 +200,7 @@
           src.value = 'data:image/png;base64,' + base64
           //codeId.value = a
           formModel.value.codeId = codeId
+          wForm.value.codeId = codeId
         })
         .catch(() => {
         })
@@ -152,6 +220,33 @@
           })
     }
   }
+
+  // wap start
+  interface WForm {
+    userName: string
+    password: string
+    code: string
+    codeId: string
+  }
+  const wForm = ref<WForm>({
+    userName: 'admin',
+    password: '123456',
+    code: '',
+    codeId: ''
+  })
+  const loginTypeChange = () => {
+    wapLogin()
+  }
+  const onSubmit = () => {
+    getRequest('userLogin', wForm.value)
+        .then((res:any) => {
+          loginAfter(res.data,true)
+        })
+        .catch(() => {
+          getCaptcha()
+        })
+  }
+  // wap end
   onMounted(() => {
     getCaptcha()
     getScanLogin()
@@ -164,41 +259,69 @@
   background: url("../../assets/bg.jpg") no-repeat center center fixed;
   display: flex;
   align-items: center;
-  justify-content: center
-}
+  justify-content: center;
 
-.form {
-  overflow: hidden;
-  position: relative;
-  background: #fff;
-  border-radius: 5px;
-  padding: 30px 100px 30px 100px;
-  width: 580px;
-  min-width: 400px;
-  box-sizing: border-box;
 
-  h3 {
-    text-align: center;
-    font-size: 24px;
-    margin-bottom: 20px;
+  .form {
+    overflow: hidden;
+    position: relative;
+    background: #fff;
+    border-radius: 5PX;
+    padding: 30PX 100PX 30PX 100PX;
+    width: 580PX;
+    min-width: 400PX;
+    box-sizing: border-box;
+
+    h3 {
+      text-align: center;
+      font-size: 24PX;
+      margin-bottom: 20PX;
+    }
+  }
+
+  :deep(.item-code .el-form-item__content) {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap
+  }
+
+  .img {
+    height: 30PX;
+    width: 100PX;
+    margin-left: 10PX;
+    cursor: pointer
+  }
+
+  .weixin {
+    display: flex;
+    justify-content: center
   }
 }
 
-:deep(.item-code .el-form-item__content) {
+.login-page {
+  background: url("../../assets/bg.jpg") no-repeat center top / auto 100%;
+  height: 100vh;
   display: flex;
-  justify-content: space-between;
-  flex-wrap: nowrap
-}
+  align-items: center;
+  justify-content: center;
+  .h1 {
+    font-size: 36px;
+    text-align: center;
+    margin-bottom: 30px
+  }
 
-.img {
-  height: 30px;
-  width: 100px;
-  margin-left: 10px;
-  cursor: pointer
-}
+  .box {
+    background: #fff;
+    border-radius: 10px;
+    margin: 0 20px;
+    padding: 50px 0;
+    flex: 2;
+  }
 
-.weixin {
-  display: flex;
-  justify-content: center
+  .login-type {
+    font-size: 24px;
+    text-align: center;
+    color: #1989fa
+  }
 }
 </style>

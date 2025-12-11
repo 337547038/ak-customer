@@ -54,6 +54,7 @@
   //import TagViews from './tagViews.vue'
   import Menu from './menu.vue'
   import CommonHeader from './header.vue'
+  import {Close} from "@element-plus/icons-vue";
   const store = useLayoutStore()
   const isCollapse = ref<boolean>(false)
   const fullScreen = ref<boolean>(false)

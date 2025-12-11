@@ -48,7 +48,7 @@ export default [
     },
     {
         title: '客户管理',
-        icon: 'user',
+        icon: 'icon-customer',
         menuIndex: "customer",
         children: [
             {
@@ -118,7 +118,7 @@ export default [
             {
                 title: '用户管理',
                 path: '/system/user',
-                icon: "UserFilled"
+                icon: "icon-user2"
             },
             {
                 title: '角色管理',
@@ -128,22 +128,22 @@ export default [
             {
                 title: '部门管理',
                 path: '/system/dept',
-                icon: "OfficeBuilding"
+                icon: "icon-dept"
             },
             {
                 title: '登录日志',
                 path: '/system/log',
-                icon: "Notebook"
+                icon: "icon-log"
             },
             {
                 title: '字典管理',
                 path: '/system/dict',
-                icon: "Memo"
+                icon: "icon-dict"
             },
             {
                 title: '清空缓存',
                 path: '/system/cache',
-                icon: "Delete"
+                icon: "icon-clear"
             }
         ]
     }

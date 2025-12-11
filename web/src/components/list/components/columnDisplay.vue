@@ -26,7 +26,7 @@
         >
           <el-button
             circle
-            icon="SetUp"
+            :icon="SetUp"
             size="small"
           />
         </el-tooltip>
@@ -39,7 +39,7 @@
   import {useFormTable} from '@/store/formTable'
   import {Columns} from '@/components/list/types'
   import {useRoute} from 'vue-router'
-
+  import {SetUp} from '@element-plus/icons-vue'
   const props = withDefaults(
       defineProps<{
         columns?: Columns[]
@@ -58,7 +58,7 @@
 
   const formTableStore = useFormTable()
   const route = useRoute()
-  const columnsCheck = ref([])
+  const columnsCheck = ref<any>([])
 
   const keyColumnDisplay = computed(() => {
     return props.keyColumns || route.path

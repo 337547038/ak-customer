@@ -1,6 +1,6 @@
 <template>
   <template
-    v-for="(item, index) in data"
+    v-for="(item, index) in data as any"
     :key="index"
   >
     <el-sub-menu
@@ -38,7 +38,7 @@
       }
   )
 
-  const subMenuPermission = (child) => {
+  const subMenuPermission = (child:any) => {
     // 其中有一个子级有权限则返回true
     for (const key in child) {
       if (permission(child[key].path)) {

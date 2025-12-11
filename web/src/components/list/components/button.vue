@@ -33,10 +33,10 @@ const props = withDefaults(
     }
 )
 const emits = defineEmits<{
-  (e: 'click', key: string): void
+  (e: 'click', key?: string): void
 }>()
 
-const getTooltipDisabled = (btn: Button): void => {
+const getTooltipDisabled = (btn: Button): boolean => {
   // 如果有label时则不提示tooltip效果,即设置了tooltip也不显示
   if (btn.label) {
     return true

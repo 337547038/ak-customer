@@ -172,7 +172,7 @@
   import {dateFormatting, jsonParseStringify} from '@/utils'
   import OperateButton from './components/operateButton.vue'
   import SearchForm from './components/searchForm.vue'
-  import {Delete, Edit, Histogram, Plus} from '@element-plus/icons-vue'
+  import {Delete, Edit, Histogram, InfoFilled, Plus} from '@element-plus/icons-vue'
   import type {Button, EventType} from './types'
   import {useLayoutStore} from '@/store/layout'
 
@@ -188,10 +188,10 @@
         params?: { [key: string]: any }
         api?: Api
         pagination?: { pageSize: number; current: number } | boolean
-        before?: (type: EventType, params: any) => boolean
-        after?: (type: EventType, res: any, isSuccess?: boolean) => any
+        before?: ((type: EventType, params: any) => boolean)|null
+        after?: ((type: EventType, res: any, isSuccess?: boolean) => any)|null
         pk?: number | string // 主键，用于删除等
-        controlBtn?: Button[]
+        controlBtn?: Button[]|null
         showSearch?: boolean
         fixedBottomScroll?: boolean | string
         searchIconVisible?: boolean // 搜索折叠icon按钮
@@ -236,22 +236,22 @@
 
   const emits = defineEmits<{
     (e: 'selection-change', rows: any): void
-    (e: 'formFieldChange', prop: string, val: any): void
+    (e: 'formFieldChange', prop: string, val: any,model:any): void
     (e: 'eventClick', type: string, btn: any, row?: any): void
   }>()
 
   const loading = ref(false)
   const layoutStore = useLayoutStore()
-  const columnsCheck = ref([])
+  const columnsCheck = ref<string[]>([])
 
   const columnsFilter = computed(() => {
     return props.columns.filter((item: Columns) => {
       let visible = item.visible
       if (typeof item.visible === 'function') {
-        visible = item.visible()
+        visible = (item.visible as () => boolean)(); // 强制断言为函数
       }
       if (columnsCheck.value.length) {
-        return columnsCheck.value.includes(item.prop || item.type) && visible !== false
+        return columnsCheck.value.includes(item.prop||item.type||'') && visible !== false
       } else {
         return visible !== false
       }
@@ -499,7 +499,6 @@
 
   const handleSizeChange = (page: number) => {
     pageSize.value = page
-    console.log("1")
     getData()
   }
   const handleCurrentChange = (val: number) => {
@@ -515,7 +514,7 @@
   const getData = (index?: number) => {
     current.value = index || 1 //每次删除时都应该回到第一页，列表改变状态和编辑时刷新当前页，传index即可
     const listApi = props.api?.list
-    const source = 'get'
+    const source:EventType = 'getData'
     if (listApi) {
       let params: any = {
         extend: getPageInfo.value,
@@ -582,13 +581,14 @@
   const downloadExport = (params: { [key: string]: any }) => {
     const exportApi = props.api?.export
     if (exportApi) {
+      let data:any
       if (props.before) {
-        params = props.before('export', params)
+        data = props.before('export', params)
       }
-      if (params === false) {
+      if (data === false) {
         return
       }
-      getRequest(exportApi, params, {
+      getRequest(exportApi, data, {
         responseType: 'blob'
       })
           .then((res: any) => {
@@ -716,7 +716,7 @@
 .control-btn {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 15px;
+  margin-bottom: 15PX;
 
   .control-btn-group {
     display: flex;
@@ -729,7 +729,7 @@
 
       :deep(button, div) {
         margin-left: 0 !important;
-        margin-right: 12px;
+        margin-right: 12PX;
       }
     }
   }
@@ -739,7 +739,7 @@
     align-items: center;
 
     :deep(button, div) {
-      margin-left: 12px;
+      margin-left: 12PX;
     }
   }
 }
@@ -749,17 +749,17 @@
   align-items: center;
 
   :deep(button, div) {
-    margin-left: 12px;
+    margin-left: 12PX;
   }
 
   :deep(.is-text) {
-    margin-left: 1px;
+    margin-left: 1PX;
   }
 }
 
 .autoHeight-enter-active,
 .autoHeight-leave-active {
-  max-height: 200px;
+  max-height: 200PX;
   transition: all 0.6s;
   overflow: hidden;
 }
@@ -772,6 +772,6 @@
 .pagination {
   display: flex;
   justify-content: flex-end;
-  padding: 15px 0
+  padding: 15PX 0
 }
 </style>

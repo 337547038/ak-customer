@@ -1,7 +1,9 @@
 <template>
-  <div>
+  <div
+    v-if="!isMobile()"
+    ref="tableListEl"
+  >
     <ak-list
-      ref="tableListEl"
       pk="id"
       :columns="columns"
       :api="{ list: 'contactList',del:'contactDel'}"
@@ -33,6 +35,10 @@
       />
     </el-dialog>
   </div>
+  <wap-index
+    v-else
+    :form-data="formData"
+  />
 </template>
 
 <script setup lang="ts">
@@ -40,6 +46,8 @@
   import customerSelect from '@/components/customerSelect/index.vue'
   import validate from "@/components/form/validate";
   import {useLayoutStore} from '@/store/layout'
+  import {isMobile} from "@/utils";
+  import WapIndex from "./wap.vue";
 
   const props = withDefaults(
       defineProps<{
@@ -51,7 +59,7 @@
         keyColumns:''
       }
   )
-  const detailTabProps = inject('detailTabsProps', ref({}));
+  const detailTabProps:any = inject('detailTabsProps', ref({}));
   const layoutStore = useLayoutStore()
   const controlBtn = [
     {
@@ -93,7 +101,7 @@
     } else {
       title.value = `编辑${row?.name}信息`
       nextTick(() => {
-        formRef.value.getData({id: row.id})
+        formRef.value.getData({id: row?.id})
       })
     }
   }
@@ -340,7 +348,7 @@
       options: isDecisionMaker
     },
     {
-      label: '性别',
+      label: '性别', 
       prop: 'sex',
       render: 'radio',
       options: 'sex'

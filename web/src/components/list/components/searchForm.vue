@@ -55,13 +55,13 @@
       return (
           visible !== false &&
           item.search !== false &&
-          !['selection', 'index'].includes(item.type) &&
+          !['selection', 'index'].includes(<string>item.type) &&
           item.prop
       )
     })
   })
   const formEl = ref()
-  const searchForm = ref({})
+  const searchForm = ref<any>({})
   const changeField = (obj: any, val: any) => {
     if (obj.search?.changeRefresh) {
       searchClick() // 刷新列表

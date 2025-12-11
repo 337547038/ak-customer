@@ -8,13 +8,9 @@ import AKFormList from './components/index'
 import './assets/scss/style.scss'
 import permission from '@/directive'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import 'amfe-flexible'
+import useVant from './components/vantComponents'
 // 实例化 Pinia
 const pinia = createPinia()
 const app = createApp(App)
-app.use(pinia).use(ElementPlus,{locale: zhCn}).use(router).use(AKFormList).use(permission).mount('#app')
-// 全局注册icon
-import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-
-for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-  app.component(key, component)
-}
+app.use(pinia).use(ElementPlus,{locale: zhCn}).use(router).use(AKFormList).use(permission).use(useVant).mount('#app')

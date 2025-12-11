@@ -4,16 +4,38 @@
     style="position: relative"
   >
     <userSelect @change="userChange" />
-    <div class="back-btn">
-      <el-button
-        v-show="!isChinaMap"
-        type="primary"
-        text
-        @click="backClick"
+    <template v-if="isMobile()">
+      <van-loading
+        v-show="loading"
+        type="spinner"
+      />
+      <div
+        class="back-btn"
+        style="margin:5px"
       >
-        返回中国地图
-      </el-button>
-    </div>
+        <van-button
+          v-show="!isChinaMap"
+          type="primary"
+          plain
+          size="small"
+          @click="backClick"
+        >
+          返回中国地图
+        </van-button>
+      </div>
+    </template>
+    <template v-else>
+      <div class="back-btn">
+        <el-button
+          v-show="!isChinaMap"
+          type="primary"
+          text
+          @click="backClick"
+        >
+          返回中国地图
+        </el-button>
+      </div>
+    </template>
     <myEcharts
       ref="myEchartsRef"
       @click="mapClick"
@@ -31,6 +53,7 @@
   import {getRequest} from "@/api";
 
   import {getCityBySingleCode} from "@/utils/getCityByCode";
+  import {isMobile} from "@/utils";
 
 
   const loading = ref(false);
@@ -38,7 +61,7 @@
   const isChinaMap = ref(true)
   const currentCityCode = ref()
   const registerName = ref()
-  const seriesData = ref([])
+  const seriesData = ref<any>([])
   const maxValue = ref(0)
   const result = ref([])
   const option = ref({
@@ -104,7 +127,7 @@
 
   const chineseToCode = (city: string) => {
     // 将中文转拼音。地图点击获取到的是中文，要转为拼音去加载相对应的js
-    const area = {
+    const area:any = {
       '北京': 'beijing',
       '广东': 'guangdong',
       '湖南': 'hunan',
@@ -156,15 +179,15 @@
   const formatData = (data: any) => {
     if (!isChinaMap.value) {
       // 不是中国地图时，先取出当前省份的数据
-      data = data.filter(item => {
+      data = data.filter((item:any) => {
         const parts = item.area?.split(',')
         return parts?.[0] === currentCityCode.value
       })
     }
     // 北京上海天津重庆市
     const specialCity = ['11', '12', '31', '50', '81', '82'].includes(currentCityCode.value)
-    const obj = {}
-    data.forEach((item) => {
+    const obj:any = {}
+    data.forEach((item:any) => {
       if (item.area) {
         const code = item.area.split(',')
         if (code && (code.length === 3 || code.length === 2)) {

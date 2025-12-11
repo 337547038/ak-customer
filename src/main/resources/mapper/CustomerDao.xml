@@ -98,7 +98,7 @@
                 </foreach>
             </when>
             <otherwise>
-                a.id, a.company, a.brandName, a.type, a.area, a.address, a.industry, a.code, a.source, a.tel, a.userId, a.creatTime, a.updateTime,a.status
+                a.id, a.company, a.brandName, a.type, a.area, a.address, a.industry, a.code, a.source, a.tel, a.userId, a.creatTime, a.updateTime,a.status,a.shareUserId
             </otherwise>
         </choose>
         <if test="extend.columns=='user'">
@@ -139,6 +139,9 @@
     <select id="count" resultType="java.lang.Long">
         select count(1)
         from sys_customer as a
+        <if test="extend.columns=='user'">
+            join `sys_user` as c ON a.userId=c.id
+        </if>
         <if test="extend.columns=='contact'">
             join `sys_user` as c ON a.userId=c.id
         </if>

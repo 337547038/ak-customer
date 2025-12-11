@@ -73,15 +73,7 @@
         label="操作记录"
         name="operate"
       >
-        <el-timeline>
-          <el-timeline-item
-            v-for="(activity, index) in operateList"
-            :key="index"
-            :timestamp="activity.userName+activity.content"
-          >
-            {{ dateFormatting(activity.dataTime) }}
-          </el-timeline-item>
-        </el-timeline>
+        <records ref="recordsRef" />
       </el-tab-pane>
       <el-tab-pane
         v-if="formModel?.userId===userId&&formModel.shareUserId"
@@ -102,7 +94,6 @@
 
 <script setup lang="ts">
   import {computed, ref, nextTick, provide} from 'vue'
-  import {getRequest} from "@/api";
   import {dateFormatting} from "@/utils";
   import Contact from "../../contact/index.vue";
   import formData from "../formData";
@@ -111,6 +102,7 @@
   import ShareInfo from "./shareInfo.vue";
   import Contract from "@/views/contract/contract/index.vue";
   import {useLayoutStore} from '@/store/layout'
+  import Records from "./records.vue";
 
   const props = withDefaults(
       defineProps<{
@@ -128,12 +120,12 @@
   const tabsNameIsShare = computed(() => {
     return props.tabsType === 'shareWithMe'
   })
-  const formModel = ref({})
+  const formModel = ref<any>({})
   const formRef = ref()
   const activeName = ref('detail')
   // drawer
   const visible = ref(false)
-  const drawerObj = ref({})
+  const drawerObj = ref<any>({})
   const isAddForm = ref(true)
   const title = ref()
   const submitCallback = ref()
@@ -143,7 +135,6 @@
     nextTick(() => {
       formModel.value = {}
       activeName.value = 'detail'
-      operateList.value = []
       submitCallback.value = undefined
     })
   }
@@ -173,6 +164,7 @@
   })
   provide("detailTabsProps", detailTabsProps)
   //tabs
+  const recordsRef = ref()
   const contactRef = ref()
   const contractRef = ref()
   const followRef = ref()
@@ -189,7 +181,7 @@
         contractRef.value.getData()
         break;
       case 'operate':
-        getOperateList()
+        recordsRef.value.getData()
         break;
       case 'share':
         shareInfoRef.value.getData()
@@ -230,16 +222,6 @@
       return formData
     }
   })
-  // 操作记录
-  const operateList = ref([])
-  const getOperateList = () => {
-    if (drawerObj.value.id && operateList.value.length === 0) {
-      getRequest("customerRecords", {tid: drawerObj.value.id})
-          .then(res => {
-            operateList.value = res.data.list || []
-          })
-    }
-  }
   //联系人
 
   //跟进记录

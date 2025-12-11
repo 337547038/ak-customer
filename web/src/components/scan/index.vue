@@ -99,7 +99,7 @@
 .account {
   display: flex;
   justify-content: center;
-  padding-top: 5px;
+  padding-top: 5PX;
 }
 
 .scan-login {
@@ -109,7 +109,7 @@
   bottom: 0;
   width: 100%;
   height: 100%;
-  border-radius: 5px;
+  border-radius: 5PX;
   background: #fff;
   z-index: 5;
 }

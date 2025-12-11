@@ -24,7 +24,7 @@
 
   const props = withDefaults(
       defineProps<{
-        modelValue?: number
+        modelValue?: number|null
         userId?: number|null // 查询指定会员下的客户
       }>(),
       {
@@ -42,13 +42,13 @@
       remoteMethod("", val)
     }
   })
-  const options = ref([])
+  const options = ref<any>([])
   const value = ref('')
   const loading = ref(false)
   const remoteMethod = (query: string, id?: number) => {
     if (query || id) {
       loading.value = true
-      let params = {company: query, userId: props.userId}
+      let params:any = {company: query, userId: props.userId}
       if (id) {
         params = {id: id, userId: props.userId}
       }

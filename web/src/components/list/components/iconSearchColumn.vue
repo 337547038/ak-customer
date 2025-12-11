@@ -8,7 +8,7 @@
     >
       <el-button
         circle
-        icon="Search"
+        :icon="Search"
         size="small"
         @click="searchToggleClick"
       />
@@ -16,7 +16,7 @@
     <column-display
       v-if="columnsIconVisible"
       :key-columns="keyColumns"
-      :columns="columns"
+      :columns="columns as any"
       @change="change"
     />
   </div>
@@ -24,13 +24,14 @@
 
 <script setup lang="ts">
   import ColumnDisplay from "./columnDisplay.vue";
-
+  import {Search} from '@element-plus/icons-vue'
+  import {Columns} from "@/components/list/types";
    withDefaults(
       defineProps<{
         showSearch: boolean
         columnsIconVisible: boolean
         searchIconVisible: boolean
-        columns: Array<string>
+        columns: Columns[]
         keyColumns?: string
       }>(),
       {

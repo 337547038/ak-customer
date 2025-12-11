@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="!isMobile()">
     <ak-list
       ref="tableListEl"
       pk="id"
@@ -44,6 +44,7 @@
       />
     </el-dialog>
   </div>
+  <wap-index v-else />
 </template>
 
 <script setup lang="ts">
@@ -51,8 +52,9 @@
   import customerSelect from '@/components/customerSelect/index.vue'
   import contactSelect from '@/components/contactSelect/index.vue'
   import validate from "@/components/form/validate";
-  import {dateFormatting} from "@/utils";
+  import {dateFormatting,isMobile} from "@/utils";
   import {useLayoutStore} from "@/store/layout";
+  import WapIndex from './wap.vue'
 
   const props = withDefaults(
       defineProps<{
@@ -65,7 +67,7 @@
       }
   )
   const layoutStore = useLayoutStore()
-  const detailTabProps = inject('detailTabsProps', ref({}));
+  const detailTabProps:any = inject('detailTabsProps', ref({}));
   const controlBtn = [
     {
       key: 'add',
@@ -81,7 +83,7 @@
   const visible = ref(false)
   const title = ref('新增联系人')
   const formRef = ref()
-  const formModel = ref({})
+  const formModel = ref<any>({})
   /*const userInfo = computed(() => {
     return getStorage('userInfo', true) || {}
   })*/
@@ -110,7 +112,7 @@
     } else {
       title.value = `编辑${row?.name}信息`
       nextTick(() => {
-        formRef.value.getData({id: row.id})
+        formRef.value.getData({id: row?.id})
       })
     }
   }
@@ -126,7 +128,7 @@
       return layoutStore.userInfo?.hasChild
     }
   })
-  const searchFormModel = ref({}) // 查询表单的值
+  const searchFormModel = ref<{[key:string]:any}>({}) // 查询表单的值
   const searchUserId = computed(() => {
     return detailTabProps.value.userId || searchFormModel.value?.userId
   })

@@ -82,6 +82,7 @@
   import { computed } from 'vue'
   import { useLayoutStore } from '@/store/layout'
   import {useRouter} from 'vue-router'
+  import {ArrowDown, CircleClose, Expand, Fold, FullScreen, RefreshRight, Setting, User} from "@element-plus/icons-vue";
   const router = useRouter()
   withDefaults(
     defineProps<{
@@ -90,7 +91,7 @@
     {}
   )
   const store = useLayoutStore()
-  const breadcrumb = computed(() => {
+  const breadcrumb:any = computed(() => {
     return store?.breadcrumb
   })
   const emits = defineEmits<{
@@ -123,20 +124,20 @@
       align-self: center;
     }
     .avatar {
-      margin-right: 8px;
+      margin-right: 8PX;
     }
     .name {
       font-weight: 500;
     }
   }
   .avatar-menu {
-    width: 150px;
+    width: 150PX;
     .title {
-      margin-left: 10px;
+      margin-left: 10PX;
     }
     li {
-      height: 35px;
-      line-height: 35px;
+      height: 35PX;
+      line-height: 35PX;
     }
   }
 </style>

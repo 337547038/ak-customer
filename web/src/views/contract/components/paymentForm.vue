@@ -46,16 +46,18 @@
 
   const visible = ref(false);
   const title = ref("");
+  const formModel = ref<any>({})
   const formDisabled = computed(() => {
     return !props.userId && formModel.value.status === 2 // 已确认不能修改
   });
   const formRef = ref<HTMLFormElement>();
-  const formModel = ref({})
   const contractDisabled = ref(false)
   const formCancelClick = () => {
     visible.value = false
     formModel.value = {}
-    formRef.value.resetFields()
+    nextTick(()=>{
+      formRef.value?.resetFields()
+    })
   }
   const currentContractUserId = ref() // 点击行时更新，当查看下属时，同列表存在不同用户的
   // 当前合同所有人id
@@ -150,7 +152,7 @@
     isCheckStatus.value = !!check
     if (edit && row) {
       nextTick(() => {
-        formRef.value.getData({id: row.id})
+        formRef.value?.getData({id: row.id})
       })
     }
     contractDisabled.value = false

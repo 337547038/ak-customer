@@ -38,7 +38,6 @@
       v-else-if="render === 'radio' && optionsArray?.length"
       v-bind="$attrs"
       v-model="model"
-      options=""
       @change="change"
     >
       <el-radio
@@ -53,7 +52,6 @@
       v-else-if="render === 'select' && optionsArray?.length"
       v-bind="$attrs"
       v-model="model"
-      options=""
       :placeholder="$attrs.placeholder || '请选择' + label"
       style="min-width: 120px"
       @change="change"
@@ -118,16 +116,17 @@
             | 'slider'
             | 'component'
             | 'tree-select'
+            | 'text'
         component?: any // render=component时
         tooltip?: string
         ajax?: AjaxObj
       }>(),
       {
-        prop:'',
-        label:'',
-        component:null,
-        tooltip:'',
-        options:()=>{
+        prop: '',
+        label: '',
+        component: null,
+        tooltip: '',
+        options: () => {
           return []
         },
         formItem: () => {
@@ -162,7 +161,7 @@
     return []
   }
 
-  const optionsArray = computed(() => {
+  const optionsArray:any = computed(() => {
     if (typeof props.options === 'string') {
       // 作为字典的标识处理
       const dict = layoutStore.getSystemDict(props.options)
@@ -188,16 +187,16 @@
 
   const getAjaxOptions = () => {
     const {api, data, before, after, label, value} = props.ajax
-    if (['checkbox', 'radio', 'select'].includes(props.render) && !props.options && api) {
+    if (['checkbox', 'radio', 'select'].includes(props.render) && api && !!props.options) {
       let params = data
       if (typeof before === 'function') {
-        params = before(data) ?? data
+        params = before(data as any) ?? data
       }
       getRequest(api, params)
           .then(({data}) => {
             let list = data?.list || data
             if (label && value) {
-              list = list.map(item => ({
+              list = list.map((item:any) => ({
                 label: item[label],
                 value: item[value]
               }));
@@ -209,7 +208,9 @@
             }
           })
           .catch((err) => {
-            after(err, false)
+            if (typeof after === 'function') {
+              after(err, false)
+            }
           })
     }
   }

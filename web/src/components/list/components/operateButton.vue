@@ -47,7 +47,7 @@
     }
   )
   const emits = defineEmits<{
-    (e: 'click', key: string): void
+    (e: 'click', key: any): void
   }>()
 
   //按钮事件规则，当设置了自定义click事件时，当return false时可阻止默认事件
@@ -70,7 +70,7 @@
 <style scoped lang="scss">
   .btn-group {
     :deep(button) {
-      padding: 4px 5px;
+      padding: 4PX 5PX;
       height: auto;
     }
   }
