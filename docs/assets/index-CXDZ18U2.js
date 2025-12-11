@@ -1,0 +1,1 @@
+import{d as r,e,n as a,P as n,o}from"./index-C2nSLI9N.js";import{_ as t}from"./user.vue_vue_type_script_setup_true_lang-EK45zMf5.js";import s from"./wap-5-bMdUKT.js";import"./index.vue_vue_type_script_setup_true_lang-DhrpG5Fo.js";import"./validate-B2z5ZXZx.js";const k=r({__name:"index",setup(m){return(p,i)=>a(n)()?(o(),e(s,{key:1})):(o(),e(t,{key:0}))}});export{k as default};
