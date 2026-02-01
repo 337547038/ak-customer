@@ -1,0 +1,1 @@
+import{_ as e}from"./bar.vue_vue_type_script_setup_true_lang-vTulclUV.js";import{d as t,c as o,h as r,o as a}from"./index-CkpV00AO.js";import"./childUser.vue_vue_type_script_setup_true_lang-BAKOSnKC.js";const i=t({__name:"industry",setup(n){return(s,c)=>(a(),o("div",null,[r(e,{"page-type":"industry"})]))}});export{i as default};
