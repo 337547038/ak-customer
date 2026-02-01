@@ -2,19 +2,6 @@
 
 AK客户关系管理系统是一款以客户为中心，专门为企业销售团队量身定制的工具，其核心目标是帮助企业实现客户信息集中化、业务流程自动化、数据分析智能化，从而提升客户满意度、增强客户忠诚度，最终驱动业务增长。
 
-项目前后端分离，主要使用技术及插件：
-
-```text
-后端：
-
-Java、SpringBoot、Maven、Mysql、Caffeine、Mybatis、Swagger、Log4j2、Fastjson2、Jwt、Crypto
-
-前端：
-
-Vue、Axios、Echarts、Element-Plus、Pinia、Vue-router、Vite
-```
-
-
 ## 演示地址
 
 https://337547038.github.io/ak-customer/
@@ -71,22 +58,21 @@ spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 
 **温馨提示：因目前项目没有完全开源，当前仓库代码运行不起来。但可在本地预览**
 
-前端请使用`pnpm run preview`启动项目，并使用`http://192.168`IP地址访问，使用`localhost`会访问请求本地json模拟数据
+**前端请使用`pnpm run preview`启动项目，并使用`http://192.168.xxx.xx`IP地址访问，使用`localhost`会访问请求本地json模拟数据**
 
-后端按上面要求配置好数据库，进入`demo`目录运行`ak-customer-0.0.1-SNAPSHOT.jar`即可
+**后端按上面要求配置好数据库，进入`demo`目录运行`customer-0.0.1-SNAPSHOT.jar`即可**
 
 ```bash
-java -jar ak-customer-0.0.1-SNAPSHOT.jar
+java -jar customer-0.0.1-SNAPSHOT.jar
 ```
 
-**即可正常在本地调试，源码部分目前有偿提供，如有需要可加微信`337547038`**
-
-## Swagger接口文档
-http://localhost:8081/api/swagger-ui/index.html
+即可正常在本地调试，源码部分目前有偿提供，如有需要可加微信`337547038`
 
 ## 相关视频
 
-## 项目截图
+暂无视频
+
+## 项目截图PC端
 
 | ![index.png](mdImg/index.png)                         | ![analysis1.png](mdImg/analysis1.png)               |
 |-------------------------------------------------------|-----------------------------------------------------|
@@ -98,3 +84,16 @@ http://localhost:8081/api/swagger-ui/index.html
 | ![customer-contract.png](mdImg/customer-contract.png) | ![customer-detail.png](mdImg/customer-detail.png)   |
 | ![customer-follow.png](mdImg/customer-follow.png)     | ![follow.png](mdImg/follow.png)                     |
 | ![ocr.png](mdImg/ocr.png)                             | ![user.png](mdImg/user.png)                         |
+
+## 项目截图WAP端
+|   ![login.jpg](mdImg/wap/login.jpg) |      ![index.jpg](mdImg/wap/index.jpg) |
+|-------------------------------------|--------------------------------|
+|![analysis.jpg](mdImg/wap/analysis.jpg)　|　![analysis2.jpg](mdImg/wap/analysis2.jpg)|
+|![contact.jpg](mdImg/wap/contact.jpg)|![contactAdd.jpg](mdImg/wap/contactAdd.jpg)|
+|![contract.jpg](mdImg/wap/contract.jpg)|![contractＡdd.jpg](mdImg/wap/contract%EF%BC%A1dd.jpg)|
+|![customer.jpg](mdImg/wap/customer.jpg)|![customer2.jpg](mdImg/wap/customer2.jpg)|
+|![custonerAdd.jpg](mdImg/wap/custonerAdd.jpg)|![dict.jpg](mdImg/wap/dict.jpg)|
+|![dictEdit.jpg](mdImg/wap/dictEdit.jpg)|![follow.jpg](mdImg/wap/follow.jpg)|
+|![follow2.jpg](mdImg/wap/follow2.jpg)|![follow3.jpg](mdImg/wap/follow3.jpg)|
+|![nav.jpg](mdImg/wap/nav.jpg)|![user.jpg](mdImg/wap/user.jpg)|
+|![userCenter.jpg](mdImg/wap/userCenter.jpg)||
