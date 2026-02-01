@@ -463,4 +463,7 @@
     margin-right: 5px
   }
 }
+:deep(.van-collapse-item .van-cell__value){
+  display: none;
+}
 </style>

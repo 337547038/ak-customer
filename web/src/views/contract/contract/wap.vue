@@ -28,15 +28,17 @@
               </div>
             </template>
             <ul class="ul">
-              <li>客户名称：{{ data.customerName }}</li>
+              <li style="width:100%">
+                客户名称：{{ data.customerName }}
+              </li>
               <li>合同金额：{{ data.money }}</li>
               <li>公司签约人：{{ data.contactName }}</li>
               <li>已收款项：{{ data.payment || 0 }}</li>
-              <li>创建时间：{{ dateFormat(data.creatDate) }}</li>
               <li>状态：{{ statusDict[data.status] }}</li>
               <li style="width:100%">
                 合同有效期：{{ dateFormat(data.startDate, 'd') + ' / ' + dateFormat(data.endDate, 'd') }}
               </li>
+              <li>创建时间：{{ dateFormat(data.creatDate) }}</li>
             </ul>
           </van-collapse-item>
           <template #right>

@@ -1,5 +1,8 @@
 <template>
-  <div class="user-center">
+  <div
+    v-if="!isMobile()"
+    class="user-center"
+  >
     <ak-form
       ref="formRef"
       v-model="formModel"
@@ -21,6 +24,32 @@
       </el-form-item>
     </ak-form>
   </div>
+  <div
+    v-else
+    style="background: #fff;height:100vh"
+  >
+    <w-form
+      ref="formRef"
+      :data="wapFormData"
+      submit-url="userEdit"
+      request-url="userInfo"
+      :after="wapFormAfter"
+    >
+      <template #formBottom>
+        <van-field label="绑定微信">
+          <template #input>
+            <van-button
+              size="small"
+              type="primary"
+              @click="bindWenXin"
+            >
+              {{ formModel.bindWX ? '解绑' : '点击绑定' }}
+            </van-button>
+          </template>
+        </van-field>
+      </template>
+    </w-form>
+  </div>
   <scan-code
     ref="scanCodeRef"
     mode="dialog"
@@ -30,13 +59,15 @@
 {meta:{permissions:"none"}}
 </route>
 <script setup lang="ts">
-  import {ref, onMounted} from 'vue'
+  import {ref, onMounted, computed} from 'vue'
   import validate from "@/components/form/validate";
   import {useLayoutStore} from '@/store/layout'
   import {ElMessage} from "element-plus";
   import {getRequest} from "@/api";
   import scanCode from '@/components/scan/index.vue'
   import {useRoute} from 'vue-router'
+  import {isMobile} from "@/utils";
+  import wapLogin from "@/utils/wWx";
 
   const route = useRoute()
   const layoutStore = useLayoutStore();
@@ -100,6 +131,13 @@
       render: 'text',
     },*/
     {
+      prop: 'phone',
+      label: '手机号码',
+      formItem: {
+        rules: [validate('mobile'), validate('required', '请输入手机号码')],
+      }
+    },
+    {
       prop: 'password',
       label: '登录密码',
       attr: {
@@ -115,13 +153,6 @@
       }*/
     },
 
-    {
-      prop: 'phone',
-      label: '手机号码',
-      formItem: {
-        rules: [validate('mobile'), validate('required', '请输入手机号码')],
-      }
-    },
     {
       prop: 'weixin',
       label: '微信号码'
@@ -141,7 +172,7 @@
   }
 
   const scanCodeRef = ref()
-  const bindOrUnbind = (param:any) => {
+  const bindOrUnbind = (param: any) => {
     getRequest("bindWx", param)
         .then(() => {
           ElMessage.success('绑定成功')
@@ -153,7 +184,11 @@
       // 解绑
       bindOrUnbind({unbind: true})
     } else {
-      scanCodeRef.value.open()
+      if (isMobile()) {
+        wapLogin('/system/userCenter')
+      } else {
+        scanCodeRef.value.open()
+      }
     }
 
   }
@@ -164,15 +199,40 @@
       bindOrUnbind({code: code})
     }
   }
+  // wap
+  const wapFormData = computed(() => {
+    const temp: any = []
+    formData.value.forEach((item: any) => {
+      if (item.formItem?.rules) {
+        item.rules = item.formItem?.rules
+        delete item.formItem?.rules
+      }
+      if (item.prop === 'password') {
+        item.field = {type: 'password'}
+        item.placeholder = '不修改请留空'
+      }
+      temp.push(item)
+    })
+    return temp
+
+  })
+  const wapFormAfter = (type: string, res: any, isSuccess: boolean) => {
+    after(res, isSuccess, 'detail')
+    formModel.value = res
+  }
   onMounted(() => {
     formRef.value.getData()
+    if (isMobile()) {
+      layoutStore.setNavBarTitle("个人中心")
+      layoutStore.setRightSearchArrow(false)
+    }
     getScanBind()
   })
 </script>
 
 <style scoped lang="scss">
-.user-center {
-  background: #fff;
-  padding: 50PX
-}
+  .user-center {
+    background: #fff;
+    padding: 50PX
+  }
 </style>

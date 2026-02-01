@@ -65,6 +65,7 @@
             v-else
             v-bind="item.field"
             v-model="model[item.prop]"
+            :readonly="item.render==='text'"
             :label="item.label"
             :placeholder="getPlaceholder(item)"
             :rules="item.rules as any"

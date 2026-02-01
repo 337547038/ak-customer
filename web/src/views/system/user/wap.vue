@@ -98,7 +98,7 @@
   const lazyload = (node: any, resolve: any) => {
     getRequest('deptList', {tid: node?.id || 0}).then((res) => {
       const list = res.data?.list || []
-      list.forEach(item => {
+      list.forEach((item:any) => {
         if (item.hasChildren) {
           item.children = []
         }
