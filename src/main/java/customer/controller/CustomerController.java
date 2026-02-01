@@ -186,14 +186,14 @@ public class CustomerController {
     @Parameters({
             @Parameter(name = "ids", description = "要分享的客户id,多个用豆号隔开", required = true),
             @Parameter(name = "userId", description = "要分享的谁,多个用豆号隔开,为0时所有人可见"),
-            @Parameter(name = "type", description = "share时为分享，其他值为取消分享", required = true),
+            @Parameter(name = "type", description = "myShare时为分享，其他值为取消分享", required = true),
     })
     @PostMapping("share")
     public ResponseEntity<Boolean> toCom(@RequestBody Map<String, Object> params) {
         if (params.get("ids") == null || params.get("ids") == "") {
             throw new CustomException("请选择要分享的客户");
         }
-        if (params.get("type") == "share" && params.get("userId") == null) {
+        if (params.get("type") == "myShare" && params.get("userId") == null) {
             throw new CustomException("请选择分享目标人");
         }
         return ResponseEntity.ok(this.customerService.shareCustomer(params));

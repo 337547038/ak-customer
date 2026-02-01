@@ -42,8 +42,14 @@ public class ContractPayment implements Serializable {
      * 回款账户
      */
     private Integer account;
-
+/**
+     * 1待确认2领导已确认3没通过
+     */
     private Integer status;
+/**
+     * 附件
+     */
+    private String files;
 
 
 }

@@ -48,6 +48,7 @@ export default [
                 AMap: true,
                 echarts: true,
                 getScreenGlobal: true,
+                eruda: true
             }
         },
         rules: {

@@ -1,6 +1,11 @@
 <template>
-  <div class="progress-container">
-    <div class="img-item">
+  <div
+    class="progress-container"
+    :class="{'wap-container':isMobile()}"
+  >
+    <div
+      class="img-item"
+    >
       <div class="img-box">
         <el-progress
           :percentage="file.percentage || 0"
@@ -63,6 +68,7 @@
   import {ref, computed} from 'vue'
   import validate from '@/components/form/validate'
   import {ElMessage} from "element-plus";
+  import {isMobile} from "@/utils";
 
   const props = withDefaults(
       defineProps<{
@@ -129,15 +135,15 @@
 
 <style scoped lang="scss">
 .progress-container {
-  padding-top: 10px
+  padding-top: 10PX
 }
 
 .img-item {
   display: flex;
-  margin-bottom: 10px;
+  margin-bottom: 10PX;
 
   .btn {
-    margin-left: 10px;
+    margin-left: 10PX;
     display: flex;
     align-items: center
   }
@@ -146,19 +152,19 @@
 .img-box {
   position: relative;
   overflow: hidden;
-  width: 360px;
-  border-radius: 5px;
+  width: 360PX;
+  border-radius: 5PX;
 
   img {
     width: 100%;
-    height: 216px;
+    height: 216PX;
     display: block;
   }
 
   .file-name {
     background: rgba(0, 0, 0, .5);
-    height: 30px;
-    line-height: 30px;
+    height: 30PX;
+    line-height: 30PX;
     text-align: center;
     position: absolute;
     left: 0;
@@ -176,32 +182,37 @@
   }
 
   :deep(.el-progress__text) {
-    min-width: 20px
+    min-width: 20PX
   }
 }
 
 .ocr-content {
-  margin: 0 10px;
-  width: 300px;
-  padding: 10px;
-  line-height: 25px;
+  margin: 0 10PX;
+  width: 300PX;
+  padding: 10PX;
+  line-height: 25PX;
   overflow: hidden;
   background: #fff;
-  border-radius: 5px;
+  border-radius: 5PX;
 }
 
 .ocr-text {
-  padding: 5px 10px;
+  padding: 5PX 10PX;
   background: #fff;
-  border-radius: 5px;
-  width: 430px;
+  border-radius: 5PX;
+  width: 430PX;
 
   p {
-    margin-bottom: 8px
+    margin-bottom: 8PX
   }
 }
 
 :deep(.el-form-item) {
-  margin-bottom: 3px
+  margin-bottom: 3PX
+}
+
+.wap-container{padding:10px;background: #fff;margin-bottom: 10px;
+  .img-item{ flex-wrap: wrap;}
+  .img-box,.ocr-content{width: 50%;margin: 0}
 }
 </style>

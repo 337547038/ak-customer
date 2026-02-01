@@ -2,7 +2,8 @@ import {defineConfig} from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import Pages from 'vite-plugin-pages'
-import * as path from 'path'
+import { fileURLToPath, URL } from 'url'
+//import * as path from 'path'
 //import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vitejs.dev/config/
@@ -21,7 +22,8 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            '@': path.resolve(__dirname, './src')
+           // '@': path.resolve(__dirname, './src')
+            '@': fileURLToPath(new URL('./src', import.meta.url)),
         },
         // 使用路径别名时想要省略的后缀名，官方不建议将.vue文件省略后缀
         extensions: ['.js', '.ts']

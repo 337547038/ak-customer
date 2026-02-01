@@ -1,6 +1,9 @@
 <template>
   <div v-loading="loading">
-    <div style="display: flex">
+    <div
+      style="display: flex"
+      :style="getMobileStyle"
+    >
       <el-upload
         ref="uploadRef"
         v-model:file-list="fileList"
@@ -47,10 +50,10 @@
 </template>
 <script setup lang="ts">
   import {createWorker} from 'tesseract.js';
-  import {onMounted, ref} from "vue";
+  import {computed, onMounted, ref} from "vue";
   import {getRequest} from "@/api";
   import Card from './components/card.vue'
-  import {setStorage, getStorage, removeStorage} from "@/utils";
+  import {setStorage, getStorage, removeStorage, isMobile} from "@/utils";
 
   const uploadRef = ref()
   const fileList = ref([])
@@ -76,7 +79,7 @@
     const params = new FormData();
     params.append('file', file);
     const options = {
-      onUploadProgress: (progressEvent) => {
+      onUploadProgress: (progressEvent:any) => {
         const percentCompleted = Math.round(
             (progressEvent.loaded * 100) / progressEvent.total
         )
@@ -130,8 +133,16 @@
   }
   onMounted(() => {
     initTesseract()
-    // 页面刷新从本地读取，防止意见丢失
+    // 页面刷新从本地读取，防止意外丢失
     fileList.value = getStorage("fileList") || [];
+  })
+
+  const getMobileStyle = computed(() => {
+    if (isMobile()) {
+      return {paddingTop: '10px',justifyContent:'center'}
+    } else {
+      return {}
+    }
   })
 </script>
 <style scoped lang="scss">

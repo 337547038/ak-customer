@@ -27,6 +27,7 @@
   import {getRequest} from "@/api";
   import {ElMessage} from "element-plus";
   import {onBeforeRouteLeave} from 'vue-router'
+  import {Plus} from "@element-plus/icons-vue";
 
   const props = withDefaults(
       defineProps<{
@@ -41,7 +42,7 @@
     (e: 'update:modelValue', value: string): void
   }>()
 
-  const fileList = ref([])
+  const fileList = ref<any>([])
   const dialogImageUrl = ref('')
   const dialogVisible = ref(false)
   const unWatch = watch(() => props.modelValue, () => {
@@ -56,18 +57,18 @@
 
   const updateModeValue = (): void => {
     nextTick(() => {
-      const urlString = fileList.value.length ? fileList.value.map(item => item.url).join(',') : '';
+      const urlString = fileList.value.length ? fileList.value.map((item:any) => item.url).join(',') : '';
       emits("update:modelValue", urlString);
     })
   }
   //const delFilePath = ref([])
-  const handleRemove = (file) => {
+  const handleRemove = (file:any) => {
     // 这里直接删除后，如果没有提交保存，只是将图片删除并没从数据库中删除
     getRequest("uploadDel", {path: file.url})
     updateModeValue()
     // 发送删除请求
   }
-  const handlePictureCardPreview = (uploadFile) => {
+  const handlePictureCardPreview = (uploadFile:any) => {
     dialogImageUrl.value = uploadFile.url!
     dialogVisible.value = true
   }
@@ -76,7 +77,7 @@
     params.append('file', file.file);
     getRequest("upload", params)
         .then(({data}) => {
-          fileList.value.forEach((item) => {
+          fileList.value.forEach((item:any) => {
             if (item.uid === file.file?.uid) {
               item.url = data
             }
@@ -84,7 +85,7 @@
           updateModeValue()
         })
         .catch(() => {
-          fileList.value.forEach((item, index) => {
+          fileList.value.forEach((item:any, index:number) => {
             if (item.uid === file.file?.uid) {
               fileList.value.splice(index, 1)
             }

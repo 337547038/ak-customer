@@ -1,4 +1,7 @@
 export const dateFormatting = (time: any, cFormat?: string) => {
+    if (!time) {
+        return ''
+    }
     const format = cFormat || '{y}-{m}-{d} {h}:{i}:{s}'
     // 字符串数字形式的时间戳要转换下
     let newTime = time
@@ -15,7 +18,7 @@ export const dateFormatting = (time: any, cFormat?: string) => {
         s: date.getSeconds(),
         a: date.getDay()
     }
-    const timeStr = format.replace(/{(y|m|d|h|i|s|a)+}/g, (result, key) => {
+    return format.replace(/{(y|m|d|h|i|s|a)+}/g, (result, key) => {
         let value = formatObj[key]
         if (key === 'a')
             return ['一', '二', '三', '四', '五', '六', '日'][value - 1]
@@ -24,15 +27,15 @@ export const dateFormatting = (time: any, cFormat?: string) => {
         }
         return value || 0
     })
-    return timeStr
 }
 
 // 动态远程加载script脚本
 export function loadScript(src: string, id?: string, remove?: boolean) {
     if (remove) {
-        const script = document.getElementById(id) ||
-            Array.from(document.scripts).find(s => s.src === id);
-
+        let script
+        if (id) {
+            script = document.getElementById(id)||Array.from(document.scripts).find(s => s.src === id)
+        }
         if (script) {
             // 移除所有事件监听器（简单方式：克隆并替换）
             const parent = script.parentNode;
@@ -48,7 +51,7 @@ export function loadScript(src: string, id?: string, remove?: boolean) {
         script.onload = resolve
         script.onerror = reject
         script.src = src
-        script.id = id
+        script.id = id || ''
         document.head.appendChild(script)
     })
 }
@@ -156,4 +159,15 @@ export const jsonParseStringify = (obj: { [key: string]: any }) => {
     } else {
         return obj
     }
+}
+
+/**
+ * 判断客户端是否为移动端
+ */
+export const isMobile = () => {
+    const isMobile = /Mobile|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const isTablet = /(iPad|Android)/i.test(navigator.userAgent) && !/(Mobile)/i.test(navigator.userAgent);
+
+    return isMobile && !isTablet;
+    //return true
 }

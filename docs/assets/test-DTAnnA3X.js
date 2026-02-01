@@ -1,0 +1,1 @@
+import{d as s,e as n,o as a,g as c,w as l,h as r,a as u,D as _}from"./index-BiMixNdo.js";const d=s({__name:"test",setup(i){const t=()=>{_("system/user/child",{})};return(m,e)=>{const o=u("el-button");return a(),n("div",null,[c(o,{onClick:t},{default:l(()=>[...e[0]||(e[0]=[r(" click ",-1)])]),_:1})])}}});export{d as default};

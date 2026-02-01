@@ -13,6 +13,8 @@ declare module 'virtual:generated-pages' {
 
 declare module '@vitejs/plugin-vue'
 declare module '@vitejs/plugin-vue-jsx'
+declare module '@/api'
+declare module '@/utils'
 /*
 declare module 'vuex' {
   type StoreStateType = typeof store.state

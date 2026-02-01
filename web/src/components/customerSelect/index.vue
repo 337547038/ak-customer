@@ -1,0 +1,80 @@
+<template>
+  <el-select
+    v-model="value"
+    placeholder="请输入客户名称"
+    filterable
+    remote
+    :remote-method="remoteMethod"
+    :loading="loading"
+    @change="change"
+  >
+    <el-option
+      v-for="item in options"
+      :key="item.id"
+      :label="item.company"
+      :value="item.id"
+    />
+  </el-select>
+</template>
+
+<script setup lang="ts">
+  import {ref, watch} from 'vue'
+  import {getRequest} from "@/api";
+  import {onBeforeRouteLeave} from 'vue-router'
+
+  const props = withDefaults(
+      defineProps<{
+        modelValue?: number|null
+        userId?: number|null // 查询指定会员下的客户
+      }>(),
+      {
+        modelValue:null,
+        userId:null
+      }
+  )
+  const emits = defineEmits<{
+    (e: 'update:modelValue', value: any): void
+    (e: 'change', value: any): void
+  }>()
+  const unWatch = watch(() => props.modelValue, (val: any): void => {
+    value.value = val
+    if (val) {
+      remoteMethod("", val)
+    }
+  })
+  const options = ref<any>([])
+  const value = ref('')
+  const loading = ref(false)
+  const remoteMethod = (query: string, id?: number) => {
+    if (query || id) {
+      loading.value = true
+      let params:any = {company: query, userId: props.userId}
+      if (id) {
+        params = {id: id, userId: props.userId}
+      }
+      getRequest("customerList", params)
+          .then(res => {
+            options.value = res.data.list || []
+            loading.value = false
+          })
+          .catch(() => {
+            options.value = []
+            loading.value = false
+          })
+    } else {
+      options.value = []
+    }
+  }
+  const change = () => {
+    emits('update:modelValue', value.value)
+    emits('change', value.value)
+  }
+
+  onBeforeRouteLeave(() => {
+    unWatch()
+  })
+</script>
+
+<style scoped lang="scss">
+
+</style>

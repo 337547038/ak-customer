@@ -1,22 +1,25 @@
 <template>
-  <ak-list
-    ref="tableListRef"
-    :columns="columns"
-    pk="id"
-    :before="beforeList"
-    :api="{list:'contractPaymentList',del:'contractPaymentDel'}"
-    :control-btn="[
-      {
-        key:'add',
-        click:()=>{addEditClick(false)}
-      }
-    ]"
-  />
-  <payment-form
-    ref="paymentFormRef"
-    :user-id="currentUserId"
-    @callback="formCallback"
-  />
+  <div v-if="!isMobile()">
+    <ak-list
+      ref="tableListRef"
+      :columns="columns"
+      pk="id"
+      :before="beforeList"
+      :api="{list:'contractPaymentList',del:'contractPaymentDel'}"
+      :control-btn="[
+        {
+          key:'add',
+          click:()=>{addEditClick(false)}
+        }
+      ]"
+    />
+    <payment-form
+      ref="paymentFormRef"
+      :user-id="currentUserId"
+      @callback="formCallback"
+    />
+  </div>
+  <wap-index v-else />
 </template>
 
 <script setup lang="ts">
@@ -25,6 +28,8 @@
   import {useLayoutStore} from "@/store/layout";
   import PaymentForm from "../components/paymentForm.vue";
   import {onBeforeRouteLeave, useRoute} from "vue-router";
+  import WapIndex from './wap.vue'
+  import {isMobile} from "@/utils";
 
   const route = useRoute();
   const currentUserId = ref() // 有id表示当前为查看下属
@@ -66,7 +71,7 @@
       label: '客户名称',
       width: 180,
       showOverflowTooltip: true,
-      formatter: (row) => {
+      formatter: (row:any) => {
         return row.customerName
       },
       search: {

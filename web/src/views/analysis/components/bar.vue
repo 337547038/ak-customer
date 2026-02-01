@@ -1,8 +1,6 @@
 <template>
   <!--客户级别-->
-  <div>
-    <userSelect @change="userChange" />
-  </div>
+  <userSelect @change="userChange" />
   <myEcharts :option="option" />
 </template>
 
@@ -12,6 +10,7 @@
   import {ref, onMounted} from 'vue'
   import {getRequest} from "@/api";
   import {useLayoutStore} from '@/store/layout'
+  import {isMobile} from "@/utils";
 
   const layerStore = useLayoutStore()
 
@@ -25,15 +24,18 @@
     getData(userId)
   }
 
-  const xAxis = ref([])
-  const series = ref([])
+  const xAxis = ref<{[key: string]: any}>([])
+  const series = ref<{[key: string]: any}>([])
   const option = ref({
     tooltip: {},
-    xAxis: {
+    xAxis: isMobile() ? {type: 'value'} : {
       type: 'category',
       data: xAxis
     },
-    yAxis: {
+    yAxis: isMobile() ? {
+      type: 'category',
+      data: xAxis
+    } : {
       type: 'value'
     },
     series: [
@@ -60,8 +62,8 @@
         break
     }
     const dict = layerStore.getSystemDict(dictKey)
-    const groups = {}
-    data.forEach(item => {
+    const groups:any = {}
+    data.forEach((item:any) => {
       const key = dict[item[props.pageType]] || '未分类'
       // 初始化分组计数
       if (!groups[key]) {
@@ -71,7 +73,7 @@
       groups[key]++;
     })
     xAxis.value = Object.keys(groups)
-    series.value = xAxis.value.map(type => groups[type]);
+    series.value = xAxis.value.map((type:any) => groups[type]);
 
   }
   const getData = (userId?: number) => {

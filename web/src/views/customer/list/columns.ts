@@ -55,7 +55,8 @@ export default [
         label: '所属区域',
         search: {
             render: 'component',
-            component: markRaw(ProvincesCity)
+            component: markRaw(ProvincesCity),
+            clearable:true
         },
         formatter: (row: any, column: any, cellValue: any) => {
             return getCityByCode(cellValue)

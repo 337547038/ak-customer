@@ -21,7 +21,8 @@
         "./src/*"
       ]
       // 这里需要配置
-    }
+    },
+    "typeRoots": ["./node_modules/@types", "./src"] // 包含 src 下的 .d.ts
   },
   "include": [
     "src/**/*.ts",

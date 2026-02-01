@@ -6,6 +6,69 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "6540383",
+      "name": "管理",
+      "font_class": "manage",
+      "unicode": "e604",
+      "unicode_decimal": 58884
+    },
+    {
+      "icon_id": "809669",
+      "name": "home",
+      "font_class": "home",
+      "unicode": "e672",
+      "unicode_decimal": 58994
+    },
+    {
+      "icon_id": "6219264",
+      "name": "清空",
+      "font_class": "clear",
+      "unicode": "e946",
+      "unicode_decimal": 59718
+    },
+    {
+      "icon_id": "7216343",
+      "name": "客户管理",
+      "font_class": "customer",
+      "unicode": "e60e",
+      "unicode_decimal": 58894
+    },
+    {
+      "icon_id": "8605754",
+      "name": "字典管理",
+      "font_class": "dict",
+      "unicode": "e668",
+      "unicode_decimal": 58984
+    },
+    {
+      "icon_id": "18321645",
+      "name": "用户管理",
+      "font_class": "yonghuguanli",
+      "unicode": "e645",
+      "unicode_decimal": 58949
+    },
+    {
+      "icon_id": "18853225",
+      "name": "登录日志",
+      "font_class": "log",
+      "unicode": "e679",
+      "unicode_decimal": 59001
+    },
+    {
+      "icon_id": "24202605",
+      "name": "删 除",
+      "font_class": "del",
+      "unicode": "e608",
+      "unicode_decimal": 58888
+    },
+    {
+      "icon_id": "24848374",
+      "name": "部门管理",
+      "font_class": "dept",
+      "unicode": "e637",
+      "unicode_decimal": 58935
+    },
+    {
       "icon_id": "10937700",
       "name": "区域",
       "font_class": "area",

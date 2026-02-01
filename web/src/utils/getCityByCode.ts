@@ -1,13 +1,19 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 import ProvincesJson from '@/assets/json/provinces.json'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 import CityJson from '@/assets/json/cities.json'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 import AreaJson from '@/assets/json/areas.json'
 
 const getCityByCode = (code: string[] | string) => {
-    let cityCode = code
+    let cityCode:any = code
     if (code && typeof code === 'string') {
         cityCode = code.split(',')
     }
-    const temp = []
+    const temp:any[] = []
     if (cityCode && (cityCode.length === 2 || cityCode.length === 3)) {
         if (containsChinese(cityCode.join(','))) {
             // 包含中文时，直接返回中文
@@ -36,15 +42,15 @@ export const getCityBySingleCode = (code: string, type: string) => {
     }
     if (type === "p") {
         //省份
-        const pro = ProvincesJson.find(item => item.code === code)
+        const pro = ProvincesJson.find((item:any) => item.code === code)
         return pro && pro?.name
     } else if (type === "c") {
         //城市
-        const city = CityJson.find(item => item.code === code)
+        const city = CityJson.find((item:any) => item.code === code)
         return city && city?.name
     } else {
         // 区
-        const area = AreaJson.find(item => item.code === code)
+        const area = AreaJson.find((item:any) => item.code === code)
         return area && area?.name
     }
 }
@@ -67,7 +73,7 @@ export const getCityBySingleCode = (code: string, type: string) => {
     }
 }*/
 
-function containsChinese(str) {
+function containsChinese(str:any) {
     return /[\u4e00-\u9fa5]/.test(str);
 }
 
